@@ -1,0 +1,1598 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>觀展中…</title>
+<style>
+  :root { color-scheme: dark; --gold: #ffd34d; }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0a0c; font-family: -apple-system, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif; }
+  #app { position: fixed; inset: 0; }
+  canvas#scene { display: block; touch-action: none; cursor: grab; }
+  canvas#scene.grabbing { cursor: grabbing; }
+  canvas#scene.editing { cursor: crosshair; }
+
+  #crosshair { position: fixed; left: 50%; top: 50%; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%; background: rgba(255,255,255,.85); box-shadow: 0 0 0 2px rgba(0,0,0,.35); pointer-events: none; opacity: 0; transition: opacity .2s, transform .12s; z-index: 20; }
+  #crosshair.show { opacity: 1; } #crosshair.hot { transform: scale(1.9); background: var(--gold); }
+
+  #intro { position: fixed; inset: 0; z-index: 60; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px; background: radial-gradient(120% 90% at 50% 30%, #16161c 0%, #0a0a0c 70%); color: #f2f2f4; }
+  #intro h1 { font-size: clamp(22px, 5vw, 34px); font-weight: 700; }
+  #intro .sub { margin-top: 10px; color: #9a9aa4; font-size: 14px; max-width: 470px; line-height: 1.7; }
+  #enterRow { margin-top: 30px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  #tourEnterBtn { padding: 14px 36px; font-size: 16px; font-weight: 700; color: #0a0a0c; background: var(--gold); border: none; border-radius: 999px; cursor: pointer; box-shadow: 0 8px 30px rgba(255,211,77,.25); }
+  #enterBtn { padding: 14px 32px; font-size: 16px; font-weight: 600; color: #f2f2f4; background: transparent; border: 1px solid rgba(255,255,255,.28); border-radius: 999px; cursor: pointer; }
+  #routeHint { margin-top: 14px; color: #8a8a92; font-size: 12px; }
+  /* 章節標題卡 */
+  #chapterCard { position: fixed; left: 50%; top: 38%; transform: translate(-50%, -50%); z-index: 45; text-align: center; color: #fff; pointer-events: none; opacity: 0; transition: opacity .6s; text-shadow: 0 2px 18px rgba(0,0,0,.45); }
+  #chapterCard.show { opacity: 1; }
+  #chapterCard .k { font-size: 13px; letter-spacing: 4px; color: var(--gold); }
+  #chapterCard .t { margin-top: 10px; font-size: clamp(28px, 5vw, 44px); font-weight: 700; letter-spacing: 2px; }
+  /* 聚焦暈影：到站看作品時畫面邊緣柔化 */
+  #focusVig { position: fixed; inset: 0; z-index: 12; pointer-events: none; opacity: 0; transition: opacity .8s; background: radial-gradient(ellipse 60% 55% at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,.42) 100%); }
+  #focusVig.show { opacity: 1; }
+  #controlsHint { margin-top: 26px; color: #6f6f78; font-size: 13px; line-height: 1.9; }
+  #controlsHint kbd { display: inline-block; min-width: 22px; padding: 2px 7px; margin: 0 1px; font-size: 12px; color: #d2d2d8; background: #232329; border: 1px solid #34343c; border-radius: 6px; }
+  #loadBar { margin-top: 22px; width: 220px; height: 3px; background: #232329; border-radius: 3px; overflow: hidden; }
+  #loadBar > i { display: block; height: 100%; width: 0%; background: var(--gold); transition: width .3s; }
+
+  #topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 15; padding: 12px 16px; display: flex; align-items: center; gap: 8px; background: linear-gradient(180deg, rgba(0,0,0,.5), rgba(0,0,0,0)); color: #f2f2f4; opacity: 0; transition: opacity .3s; flex-wrap: wrap; }
+  #topbar.show { opacity: 1; }
+  #topbar a, #topbar .tbtn { pointer-events: auto; text-decoration: none; color: #ececf0; font-size: 13px; padding: 7px 12px; border: 1px solid rgba(255,255,255,.16); border-radius: 999px; background: rgba(0,0,0,.3); cursor: pointer; }
+  #topbar .tbtn.on { background: var(--gold); color: #0a0a0c; border-color: var(--gold); font-weight: 700; }
+  #topbar .title { font-size: 15px; font-weight: 600; margin-left: 4px; }
+  #topbar .count { font-size: 12px; color: #b9b9c2; margin-left: auto; }
+  #roomBar { display: flex; gap: 6px; margin-left: 8px; pointer-events: auto; }
+  #roomBar button { font-size: 12px; padding: 6px 11px; border-radius: 999px; border: 1px solid rgba(255,255,255,.16); background: rgba(0,0,0,.3); color: #ececf0; cursor: pointer; }
+  #roomBar button.on { background: #fff; color: #0a0a0c; border-color: #fff; font-weight: 700; }
+
+  #editbar { position: fixed; top: 52px; left: 0; right: 0; z-index: 16; padding: 9px 14px; display: none; align-items: center; gap: 7px; flex-wrap: wrap; background: rgba(16,16,22,.93); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(255,255,255,.08); }
+  #editbar.show { display: flex; }
+  #editbar .lbl { font-size: 12px; font-weight: 700; color: var(--gold); margin-right: 2px; }
+  #editbar button { font-size: 13px; padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.05); color: #ececf0; cursor: pointer; }
+  #editbar button:hover { background: rgba(255,255,255,.12); }
+  #editbar .hint { font-size: 12px; color: #8a8a92; margin-left: auto; }
+
+  .panel { position: fixed; z-index: 40; right: 0; top: 0; bottom: 0; width: min(420px, 90vw); background: rgba(18,18,22,.96); backdrop-filter: blur(14px); border-left: 1px solid rgba(255,255,255,.08); color: #ececf0; transform: translateX(100%); transition: transform .3s cubic-bezier(.22,.61,.36,1); display: flex; flex-direction: column; padding: 22px; overflow-y: auto; }
+  .panel.open { transform: translateX(0); }
+  .panel .close { position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.04); color: #ececf0; font-size: 18px; cursor: pointer; }
+  .panel .kind { font-size: 12px; color: var(--gold); letter-spacing: 1.5px; }
+  .panel h2 { margin-top: 8px; font-size: 22px; font-weight: 700; line-height: 1.3; }
+  .panel .body { margin-top: 14px; font-size: 15px; line-height: 1.8; color: #c4c4cc; white-space: pre-wrap; }
+  .panel .media { margin-top: 16px; border-radius: 12px; overflow: hidden; background: #000; }
+  .panel .media video, .panel .media img { width: 100%; display: block; }
+  .panel label { display: block; font-size: 12px; color: #9a9aa4; margin: 14px 0 6px; }
+  .panel input[type=text], .panel input[type=url], .panel textarea, .panel select { width: 100%; padding: 9px 11px; font-size: 14px; background: #0e0e12; border: 1px solid rgba(255,255,255,.12); border-radius: 9px; color: #fff; font-family: inherit; }
+  .panel textarea { resize: vertical; min-height: 56px; line-height: 1.5; }
+  .panel input[type=range] { width: 100%; accent-color: var(--gold); }
+  .panel input[type=color] { width: 44px; height: 32px; padding: 0; border: 1px solid rgba(255,255,255,.12); border-radius: 8px; background: #0e0e12; }
+  .panel .row { display: flex; gap: 10px; } .panel .row > div { flex: 1; }
+  .panel .rr { display: flex; align-items: center; gap: 10px; } .panel .rr output { font-size: 12px; color: #9a9aa4; min-width: 40px; text-align: right; }
+  .panel .ph { font-size: 11px; color: #6f6f78; margin-top: 5px; line-height: 1.6; }
+  .seg { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .seg button { flex: 1; min-width: 60px; padding: 7px 8px; font-size: 13px; border-radius: 8px; border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.04); color: #ddd; cursor: pointer; }
+  .seg button.sel { background: var(--gold); color: #0a0a0c; border-color: var(--gold); font-weight: 700; }
+  .delBtn { margin-top: 20px; padding: 9px 16px; font-size: 13px; border-radius: 999px; border: 1px solid rgba(255,255,255,.12); background: transparent; color: #f09595; cursor: pointer; }
+  .delBtn:hover { background: rgba(226,75,74,.15); border-color: #e24b4a; }
+
+  #reactBox { margin-top: 20px; border-top: 1px solid rgba(255,255,255,.1); padding-top: 16px; }
+  #likeBtn { display: inline-flex; align-items: center; gap: 7px; font-size: 15px; padding: 8px 16px; border-radius: 999px; border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.04); color: #ececf0; cursor: pointer; }
+  #likeBtn.liked { background: rgba(212,83,126,.18); border-color: #d4537e; color: #f4c0d1; }
+  #commentList { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+  #commentList .c { background: rgba(255,255,255,.04); border-radius: 10px; padding: 10px 12px; }
+  #commentList .c .n { font-size: 12px; color: var(--gold); font-weight: 600; }
+  #commentList .c .t { font-size: 14px; color: #d6d6dc; margin-top: 3px; line-height: 1.5; white-space: pre-wrap; }
+  #commentList .none { color: #6f6f78; font-size: 13px; }
+  .cForm { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+  .cForm button { align-self: flex-end; padding: 8px 18px; font-size: 14px; font-weight: 600; border: none; border-radius: 999px; background: var(--gold); color: #0a0a0c; cursor: pointer; }
+
+  /* 小地圖 */
+  #minimap { position: fixed; left: 18px; bottom: 18px; z-index: 18; width: 150px; height: 150px; border-radius: 12px; background: rgba(10,10,12,.6); border: 1px solid rgba(255,255,255,.12); backdrop-filter: blur(6px); opacity: 0; transition: opacity .3s; }
+  #minimap.show { opacity: 1; }
+
+  /* 導覽控制列 */
+  #tourbar { position: fixed; right: 18px; bottom: 18px; z-index: 18; display: none; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 999px; background: rgba(10,10,12,.7); border: 1px solid rgba(255,255,255,.12); backdrop-filter: blur(6px); color: #ececf0; }
+  #tourbar.show { display: flex; }
+  #tourbar button { padding: 9px 14px; border-radius: 999px; border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.06); color: #fff; font-size: 13px; cursor: pointer; }
+  #tourbar #tourLabel { font-size: 13px; min-width: 120px; text-align: center; padding: 0 6px; }
+
+  #joystick { position: fixed; left: 26px; bottom: 30px; width: 116px; height: 116px; z-index: 30; border-radius: 50%; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); display: none; touch-action: none; }
+  #joystick > i { position: absolute; left: 50%; top: 50%; width: 50px; height: 50px; margin: -25px 0 0 -25px; border-radius: 50%; background: rgba(255,255,255,.85); }
+  .touch #joystick { display: block; } .touch #minimap { left: 150px; }
+  #tapHint { position: fixed; left: 50%; bottom: 38px; transform: translateX(-50%); z-index: 30; padding: 11px 20px; border-radius: 999px; font-size: 14px; font-weight: 600; color: #0a0a0c; background: var(--gold); opacity: 0; pointer-events: none; transition: opacity .2s; display: none; }
+  .touch #tapHint { display: block; } #tapHint.show { opacity: 1; pointer-events: auto; }
+  #chatBar { position: fixed; left: 186px; bottom: 22px; z-index: 30; width: min(340px, 36vw); opacity: 0; transition: opacity .3s; }
+  #chatBar.show { opacity: 1; }
+  #chatBar input { width: 100%; padding: 11px 16px; font-size: 14px; color: #fff; background: rgba(16,16,22,.82); border: 1px solid rgba(255,255,255,.18); border-radius: 999px; backdrop-filter: blur(8px); }
+  #chatBar input::placeholder { color: #8a8a92; }
+  .touch #chatBar { left: 50%; transform: translateX(-50%); bottom: 160px; width: min(340px, 70vw); }
+  #chatBubble { position: fixed; z-index: 31; transform: translate(-50%, -100%); padding: 7px 14px; font-size: 14px; font-weight: 600; color: #1a1a1f; background: #fff; border-radius: 14px; box-shadow: 0 4px 16px rgba(0,0,0,.3); pointer-events: none; opacity: 0; transition: opacity .25s; white-space: nowrap; max-width: 240px; overflow: hidden; text-overflow: ellipsis; }
+  #chatBubble.show { opacity: 1; }
+  #chatBubble::after { content: ''; position: absolute; left: 50%; bottom: -7px; transform: translateX(-50%); border: 7px solid transparent; border-top-color: #fff; border-bottom: 0; }
+  /* 準心作品名稱提示 */
+  #aimTip { position: fixed; left: 50%; top: calc(50% + 26px); transform: translateX(-50%); z-index: 20; padding: 6px 14px; border-radius: 999px; background: rgba(16,16,20,.78); color: #fff; font-size: 13px; pointer-events: none; opacity: 0; transition: opacity .18s; white-space: nowrap; backdrop-filter: blur(4px); }
+  #aimTip.show { opacity: 1; }
+  #aimTip b { color: var(--gold); font-weight: 600; }
+  /* 房間切換淡出 */
+  #fadeOv { position: fixed; inset: 0; z-index: 55; background: #0a0a0c; opacity: 0; pointer-events: none; transition: opacity .24s; }
+  #fadeOv.show { opacity: 1; }
+  /* 提示訊息 */
+  #toast { position: fixed; left: 50%; top: 72px; transform: translateX(-50%); z-index: 70; max-width: min(560px, 90vw); padding: 12px 18px; border-radius: 12px; background: rgba(226,75,74,.94); color: #fff; font-size: 13px; line-height: 1.6; box-shadow: 0 8px 28px rgba(0,0,0,.35); opacity: 0; pointer-events: none; transition: opacity .3s; }
+  #toast.show { opacity: 1; }
+  /* 窄視窗：縮小小地圖、聊天框上移、導覽列置中，避免重疊 */
+  @media (max-width: 860px) {
+    #minimap { width: 110px; height: 110px; left: 12px; bottom: 12px; }
+    #chatBar { left: 132px; bottom: 70px; width: min(300px, 52vw); }
+    #tourbar { left: 12px; right: 12px; bottom: 12px; justify-content: center; padding: 6px 8px; }
+    #tourbar #tourLabel { min-width: 0; font-size: 12px; }
+    #topbar { gap: 6px; padding: 8px 10px; }
+  }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="crosshair"></div>
+
+<div id="topbar">
+  <a class="back" href="index.html">返回</a>
+  <span class="tbtn hidden" id="tourBtn">導覽</span>
+  <span class="tbtn hidden" id="mapBtn">地圖</span>
+  <span class="tbtn hidden" id="muteBtn">音樂</span>
+  <span class="tbtn" id="viewBtn">第三人稱</span>
+  <span class="tbtn hidden" id="editToggle">編輯展場</span>
+  <span class="title"></span>
+  <span class="roomBar" id="roomBar"></span>
+  <span class="count"></span>
+</div>
+
+<div id="editbar">
+  <span class="lbl">編輯</span>
+  <button data-eadd="image">＋圖片</button>
+  <button data-eadd="text">＋文字</button>
+  <button data-eadd="video">＋影片</button>
+  <button data-eadd="prop">＋道具/展架</button>
+  <button data-eadd="light">＋燈具</button>
+  <button data-eadd="hotspot">＋熱點</button>
+  <button id="sceneBtn">場景／房間</button>
+  <span class="hint">點展品選取、拖曳移動；拖曳空白處轉視角</span>
+</div>
+
+<aside id="info" class="panel">
+  <button class="close">✕</button>
+  <span class="kind"></span><h2></h2>
+  <div class="media"></div><div class="body"></div>
+  <div id="reactBox">
+    <button id="likeBtn">♡ <span id="likeCount">0</span></button>
+    <div id="commentList"></div>
+    <div class="cForm">
+      <input id="cName" placeholder="你的名字（選填）" maxlength="24">
+      <textarea id="cText" placeholder="留個言給策展人或其他觀眾…" maxlength="300"></textarea>
+      <button id="cSend">送出留言</button>
+    </div>
+  </div>
+</aside>
+
+<aside id="editPanel" class="panel">
+  <button class="close">✕</button>
+  <span class="kind" id="epKind"></span><h2 id="epHead">編輯展品</h2>
+  <div id="epFields"></div>
+</aside>
+
+<aside id="scenePanel" class="panel">
+  <button class="close">✕</button>
+  <span class="kind">場景設定</span><h2>展間外觀與氛圍</h2>
+  <div id="spFields"></div>
+</aside>
+
+<canvas id="minimap" width="150" height="150"></canvas>
+<div id="tourbar">
+  <button id="tourPrev">上一件</button>
+  <span id="tourLabel"></span>
+  <button id="tourNext">下一件</button>
+  <button id="tourExit">結束</button>
+</div>
+
+<div id="joystick"><i></i></div>
+<button id="tapHint">查看展品</button>
+<div id="chatBubble"></div>
+<div id="toast"></div>
+<div id="aimTip"></div>
+<div id="fadeOv"></div>
+<div id="chapterCard"><div class="k"></div><div class="t"></div></div>
+<div id="focusVig"></div>
+<div id="chatBar"><input id="chatInput" maxlength="60" placeholder="輸入訊息，按 Enter 顯示在頭上…" /></div>
+
+<div id="intro">
+  <h1 id="introTitle">載入中…</h1>
+  <p class="sub" id="introSub"></p>
+  <div id="enterRow" class="hidden">
+    <button id="tourEnterBtn">策展導覽（推薦）</button>
+    <button id="enterBtn">自由參觀</button>
+  </div>
+  <div id="routeHint">策展導覽會依策展人設計的動線，依章節帶你走到每件作品前。</div>
+  <div id="controlsHint"></div>
+  <div id="loadBar"><i></i></div>
+</div>
+
+<script src="js/store.js?v=20260823"></script>
+<script src="js/auth.js?v=20260823"></script>
+<script src="js/templates.js?v=20260823"></script>
+<script src="js/props.js?v=20260823"></script>
+<script src="js/starter.js?v=20260823"></script>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/"
+} }
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { STLLoader } from 'three/addons/loaders/STLLoader.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { Sky } from 'three/addons/objects/Sky.js';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+window.RBG = RoundedBoxGeometry;   // 給 props.js 用：所有方塊圓角
+function roundedBox(w, h, d, mat, r) { const rr = r ?? Math.min(0.04, Math.min(w, h, d) * 0.45); const g = rr > 0.004 ? new RoundedBoxGeometry(w, h, d, 3, rr) : new THREE.BoxGeometry(w, h, d); return new THREE.Mesh(g, mat); }
+
+/* ===== 載入展覽 ===== */
+const params = new URLSearchParams(location.search);
+const exId = params.get('id'), wantEdit = params.get('edit') === '1';
+const DEMO = Object.assign({ id: null }, window.STARTER_EXHIBITION ? STARTER_EXHIBITION('示範展覽 · 基礎展覽空間') : { title: '示範展覽', style: {}, rooms: [] });
+const fromStore = exId && window.Store ? Store.get(exId) : null;
+const EX = fromStore || DEMO;
+const me = window.Auth ? Auth.current() : null;
+const isOwner = !!(fromStore && me && EX.ownerId === me.id);
+
+// ---- 多房間：把舊的單一 items 遷移成 rooms[]，確保每件展品有 id ----
+function ensureItemIds(items) { for (const it of (items || [])) if (!it.id) it.id = (window.Store ? Store.newId('it') : 'it' + Math.round(performance.now()) + Math.random().toString(36).slice(2, 6)); }
+function ensureRooms(ex) {
+  if (!ex.rooms || !ex.rooms.length) ex.rooms = [{ id: 'rm0', name: '展廳 1', template: ex.template || 'white', items: ex.items || [] }];
+  ex.rooms.forEach((rm, i) => { if (!rm.id) rm.id = 'rm' + i; if (!rm.name) rm.name = '展廳 ' + (i + 1); if (!rm.items) rm.items = []; if (!rm.template) rm.template = ex.template || 'white'; ensureItemIds(rm.items); });
+}
+ensureRooms(EX);
+let roomIdx = Math.min(Math.max(0, parseInt(params.get('room') || '0', 10) || 0), EX.rooms.length - 1);
+let room = EX.rooms[roomIdx];
+EX.items = room.items;   // 別名：下方程式都用 EX.items 指向「當前房間」展品
+
+const DEF_ROOM = { width: 18, height: 4.2, depth: 13, wallColor: '#eceae4', floorColor: '#b9b6ad', ceilingColor: '#f6f4ee', skirtingColor: '#d8d5cd', lightColor: '#fff6e8', floorType: 'concrete', ambient: 0.55 };
+function roomDims() { return (window.TEMPLATES && TEMPLATES[room.template] ? TEMPLATES[room.template].room : null) || DEF_ROOM; }
+let R = roomDims();
+
+const STYLE = Object.assign({
+  frameDefault: 'black', font: 'serif',
+  sun: 2.4, sunAzimuth: 35, sky: '#bcd6f2', hdri: 'field',
+  bgm: '', bgmVolume: 0.4, wallColors: {}
+}, EX.style || {});
+EX.style = STYLE;
+
+const isTouch = matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window;
+document.body.classList.toggle('touch', isTouch);
+
+/* ===== 基礎 ===== */
+const app = document.getElementById('app');
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(68, innerWidth / innerHeight, 0.1, 120);
+const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: Object.assign(document.createElement('canvas'), { id: 'scene' }), powerPreference: 'high-performance' });
+app.appendChild(renderer.domElement);
+const canvas = renderer.domElement;
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+// 環境反射貼圖（讓材質有質感）
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+const MAX_ANISO = renderer.capabilities.getMaxAnisotropy();
+let _toastTimer = null;
+function showToast(msg, ms = 5000) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(_toastTimer); _toastTimer = setTimeout(() => t.classList.remove('show'), ms); }
+
+/* ===== 精緻化：程序紋理（石膏牆、水泥地、暗角、接觸陰影暈）===== */
+const _texCache = {};
+function cachedTex(key, w, h, draw, opts) {
+  if (_texCache[key]) return _texCache[key];
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  draw(c.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = MAX_ANISO;
+  if (opts && opts.repeat) { t.wrapS = t.wrapT = THREE.RepeatWrapping; }
+  _texCache[key] = t; return t;
+}
+function noiseOn(g, w, h, amp) {
+  const img = g.getImageData(0, 0, w, h), d = img.data;
+  for (let i = 0; i < d.length; i += 4) { const n = (Math.random() - 0.5) * amp; d[i] += n; d[i + 1] += n; d[i + 2] += n; }
+  g.putImageData(img, 0, 0);
+}
+// 石膏牆：近白底＋細噪點＋四邊烘焙 AO（牆角/踢腳/天花交接的柔和暗角）
+function plasterTexture() {
+  return cachedTex('plaster', 512, 512, (g, w, h) => {
+    g.fillStyle = '#fbfbfa'; g.fillRect(0, 0, w, h);
+    noiseOn(g, w, h, 7);
+    const edge = (x0, y0, x1, y1, a) => { const gr = g.createLinearGradient(x0, y0, x1, y1); gr.addColorStop(0, 'rgba(0,0,0,' + a + ')'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, h); };
+    edge(0, 0, 78, 0, 0.10); edge(w, 0, w - 78, 0, 0.10);   // 左右牆角
+    edge(0, h, 0, h - 88, 0.13);                              // 底部（接地板）
+    edge(0, 0, 0, 64, 0.07);                                  // 頂部（接天花）
+  });
+}
+// 水泥地：近白底＋噪點＋淡斑塊（乘上 floorColor 得到最終色）
+function concreteTexture() {
+  return cachedTex('concrete', 512, 512, (g, w, h) => {
+    g.fillStyle = '#f4f4f2'; g.fillRect(0, 0, w, h);
+    noiseOn(g, w, h, 9);
+    for (let i = 0; i < 26; i++) { g.fillStyle = 'rgba(0,0,0,0.018)'; g.beginPath(); g.ellipse(Math.random() * w, Math.random() * h, 30 + Math.random() * 70, 20 + Math.random() * 50, Math.random() * 3, 0, 7); g.fill(); }
+  }, { repeat: true });
+}
+// 地板暗角（單獨覆蓋層，避免隨磚紋重複）
+function vignetteTexture() {
+  return cachedTex('vignette', 512, 512, (g, w, h) => {
+    g.clearRect(0, 0, w, h);
+    const gr = g.createRadialGradient(256, 256, 150, 256, 256, 350);
+    gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,0.20)');
+    g.fillStyle = gr; g.fillRect(0, 0, w, h);
+  });
+}
+// 接觸陰影暈（傢俱底下的柔和圓影）
+function blobTexture() {
+  return cachedTex('blob', 256, 256, (g, w, h) => {
+    g.clearRect(0, 0, w, h);
+    const gr = g.createRadialGradient(128, 128, 10, 128, 128, 120);
+    gr.addColorStop(0, 'rgba(0,0,0,0.28)'); gr.addColorStop(0.6, 'rgba(0,0,0,0.12)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = gr; g.fillRect(0, 0, w, h);
+  });
+}
+function addBlob(group, r) {
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(r * 2.3, r * 2.3), new THREE.MeshBasicMaterial({ map: blobTexture(), transparent: true, depthWrite: false }));
+  m.rotation.x = -Math.PI / 2; m.position.y = 0.006; group.add(m); return m;
+}
+
+// 天空漸層背景
+function skyTexture(top) {
+  const c = document.createElement('canvas'); c.width = 4; c.height = 256; const g = c.getContext('2d');
+  const grad = g.createLinearGradient(0, 0, 0, 256); grad.addColorStop(0, top); grad.addColorStop(1, '#f3f7fb');
+  g.fillStyle = grad; g.fillRect(0, 0, 4, 256);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+// 物理天空（HDRI 載入前的後備）
+const sky = new Sky(); sky.scale.setScalar(600); scene.add(sky);
+{ const u = sky.material.uniforms; u.turbidity.value = 4; u.rayleigh.value = 1.1; u.mieCoefficient.value = 0.003; u.mieDirectionalG.value = 0.82; }
+// HDRI：真實全景照片當戶外背景＋環境光照（IBL），所有材質得到真實反射
+const HDRIS = { auto: { name: '跟隨台北時間（日夜自動）', auto: true }, field: { file: 'assets/hdr/spruit_sunrise_1k.hdr', name: '原野樹影（日出）' }, park: { file: 'assets/hdr/san_giuseppe_bridge_2k.hdr', name: '歐洲街景（白天）' }, night: { file: 'assets/hdr/moonless_golf_1k.hdr', name: '夜晚（星空）', night: true } };
+let hdrLoaded = null, envSunScale = 1;
+/* 跟隨台北時間：白天用原野、夜晚用星空；太陽仰角與方位隨時刻移動（清晨低、正午高、傍晚低） */
+let _autoKey = null, _autoElev = null, _autoAz = null;
+function taipeiHour() {
+  const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Taipei', hour: 'numeric', minute: 'numeric', hour12: false }).formatToParts(new Date());
+  const g = (t) => +(parts.find(p => p.type === t) || {}).value || 0;
+  return (g('hour') % 24) + g('minute') / 60;
+}
+function applyAutoSky() {
+  const h = taipeiHour();
+  const day = h >= 5.5 && h < 18.5;
+  if (day) { const t = (h - 5.5) / 13; _autoElev = Math.max(10, Math.sin(Math.PI * t) * 72); _autoAz = 90 + t * 180; }
+  else { _autoElev = 45; _autoAz = 35; }
+  const key = day ? 'field' : 'night';
+  if (key !== _autoKey) { _autoKey = key; loadHDRI(key); } else placeSun();
+}
+setInterval(() => { if ((STYLE.hdri || '') === 'auto') applyAutoSky(); }, 60000);
+function loadHDRI(key) {
+  const h = HDRIS[key] || HDRIS.field;
+  if (h.auto) { applyAutoSky(); return; }
+  new RGBELoader().load(h.file, tex => {
+    tex.mapping = THREE.EquirectangularReflectionMapping;
+    scene.environment = pmrem.fromEquirectangular(tex).texture;
+    scene.background = tex; scene.backgroundIntensity = 1.0; sky.visible = false; hdrLoaded = key;
+    envSunScale = h.night ? 0.1 : 1;                        // 夜晚：太陽變月光，室內靠燈具
+    hemi.intensity = (R.ambient ?? 0.55) * (h.night ? 0.25 : 1);
+    placeSun();
+    setOutdoorFallback(false);
+  }, undefined, () => { console.warn('HDRI 載入失敗，使用程序天空'); setOutdoorFallback(true); });
+}
+let outdoorGroup = null;
+function setOutdoorFallback(on) { if (outdoorGroup) outdoorGroup.visible = on; }
+
+const EYE = 1.6, MARGIN = 0.7;
+const start = EX.start || { x: 0, z: 4.5, lookAt: { x: 0, z: -1 } };
+const yawObj = new THREE.Object3D(), pitchObj = new THREE.Object3D();
+yawObj.add(pitchObj); pitchObj.add(camera);
+yawObj.position.set(start.x, EYE, start.z); scene.add(yawObj);
+let yaw = Math.atan2((start.lookAt?.x ?? 0) - start.x, (start.lookAt?.z ?? -1) - start.z) + Math.PI, pitch = 0;
+let hw = R.width / 2, hd = R.depth / 2;
+
+/* ===== 化身（第三人稱可見）===== */
+let thirdPerson = false;
+const avatar = (function () {
+  const a = new THREE.Group();
+  const skin = new THREE.MeshStandardMaterial({ color: '#eab892', roughness: 0.6 });
+  const shirt = new THREE.MeshStandardMaterial({ color: '#f5f5f7', roughness: 0.75 });
+  const pants = new THREE.MeshStandardMaterial({ color: '#2e3440', roughness: 0.85 });
+  const shoe = new THREE.MeshStandardMaterial({ color: '#1a1a1e', roughness: 0.45 });
+  const hairM = new THREE.MeshStandardMaterial({ color: '#17130f', roughness: 0.6 });
+  const mk = (geo, mat, x, y, z) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = true; a.add(m); return m; };
+  // 鞋（圓角）
+  for (const sx of [-1, 1]) { const s = roundedBox(0.13, 0.09, 0.27, shoe, 0.035); s.position.set(sx * 0.09, 0.045, 0.03); s.castShadow = true; a.add(s); }
+  // 褲腿（微錐形）＋臀
+  mk(new THREE.CylinderGeometry(0.062, 0.075, 0.78, 16), pants, -0.09, 0.47, 0);
+  mk(new THREE.CylinderGeometry(0.062, 0.075, 0.78, 16), pants, 0.09, 0.47, 0);
+  mk(new THREE.CylinderGeometry(0.15, 0.14, 0.22, 20), pants, 0, 0.94, 0);
+  // 上身（白衫，前後略扁不是圓筒）＋肩
+  const torso = mk(new THREE.CapsuleGeometry(0.155, 0.34, 8, 20), shirt, 0, 1.24, 0); torso.scale.set(1, 1, 0.72);
+  mk(new THREE.SphereGeometry(0.06, 14, 12), shirt, -0.175, 1.385, 0);
+  mk(new THREE.SphereGeometry(0.06, 14, 12), shirt, 0.175, 1.385, 0);
+  // 手臂自然下垂＋手
+  mk(new THREE.CapsuleGeometry(0.042, 0.36, 6, 12), shirt, -0.205, 1.15, 0).rotation.z = 0.08;
+  mk(new THREE.CapsuleGeometry(0.042, 0.36, 6, 12), shirt, 0.205, 1.15, 0).rotation.z = -0.08;
+  mk(new THREE.SphereGeometry(0.046, 12, 10), skin, -0.222, 0.94, 0);
+  mk(new THREE.SphereGeometry(0.046, 12, 10), skin, 0.222, 0.94, 0);
+  // 脖子＋頭（微橢圓）
+  mk(new THREE.CylinderGeometry(0.048, 0.055, 0.1, 14), skin, 0, 1.46, 0);
+  const head = mk(new THREE.SphereGeometry(0.145, 28, 22), skin, 0, 1.62, 0); head.scale.set(0.92, 1.05, 0.95);
+  // 頭髮：後腦罩＋側鬢＋瀏海（臉露出）
+  const back = mk(new THREE.SphereGeometry(0.155, 26, 20), hairM, 0, 1.655, -0.018); back.scale.set(0.95, 1.0, 0.95);
+  const fringe = mk(new THREE.SphereGeometry(0.09, 18, 14), hairM, 0.012, 1.735, 0.085); fringe.scale.set(1.34, 0.5, 0.85); fringe.rotation.x = -0.15;
+  // 眼睛
+  const eyeM = new THREE.MeshStandardMaterial({ color: '#241f1b', roughness: 0.3 });
+  mk(new THREE.SphereGeometry(0.015, 10, 8), eyeM, -0.05, 1.632, 0.126);
+  mk(new THREE.SphereGeometry(0.015, 10, 8), eyeM, 0.05, 1.632, 0.126);
+  // 眉毛（細圓角條）
+  for (const sx of [-1, 1]) { const b = roundedBox(0.038, 0.008, 0.008, hairM, 0.003); b.position.set(sx * 0.05, 1.672, 0.128); b.castShadow = false; a.add(b); }
+  addBlob(a, 0.35);   // 腳下柔和陰影
+  a.visible = false; scene.add(a); return a;
+})();
+window.__dbg = { avatar, camera, scene, loadHDRI: (k) => loadHDRI(k) };   // 除錯用
+
+/* ===== 自然光（建立一次，換房間時更新）===== */
+const hemi = new THREE.HemisphereLight('#cfe0f5', new THREE.Color(R.floorColor), R.ambient ?? 0.55); scene.add(hemi);
+scene.add(new THREE.AmbientLight('#ffffff', 0.12));
+const sun = new THREE.DirectionalLight('#fff3df', STYLE.sun);
+sun.castShadow = true;
+sun.shadow.mapSize.set(isTouch ? 1024 : 2048, isTouch ? 1024 : 2048);
+sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02;
+sun.shadow.camera.near = 0.5; sun.shadow.camera.far = 40;
+scene.add(sun); scene.add(sun.target);
+function placeSun() {
+  const isAuto = (STYLE.hdri || '') === 'auto';
+  const az = (isAuto && _autoAz != null ? _autoAz : STYLE.sunAzimuth) * Math.PI / 180, el = (isAuto && _autoElev != null ? _autoElev : (STYLE.sunElev ?? 58)) * Math.PI / 180, d = 16;
+  sun.position.set(Math.sin(az) * Math.cos(el) * d, Math.sin(el) * d, Math.cos(az) * Math.cos(el) * d);
+  sun.target.position.set(0, 0, 0); sun.intensity = STYLE.sun * envSunScale;
+  sun.color.set(envSunScale < 0.5 ? '#bcd0f0' : '#fff3df');   // 夜晚轉冷月光色
+  sky.material.uniforms.sunPosition.value.copy(sun.position).normalize();   // 天空跟著太陽
+}
+placeSun();
+
+/* ===== 房間幾何（可重建：地板/天花板/天窗/牆/踢腳線）===== */
+function shadeHex(hex, f) { const n = parseInt(hex.slice(1), 16); let r = (n >> 16) & 255, gg = (n >> 8) & 255, b = n & 255; r = Math.min(255, r * f); gg = Math.min(255, gg * f); b = Math.min(255, b * f); return `rgb(${r | 0},${gg | 0},${b | 0})`; }
+function woodTexture(base) {
+  const c = document.createElement('canvas'); c.width = 512; c.height = 512; const g = c.getContext('2d');
+  g.fillStyle = base; g.fillRect(0, 0, 512, 512);
+  for (let p = 0; p < 8; p++) {
+    const y = p * 64; const shade = 1 + (Math.sin(p * 2.3) * 0.08);
+    g.fillStyle = shadeHex(base, shade); g.fillRect(0, y, 512, 64);
+    g.strokeStyle = 'rgba(0,0,0,.18)'; g.lineWidth = 2; g.beginPath(); g.moveTo(0, y); g.lineTo(512, y); g.stroke();
+    for (let k = 0; k < 4; k++) { g.beginPath(); g.moveTo((p % 2 ? 64 : 0) + k * 128, y); g.lineTo((p % 2 ? 64 : 0) + k * 128, y + 64); g.stroke(); }
+  }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(R.width / 3, R.depth / 3); t.anisotropy = MAX_ANISO; return t;
+}
+const roomGroup = new THREE.Group(); scene.add(roomGroup);
+let wallMats = {}; const wallMeshes = [];
+const _roomTexLoader = new THREE.TextureLoader(), _roomTexCache = {};
+function roomTex(url, srgb) { if (_roomTexCache[url]) return _roomTexCache[url]; const t = _roomTexLoader.load(url); if (srgb) t.colorSpace = THREE.SRGBColorSpace; _roomTexCache[url] = t; return t; }
+function buildRoomGeometry() {
+  while (roomGroup.children.length) roomGroup.remove(roomGroup.children[0]);
+  wallMeshes.length = 0;
+  R = roomDims(); hw = R.width / 2; hd = R.depth / 2;
+  hemi.groundColor.set(R.floorColor); hemi.intensity = R.ambient ?? 0.55;
+  const span = Math.max(hw, hd) + 3, sc = sun.shadow.camera; sc.left = -span; sc.right = span; sc.top = span; sc.bottom = -span; sc.updateProjectionMatrix();
+  let floorMat;
+  const floorKind = (STYLE.floorTex && STYLE.floorTex !== 'auto') ? STYLE.floorTex : (['wood', 'tatami', 'darkwood'].includes(R.floorType) ? R.floorType : 'plain');
+  const frep = (t, n) => { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(R.width / n, R.depth / n); t.anisotropy = MAX_ANISO; return t; };
+  if (floorKind === 'wood') {
+    // 真實木地板 PBR（顏色／凹凸／粗糙度三張貼圖）
+    floorMat = new THREE.MeshPhysicalMaterial({ map: frep(roomTex('assets/tex/hardwood2_diffuse.jpg', true), 3.2), bumpMap: frep(roomTex('assets/tex/hardwood2_bump.jpg'), 3.2), bumpScale: 0.012, roughnessMap: frep(roomTex('assets/tex/hardwood2_roughness.jpg'), 3.2), roughness: 0.9, metalness: 0, clearcoat: 0.22, clearcoatRoughness: 0.35, color: '#f2e6d2' });
+  } else if (floorKind === 'concrete') {
+    // 真實清水模水泥（你的材質）
+    const b = 'assets/tex/concrete_wall_009_1k/textures/concrete_wall_009_';
+    floorMat = new THREE.MeshPhysicalMaterial({ map: frep(roomTex(b + 'diff_1k.jpg', true), 3.0), normalMap: frep(roomTex(b + 'nor_gl_1k.jpg'), 3.0), normalScale: new THREE.Vector2(0.5, 0.5), roughnessMap: frep(roomTex(b + 'arm_1k.jpg'), 3.0), roughness: 1, metalness: 0, clearcoat: 0.1, clearcoatRoughness: 0.6 });
+  } else if (floorKind === 'osb') {
+    const b = 'assets/tex/oriented_strand_board_1k/textures/oriented_strand_board_';
+    floorMat = new THREE.MeshPhysicalMaterial({ map: frep(roomTex(b + 'diff_1k.jpg', true), 1.6), normalMap: frep(roomTex(b + 'nor_gl_1k.jpg'), 1.6), normalScale: new THREE.Vector2(0.6, 0.6), roughnessMap: frep(roomTex(b + 'arm_1k.jpg'), 1.6), roughness: 1, metalness: 0, clearcoat: 0.15, clearcoatRoughness: 0.4 });
+  } else if (floorKind === 'darkwood') {
+    // 深色亮面木地板（老屋打蠟地板：低粗糙度＋清漆層 → 強反射光影）
+    floorMat = new THREE.MeshPhysicalMaterial({ map: woodTexture('#382817'), roughness: 0.42, metalness: 0, clearcoat: 0.5, clearcoatRoughness: 0.22, envMapIntensity: 0.45 });
+  } else if (floorKind === 'tatami') {
+    // 榻榻米：織紋＋黑色布邊格
+    const tat = cachedTex('tatami', 512, 512, (g, w, h) => {
+      g.fillStyle = '#cdc191'; g.fillRect(0, 0, w, h);
+      for (let y = 0; y < h; y += 3) { g.fillStyle = (y / 3) % 2 ? 'rgba(120,108,60,0.16)' : 'rgba(255,250,220,0.10)'; g.fillRect(0, y, w, 1); }
+      g.fillStyle = '#33322a'; g.fillRect(0, 0, w, 10); g.fillRect(0, h - 10, w, 10); g.fillRect(0, 0, 10, h); g.fillRect(w - 10, 0, 10, h);
+    }, { repeat: true });
+    tat.repeat.set(R.width / 0.91, R.depth / 1.82);
+    floorMat = new THREE.MeshStandardMaterial({ map: tat, roughness: 0.92, metalness: 0 });
+  } else {
+    floorMat = new THREE.MeshPhysicalMaterial({ color: R.floorColor, map: concreteTexture(), roughness: 0.42, metalness: 0.02, clearcoat: 0.12, clearcoatRoughness: 0.5 });
+    floorMat.map.repeat.set(R.width / 7, R.depth / 7);
+  }
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(R.width, R.depth), floorMat);
+  floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; roomGroup.add(floor);
+  // 地板暗角（柔和的環境遮蔽感）
+  const vg = new THREE.Mesh(new THREE.PlaneGeometry(R.width, R.depth), new THREE.MeshBasicMaterial({ map: vignetteTexture(), transparent: true, depthWrite: false }));
+  vg.rotation.x = -Math.PI / 2; vg.position.y = 0.003; roomGroup.add(vg);
+  if (R.jp) {
+    // ── 和室：整片深木天花板＋外露木樑，無天窗（光從格窗進來）──
+    const jpCeil = new THREE.Mesh(new THREE.PlaneGeometry(R.width, R.depth), new THREE.MeshStandardMaterial({ map: woodTexture('#3f2f1f'), roughness: 0.85 }));
+    jpCeil.rotation.x = Math.PI / 2; jpCeil.position.y = R.height; roomGroup.add(jpCeil);
+    const beamMat = new THREE.MeshStandardMaterial({ color: '#2b1f14', roughness: 0.8 });
+    for (let bz = -hd + 1.2; bz < hd; bz += 1.8) { const b = new THREE.Mesh(new THREE.BoxGeometry(R.width, 0.14, 0.18), beamMat); b.position.set(0, R.height - 0.08, bz); b.castShadow = true; roomGroup.add(b); }
+    // 樹影光斑：從庭園方向投進室內的柔和光斑（gobo 投影）
+    const gobo = cachedTex('gobo', 512, 512, (g, w, h) => { g.fillStyle = '#000'; g.fillRect(0, 0, w, h); for (let i = 0; i < 46; i++) { const x = Math.random() * w, y = Math.random() * h, r = 14 + Math.random() * 42; const gr = g.createRadialGradient(x, y, 2, x, y, r); gr.addColorStop(0, 'rgba(255,244,220,0.95)'); gr.addColorStop(1, 'rgba(255,244,220,0)'); g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); } });
+    const sp = new THREE.SpotLight('#fff0d6', 5.5, 40, 0.85, 0.55, 1.2);
+    sp.position.set(hw + 5, 4.5, 1.5); sp.target.position.set(-hw * 0.4, 0, -1); sp.map = gobo;
+    sp.castShadow = true; sp.shadow.mapSize.set(512, 512);
+    roomGroup.add(sp); roomGroup.add(sp.target);
+  } else {
+  const ow = R.width * 0.4, od = R.depth * 0.48;
+  const ceilMat = new THREE.MeshStandardMaterial({ color: R.ceilingColor, roughness: 1, emissive: new THREE.Color(R.ceilingColor), emissiveIntensity: 0.38 });
+  const ceilStrip = (w, d, x, z) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), ceilMat); m.rotation.x = Math.PI / 2; m.position.set(x, R.height, z); m.receiveShadow = true; m.castShadow = true; roomGroup.add(m); };
+  ceilStrip(R.width, hd - od / 2, 0, -(hd + od / 2) / 2); ceilStrip(R.width, hd - od / 2, 0, (hd + od / 2) / 2);
+  ceilStrip(hw - ow / 2, od, -(hw + ow / 2) / 2, 0); ceilStrip(hw - ow / 2, od, (hw + ow / 2) / 2, 0);
+  // 天窗：一體成形外框＋收在框內的格條（頂面低於天花板，不穿出）＋玻璃
+  const mullMat = new THREE.MeshStandardMaterial({ color: '#2a2a2e', roughness: 0.6, metalness: 0.3 });
+  const skyFrame = ringExtrude(ow + 0.24, od + 0.24, 0.12, 0.07, mullMat, 0.008);
+  skyFrame.rotation.x = Math.PI / 2; skyFrame.position.set(0, R.height - 0.012, 0); roomGroup.add(skyFrame);   // 擠出朝 -y（向下）
+  const barLen = od - 0.06, barLenX = ow - 0.06;
+  for (let k = -2; k <= 2; k++) { const b = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.07, barLen), mullMat); b.position.set(k * ow / 5, R.height - 0.05, 0); b.castShadow = true; roomGroup.add(b); }
+  { const b = new THREE.Mesh(new THREE.BoxGeometry(barLenX, 0.07, 0.05), mullMat); b.position.set(0, R.height - 0.05, 0); b.castShadow = true; roomGroup.add(b); }
+  const glass = new THREE.Mesh(new THREE.PlaneGeometry(ow, od), new THREE.MeshBasicMaterial({ color: '#dcebfb', transparent: true, opacity: 0.3, depthWrite: false, side: THREE.DoubleSide }));
+  glass.rotation.x = Math.PI / 2; glass.position.set(0, R.height - 0.006, 0); roomGroup.add(glass);
+  // 樹影光斑：從天窗灑下的自然光斑（所有展間都有，強度較和室低）
+  const gobo2 = cachedTex('gobo', 512, 512, (g, w, h) => { g.fillStyle = '#000'; g.fillRect(0, 0, w, h); for (let i = 0; i < 46; i++) { const x = Math.random() * w, y = Math.random() * h, r2 = 14 + Math.random() * 42; const gr = g.createRadialGradient(x, y, 2, x, y, r2); gr.addColorStop(0, 'rgba(255,244,220,0.95)'); gr.addColorStop(1, 'rgba(255,244,220,0)'); g.fillStyle = gr; g.beginPath(); g.arc(x, y, r2, 0, 7); g.fill(); } });
+  const sp2 = new THREE.SpotLight('#fff2da', 2.6, 50, 0.7, 0.6, 1.1);
+  sp2.position.set(3, R.height + 5, 2); sp2.target.position.set(-1.5, 0, -1); sp2.map = gobo2;
+  sp2.castShadow = true; sp2.shadow.mapSize.set(512, 512);
+  roomGroup.add(sp2); roomGroup.add(sp2.target);
+  }   // ── 非和室（天窗）結束 ──
+  wallMats = {};
+  const makeWall = (side, w, x, y, z, ry) => {
+    if (R.glassWall === side) {   // 整面落地玻璃牆：細框＋透明玻璃，可看見戶外
+      const gm = new THREE.MeshPhysicalMaterial({ color: '#e4f0fa', transparent: true, opacity: 0.22, roughness: 0.04, metalness: 0, transmission: 0.85, thickness: 0.05, side: THREE.DoubleSide, depthWrite: false });
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(w, R.height), gm); m.position.set(x, y, z); m.rotation.y = ry; roomGroup.add(m);
+      const fm = new THREE.MeshStandardMaterial({ color: R.jp ? '#2e2118' : '#f2f1ee', roughness: 0.6, metalness: R.jp ? 0 : 0.1 });
+      const frame = new THREE.Group(); frame.position.set(x, 0, z); frame.rotation.y = ry; roomGroup.add(frame);
+      if (R.jp) {
+        // 和室木格窗：直橫密格（陽光會在地板灑出格狀影）
+        const nv = Math.round(w / 0.48), nh = Math.round(R.height / 0.55);
+        for (let k = 0; k <= nv; k++) { const b = new THREE.Mesh(new THREE.BoxGeometry(0.045, R.height, 0.06), fm); b.position.set(-w / 2 + k * (w / nv), R.height / 2, 0); b.castShadow = true; frame.add(b); }
+        for (let k = 0; k <= nh; k++) { const b = new THREE.Mesh(new THREE.BoxGeometry(w, 0.045, 0.06), fm); b.position.set(0, Math.min(R.height - 0.02, 0.02 + k * (R.height / nh)), 0); b.castShadow = true; frame.add(b); }
+        for (const yy of [0.05, R.height - 0.06]) { const b = new THREE.Mesh(new THREE.BoxGeometry(w, 0.12, 0.12), fm); b.position.set(0, yy, 0); b.castShadow = true; frame.add(b); }
+      } else {
+        const n = Math.max(2, Math.round(w / 2.4));
+        for (let k = 0; k <= n; k++) { const b = new THREE.Mesh(new THREE.BoxGeometry(0.08, R.height, 0.1), fm); b.position.set(-w / 2 + k * (w / n), R.height / 2, 0); b.castShadow = true; frame.add(b); }
+        for (const yy of [0.04, R.height - 0.05]) { const b = new THREE.Mesh(new THREE.BoxGeometry(w, 0.1, 0.12), fm); b.position.set(0, yy, 0); frame.add(b); }
+      }
+      return;
+    }
+    const mat = new THREE.MeshStandardMaterial({ color: STYLE.wallColors[side] || R.wallColor, map: plasterTexture(), roughness: 0.95 });
+    wallMats[side] = mat; const m = new THREE.Mesh(new THREE.PlaneGeometry(w, R.height), mat); m.position.set(x, y, z); m.rotation.y = ry; m.receiveShadow = true; m.userData.mountable = true; roomGroup.add(m); wallMeshes.push(m);
+    if (R.jp) {   // 和室牆：深木立柱＋上下橫樑（障子牆感）
+      const jm = new THREE.MeshStandardMaterial({ color: '#2e2118', roughness: 0.8 });
+      const grp = new THREE.Group(); grp.position.set(x, 0, z); grp.rotation.y = ry; roomGroup.add(grp);
+      const np = Math.max(2, Math.round(w / 1.8));
+      for (let k = 0; k <= np; k++) { const p = new THREE.Mesh(new THREE.BoxGeometry(0.12, R.height, 0.07), jm); p.position.set(-w / 2 + k * (w / np), R.height / 2, 0.045); p.castShadow = true; grp.add(p); }
+      for (const yy of [R.height - 0.28, 0.75]) { const rl = new THREE.Mesh(new THREE.BoxGeometry(w, 0.1, 0.06), jm); rl.position.set(0, yy, 0.04); grp.add(rl); }
+    }
+  };
+  makeWall('north', R.width, 0, R.height / 2, -hd, 0); makeWall('south', R.width, 0, R.height / 2, hd, Math.PI);
+  makeWall('west', R.depth, -hw, R.height / 2, 0, Math.PI / 2); makeWall('east', R.depth, hw, R.height / 2, 0, -Math.PI / 2);
+  // 戶外（程序後備：草地＋樹林；HDRI 載入後隱藏，改由真實全景照片呈現）
+  outdoorGroup = new THREE.Group(); outdoorGroup.visible = !hdrLoaded; roomGroup.add(outdoorGroup);
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(160, 160), new THREE.MeshStandardMaterial({ color: '#8fa878', roughness: 1 }));
+  ground.rotation.x = -Math.PI / 2; ground.position.y = -0.03; outdoorGroup.add(ground);
+  const trunkM = new THREE.MeshStandardMaterial({ color: '#6b4e35', roughness: 0.9 }), leafA = new THREE.MeshStandardMaterial({ color: '#4f8a3e', roughness: 0.85 }), leafB = new THREE.MeshStandardMaterial({ color: '#6aa04c', roughness: 0.85 });
+  const rnd = (s) => { const x = Math.sin(s * 127.1) * 43758.5453; return x - Math.floor(x); };
+  for (let i = 0; i < 22; i++) {
+    const a = i / 22 * Math.PI * 2 + rnd(i) * 0.25, rad = Math.max(hw, hd) + 3.5 + rnd(i + 9) * 6, s = 0.8 + rnd(i + 3) * 0.7;
+    const tx = Math.cos(a) * rad, tz = Math.sin(a) * rad, th = 4.5 * s;
+    const t = new THREE.Mesh(new THREE.CylinderGeometry(0.12 * s, 0.2 * s, th, 8), trunkM); t.position.set(tx, th / 2 - 0.03, tz); outdoorGroup.add(t);
+    for (const [ox, oy, oz, r] of [[0, th + 0.6 * s, 0, 1.5], [0.9, th, 0.3, 1.15], [-0.8, th + 0.2, -0.4, 1.2], [0.2, th + 1.4 * s, -0.2, 1.0]]) { const c = new THREE.Mesh(new THREE.SphereGeometry(r * s, 12, 10), (i + ox > 0) ? leafA : leafB); c.position.set(tx + ox * s, oy, tz + oz * s); outdoorGroup.add(c); }
+  }
+  const skirtMat = new THREE.MeshStandardMaterial({ color: R.skirtingColor, roughness: 0.8 });
+  const addSkirt = (w, x, z, ry) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, 0.14, 0.04), skirtMat); m.position.set(x, 0.07, z); m.rotation.y = ry; roomGroup.add(m); };
+  addSkirt(R.width, 0, -hd + 0.03, 0); addSkirt(R.width, 0, hd - 0.03, 0);
+  addSkirt(R.depth, -hw + 0.03, 0, Math.PI / 2); addSkirt(R.depth, hw - 0.03, 0, Math.PI / 2);
+  // 天花板頂角線（cornice）
+  const corniceMat = new THREE.MeshStandardMaterial({ color: R.jp ? '#2b1f14' : '#f7f6f2', roughness: 0.9 });
+  const addCornice = (w, x, z, ry) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, 0.1, 0.05), corniceMat); m.position.set(x, R.height - 0.05, z); m.rotation.y = ry; roomGroup.add(m); };
+  addCornice(R.width, 0, -hd + 0.035, 0); addCornice(R.width, 0, hd - 0.035, 0);
+  addCornice(R.depth, -hw + 0.035, 0, Math.PI / 2); addCornice(R.depth, hw - 0.035, 0, Math.PI / 2);
+}
+buildRoomGeometry();
+loadHDRI(STYLE.hdri || 'field');
+
+/* ===== 展品 ===== */
+const built = [], interactables = [], animated = [], pulses = [];
+let lightCount = 0; const LIGHT_CAP = 8;
+const texLoader = new THREE.TextureLoader(); texLoader.crossOrigin = 'anonymous';
+const gltfLoader = new GLTFLoader();
+{ const draco = new DRACOLoader(); draco.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/libs/draco/'); gltfLoader.setDRACOLoader(draco); }   // 支援 Draco 壓縮模型
+const stlLoader = new STLLoader();
+const CEILING_PROP = { hanging_panel: 1, banner: 1, track_light: 1 };       // 天花板物件：不套用整體縮放
+/* 真實 GLB 模型：目標高度（公尺）、是否放在展台上；載入後快取並 clone 重用 */
+// h=目標高度(m)；plinth=放在展台上；y=離地高度（掛牆物件）；ceiling=貼天花板吊掛；r=碰撞半徑
+const PH = (n) => `assets/models/${n}/${n}.gltf`;   // Poly Haven 資料夾版 glTF
+const GLB_INFO = {
+  SheenWoodLeatherSofa: { h: 0.86, r: 1.05 }, SheenChair: { h: 0.95, r: 0.5 }, ChairDamaskPurplegold: { h: 1.02, r: 0.45 }, IridescentDishWithOlives: { h: 0.2, plinth: true, r: 0.4 },
+  anthurium_botany_01_1k: { file: PH('anthurium_botany_01_1k'), h: 0.8, r: 0.3 },
+  bronze_ray_statue_1k: { file: PH('bronze_ray_statue_1k'), h: 0.55, plinth: true, r: 0.4 },
+  moon_rock_01_1k: { file: PH('moon_rock_01_1k'), h: 0.38, plinth: true, r: 0.4 },
+  postcard_set_01_1k: { file: PH('postcard_set_01_1k'), h: 0.16, plinth: true, r: 0.4 },
+  standing_picture_frame_01_1k: { file: PH('standing_picture_frame_01_1k'), h: 0.26, plinth: true, r: 0.4 },
+  standing_picture_frame_02_1k: { file: PH('standing_picture_frame_02_1k'), h: 0.26, plinth: true, r: 0.4 },
+  coffee_table_round_01_1k: { file: PH('coffee_table_round_01_1k'), h: 0.45, r: 0.55 },
+  modern_wooden_cabinet_1k: { file: PH('modern_wooden_cabinet_1k'), h: 0.9, r: 0.75 },
+  vintage_wooden_drawer_01_1k: { file: PH('vintage_wooden_drawer_01_1k'), h: 0.85, r: 0.6 },
+  dead_tree_trunk_02_1k: { file: PH('dead_tree_trunk_02_1k'), h: 2.3, r: 0.5 },
+  island_tree_03_1k: { file: 'assets/models/island_tree_03_draco.glb', h: 6.0, r: 0.7, noShadow: true },   // Draco 壓縮版（85MB→15MB）；208 萬面，不投影以省效能
+  fancy_picture_frame_01_1k: { file: PH('fancy_picture_frame_01_1k'), h: 0.62, y: 1.35, r: 0 },
+  fancy_picture_frame_02_1k: { file: PH('fancy_picture_frame_02_1k'), h: 0.7, y: 1.3, r: 0 },
+  hanging_picture_frame_02_1k: { file: PH('hanging_picture_frame_02_1k'), h: 0.6, y: 1.35, r: 0 },
+  television_02_1k: { file: PH('television_02_1k'), h: 0.55, y: 1.2, r: 0 },
+  projector_screen_1k: { file: PH('projector_screen_1k'), h: 1.7, y: 0.7, r: 0 },
+  industrial_wall_sconce_1k: { file: PH('industrial_wall_sconce_1k'), h: 0.36, y: 1.9, r: 0, light: true },
+  modern_ceiling_lamp_01_1k: { file: PH('modern_ceiling_lamp_01_1k'), h: 0.7, ceiling: true, r: 0, light: true }
+};
+const _glbCache = {};
+function loadGlbProp(group, name, yOverride) {
+  const info = GLB_INFO[name] || { h: 1 };
+  const baseY = (yOverride != null) ? yOverride : (info.y || 0);   // 離地高度：策展人可自訂（不自動放展台）
+  const place = (src) => {
+    const obj = src.clone(true);
+    obj.traverse(o => { if (o.isMesh) { o.castShadow = !info.noShadow; o.receiveShadow = true; } });
+    const box = new THREE.Box3().setFromObject(obj); const sz = box.getSize(new THREE.Vector3());
+    const s = info.h / Math.max(sz.y, 0.001); obj.scale.setScalar(s);
+    const b2 = new THREE.Box3().setFromObject(obj); const c = b2.getCenter(new THREE.Vector3());
+    const yOff = info.ceiling ? (R.height - 0.02) - b2.max.y : baseY - b2.min.y;
+    obj.position.set(-c.x, yOff, -c.z); group.add(obj);
+    if (info.light && lightCount < LIGHT_CAP) { lightCount++; const pl = new THREE.PointLight('#ffe9c4', 3, 6, 2); pl.position.set(0, info.ceiling ? R.height - 0.5 : baseY + 0.15, 0.12); group.add(pl); }   // 燈具類模型真的會發光
+  };
+  if (_glbCache[name]) { place(_glbCache[name]); return; }
+  gltfLoader.load(info.file || ('assets/models/' + name + '.glb'), gltf => { _glbCache[name] = gltf.scene; place(gltf.scene); }, undefined, () => console.warn('GLB 載入失敗', name));
+}
+const MOUNTABLE_PROP = { partition: 1, locker_grid: 1, shelf_unit: 1, acrylic_stand: 1, glass_partition: 1, slat_wall: 1, wall_seg: 1, wall_arch: 1, wall_door: 1 };     // 可掛展品的結構
+/* 牆體道具的碰撞：沿牆佈點、開口處留通道（可走過洞） */
+const WALL_OBS = { wall_seg: { w: 3.0 }, wall_arch: { w: 3.6, gap: [-0.75, 0.75] }, wall_door: { w: 3.2, gap: [-0.65, 0.65] }, doorway: { w: 2.6, gap: [-0.73, 0.73] } };
+/* 展台／櫃體材質（可選）：霧白、清水模水泥、OSB 木板、黑色；未指定則用道具主色 */
+const MAT_PROPS = { plinth: 1, plinth_low: 1, plinth_wide: 1, pedestal: 1, vitrine: 1, partition: 1, info_stand: 1, cabinet: 1, reception_desk: 1, locker_grid: 1 };
+const MAT_OPTS = [['', '道具主色'], ['white', '霧白'], ['concrete', '清水模水泥'], ['osb', 'OSB 木板'], ['black', '啞黑']];
+const _propMatCache = {};
+function propMaterial(key, color) {
+  if (!key) return null;
+  if (_propMatCache[key]) return _propMatCache[key];
+  const rep = (t, n) => { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(n, n); t.anisotropy = MAX_ANISO; return t; };
+  let m;
+  if (key === 'concrete') { const b = 'assets/tex/concrete_wall_009_1k/textures/concrete_wall_009_'; m = new THREE.MeshStandardMaterial({ map: rep(roomTex(b + 'diff_1k.jpg', true), 0.55), normalMap: rep(roomTex(b + 'nor_gl_1k.jpg'), 0.55), normalScale: new THREE.Vector2(0.6, 0.6), roughnessMap: rep(roomTex(b + 'arm_1k.jpg'), 0.55), roughness: 1 }); }
+  else if (key === 'osb') { const b = 'assets/tex/oriented_strand_board_1k/textures/oriented_strand_board_'; m = new THREE.MeshStandardMaterial({ map: rep(roomTex(b + 'diff_1k.jpg', true), 0.8), normalMap: rep(roomTex(b + 'nor_gl_1k.jpg'), 0.8), normalScale: new THREE.Vector2(0.7, 0.7), roughnessMap: rep(roomTex(b + 'arm_1k.jpg'), 0.8), roughness: 1 }); }
+  else if (key === 'black') m = new THREE.MeshStandardMaterial({ color: '#1c1c20', roughness: 0.55, metalness: 0.1 });
+  else m = new THREE.MeshStandardMaterial({ color: '#f3f1ec', roughness: 0.62 });   // white
+  _propMatCache[key] = m; return m;
+}
+const FONTS = { sans: '"Noto Sans TC", sans-serif', serif: 'Georgia, "Noto Serif TC", serif', rounded: '"Trebuchet MS", "Noto Sans TC", sans-serif' };
+function wallSlot(wall, offset, height) {
+  const inset = 0.09;
+  if (wall === 'north') return { pos: [offset, height, -hd + inset], ry: 0 };
+  if (wall === 'south') return { pos: [offset, height, hd - inset], ry: Math.PI };
+  if (wall === 'west') return { pos: [-hw + inset, height, offset], ry: Math.PI / 2 };
+  return { pos: [hw - inset, height, offset], ry: -Math.PI / 2 };
+}
+function wallNormal(wall) { return wall === 'north' ? new THREE.Vector3(0, 0, 1) : wall === 'south' ? new THREE.Vector3(0, 0, -1) : wall === 'west' ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(-1, 0, 0); }
+// 門戶吸附到最近的牆面、貼齊並朝向房間內
+function snapDoorToWall(d) {
+  const inset = 0.16, dN = d.z + hd, dS = hd - d.z, dW = d.x + hw, dE = hw - d.x, m = Math.min(dN, dS, dW, dE);
+  if (m === dN) { d.z = -hd + inset; d.rot = 0; d.x = THREE.MathUtils.clamp(d.x, -hw + 0.9, hw - 0.9); }
+  else if (m === dS) { d.z = hd - inset; d.rot = 180; d.x = THREE.MathUtils.clamp(d.x, -hw + 0.9, hw - 0.9); }
+  else if (m === dW) { d.x = -hw + inset; d.rot = 90; d.z = THREE.MathUtils.clamp(d.z, -hd + 0.9, hd - 0.9); }
+  else { d.x = hw - inset; d.rot = -90; d.z = THREE.MathUtils.clamp(d.z, -hd + 0.9, hd - 0.9); }
+}
+function placeholderTexture(label, color = '#6b8cae') {
+  const c = document.createElement('canvas'); c.width = 1536; c.height = 1152; const g = c.getContext('2d'); g.scale(2, 2);
+  const grad = g.createLinearGradient(0, 0, 768, 576); grad.addColorStop(0, color); grad.addColorStop(1, '#dcdce2');
+  g.fillStyle = grad; g.fillRect(0, 0, 768, 576);
+  g.fillStyle = 'rgba(20,20,28,.7)'; g.font = '600 44px sans-serif'; g.textAlign = 'center'; g.fillText(label || '', 384, 300);
+  g.font = '400 22px sans-serif'; g.fillStyle = 'rgba(20,20,28,.4)'; g.fillText('（佔位圖）', 384, 350);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = MAX_ANISO; return t;
+}
+/* 文字版面（共用）：title 大字 + 金線 + 內文自動換行。fill 為 { title, line, body }，line 可為 null */
+function drawTextLayout(g, title, body, fill) {
+  const ff = FONTS[STYLE.font] || FONTS.serif;
+  g.fillStyle = fill.title; g.font = `700 40px ${ff}`; g.textAlign = 'left'; g.fillText(title || '', 50, 96);
+  if (fill.line) { g.strokeStyle = fill.line; g.lineWidth = 3; g.beginPath(); g.moveTo(50, 120); g.lineTo(220, 120); g.stroke(); }
+  g.fillStyle = fill.body; g.font = `400 24px ${ff}`;
+  // 逐字換行（中文沒有空格）；英文單字盡量不從中間斷
+  const maxW = 540, lineH = 38, maxY = 430; let line = '', y = 170;
+  const flush = () => { g.fillText(line, 50, y); line = ''; y += lineH; };
+  const tokens = (body || '').match(/\n|[A-Za-z0-9'’\-]+|\s+|[^\sA-Za-z0-9]/g) || [];
+  for (const tk of tokens) {
+    if (y > maxY) break;
+    if (tk === '\n') { flush(); continue; }
+    if (g.measureText(line + tk).width > maxW) { if (line.trim()) flush(); if (/^\s+$/.test(tk)) continue; }
+    line += tk;
+  }
+  if (line.trim() && y <= maxY) g.fillText(line, 50, y);
+}
+function textCanvas(draw) { const c = document.createElement('canvas'); c.width = 1280; c.height = 920; const g = c.getContext('2d'); g.scale(2, 2); draw(g); return c; }
+function canvasTex(c, srgb = true) { const t = new THREE.CanvasTexture(c); if (srgb) t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = MAX_ANISO; return t; }
+/* 文字展品材質：看板 / 卡典西德割字 / 透明貼紙 / 局部上光 / 燙金箔 → 回傳 THREE.Material */
+const TEXT_STYLES = [['board', '看板'], ['vinyl', '卡典西德割字'], ['clear', '透明貼紙'], ['frosted', '霧面磨砂'], ['spotuv', '局部上光'], ['foil', '燙金箔'], ['mirror', '鏡面貼']];
+function textMaterial(title, body, style, color) {
+  const ink = color || '#1a1a1f';
+  const maskCanvas = () => textCanvas(g => { g.fillStyle = '#000'; g.fillRect(0, 0, 640, 460); drawTextLayout(g, title, body, { title: '#fff', line: '#fff', body: '#fff' }); });   // 白=文字
+  const invMask = () => textCanvas(g => { g.fillStyle = '#fff'; g.fillRect(0, 0, 640, 460); drawTextLayout(g, title, body, { title: '#000', line: '#000', body: '#000' }); });  // 黑=文字
+  if (style === 'vinyl') {   // 割字：沒有底板，霧面字直接在牆上
+    const c = textCanvas(g => { g.clearRect(0, 0, 640, 460); drawTextLayout(g, title, body, { title: ink, line: ink, body: ink }); });
+    return new THREE.MeshStandardMaterial({ map: canvasTex(c), transparent: true, alphaTest: 0.4, roughness: 0.9, metalness: 0 });
+  }
+  if (style === 'clear') {   // 透明貼紙：透明膠膜帶微光澤，字印在膜上
+    const c = textCanvas(g => { g.clearRect(0, 0, 640, 460); g.fillStyle = 'rgba(255,255,255,0.16)'; g.fillRect(0, 0, 640, 460); drawTextLayout(g, title, body, { title: ink, line: ink, body: ink }); });
+    return new THREE.MeshPhysicalMaterial({ map: canvasTex(c), transparent: true, roughness: 0.18, metalness: 0, clearcoat: 0.8, clearcoatRoughness: 0.15, depthWrite: false });
+  }
+  if (style === 'frosted') { // 霧面磨砂：半透明磨砂膜（像噴砂玻璃貼），字印在膜上，無光澤
+    const c = textCanvas(g => { g.clearRect(0, 0, 640, 460); g.fillStyle = 'rgba(255,255,255,0.55)'; g.fillRect(0, 0, 640, 460); const img = g.getImageData(0, 0, 1280, 920), d = img.data; for (let i = 0; i < d.length; i += 4) { const n = (Math.random() - 0.5) * 22; d[i] += n; d[i + 1] += n; d[i + 2] += n; } g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.putImageData(img, 0, 0); g.restore(); drawTextLayout(g, title, body, { title: ink, line: ink, body: ink }); });
+    return new THREE.MeshStandardMaterial({ map: canvasTex(c), transparent: true, roughness: 0.97, metalness: 0, depthWrite: false });
+  }
+  if (style === 'mirror') {  // 鏡面貼：鏡面割字，文字是鏡面金屬、沒有底板
+    const c = textCanvas(g => { g.clearRect(0, 0, 640, 460); drawTextLayout(g, title, body, { title: '#eef0f4', line: '#eef0f4', body: '#eef0f4' }); });
+    return new THREE.MeshStandardMaterial({ map: canvasTex(c), transparent: true, alphaTest: 0.4, metalness: 1, roughness: 0.06, envMapIntensity: 1.4 });
+  }
+  if (style === 'spotuv') {  // 局部上光：霧面底板，文字區域亮光（粗糙度貼圖）
+    const c = textCanvas(g => { g.fillStyle = '#fbfaf7'; g.fillRect(0, 0, 640, 460); drawTextLayout(g, title, body, { title: ink, line: '#c9a83c', body: '#3a3a40' }); });
+    return new THREE.MeshPhysicalMaterial({ map: canvasTex(c), roughnessMap: canvasTex(invMask(), false), roughness: 1, metalness: 0, clearcoat: 1, clearcoatRoughnessMap: canvasTex(invMask(), false), clearcoatRoughness: 1 });
+  }
+  if (style === 'foil') {    // 燙金箔：文字為金屬箔，會反射環境
+    const gold = color && color !== '#1a1a1f' ? color : '#d4af37';
+    const c = textCanvas(g => { g.fillStyle = '#fbfaf7'; g.fillRect(0, 0, 640, 460); drawTextLayout(g, title, body, { title: gold, line: gold, body: gold }); });
+    return new THREE.MeshStandardMaterial({ map: canvasTex(c), metalnessMap: canvasTex(maskCanvas(), false), metalness: 1, roughnessMap: canvasTex(invMask(), false), roughness: 1 });
+  }
+  // board（預設看板）
+  const c = textCanvas(g => { g.fillStyle = '#fbfaf7'; g.fillRect(0, 0, 640, 460); drawTextLayout(g, title, body, { title: ink, line: '#c9a83c', body: '#3a3a40' }); });
+  return new THREE.MeshStandardMaterial({ map: canvasTex(c), roughness: 0.7, metalness: 0 });
+}
+function frameMat(style) {
+  if (style === 'white') return new THREE.MeshStandardMaterial({ color: '#f3f1ea', roughness: 0.55, metalness: 0 });
+  if (style === 'wood') {   // 木框：真實 OSB 纖維板 PBR（顏色／法線／粗糙度）
+    const rep = (t) => { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(1.6, 1.6); t.anisotropy = MAX_ANISO; return t; };
+    const base = 'assets/tex/oriented_strand_board_1k/textures/oriented_strand_board_';
+    return new THREE.MeshStandardMaterial({ map: rep(roomTex(base + 'diff_1k.jpg', true)), normalMap: rep(roomTex(base + 'nor_gl_1k.jpg')), normalScale: new THREE.Vector2(0.7, 0.7), roughnessMap: rep(roomTex(base + 'arm_1k.jpg')), roughness: 1, metalness: 0 });
+  }
+  if (style === 'gold') return new THREE.MeshStandardMaterial({ color: '#c9a83c', roughness: 0.3, metalness: 1 });
+  return new THREE.MeshStandardMaterial({ color: '#26262b', roughness: 0.5, metalness: 0.1 });
+}
+// 一體成形的矩形環（外框）：一次擠出＋倒角，沒有接縫。回傳位於 XY 平面、沿 +z 擠出的 Mesh
+function ringExtrude(outerW, outerH, thick, depth, mat, bevel = 0.012) {
+  const s = new THREE.Shape();
+  s.moveTo(-outerW / 2, -outerH / 2); s.lineTo(outerW / 2, -outerH / 2); s.lineTo(outerW / 2, outerH / 2); s.lineTo(-outerW / 2, outerH / 2); s.closePath();
+  const hole = new THREE.Path(); const iw = outerW / 2 - thick, ih = outerH / 2 - thick;
+  hole.moveTo(-iw, -ih); hole.lineTo(-iw, ih); hole.lineTo(iw, ih); hole.lineTo(iw, -ih); hole.closePath(); s.holes.push(hole);
+  const geo = new THREE.ExtrudeGeometry(s, { depth, bevelEnabled: true, bevelThickness: bevel, bevelSize: bevel, bevelSegments: 3, curveSegments: 4 });
+  const m = new THREE.Mesh(geo, mat); m.castShadow = true; m.receiveShadow = true; return m;
+}
+function build3DFrame(group, w, h, style) {
+  if (style === 'none') return;   // 無框：直接貼牆，不加背板與邊框
+  if (style === 'acrylic') {      // 鋁框壓克力：作品浮在透明壓克力板中間，鋁管細框＋固定釘
+    const sheet = new THREE.Mesh(new THREE.BoxGeometry(w + 0.34, h + 0.34, 0.012), new THREE.MeshPhysicalMaterial({ color: '#eef4fa', transparent: true, opacity: 0.18, roughness: 0.05, metalness: 0, transmission: 0.7, thickness: 0.012, side: THREE.DoubleSide, depthWrite: false }));
+    sheet.position.z = 0.03; group.add(sheet);
+    const alu = new THREE.MeshStandardMaterial({ color: '#cfd2d6', roughness: 0.28, metalness: 1 });
+    const ring = ringExtrude(w + 0.4, h + 0.4, 0.028, 0.028, alu, 0.008); ring.position.z = 0.016; group.add(ring);
+    for (const [sx, sy] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) { const pin = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.035, 10), alu); pin.rotation.x = Math.PI / 2; pin.position.set(sx * (w / 2 - 0.05), sy * (h / 2 - 0.05), 0.05); group.add(pin); }
+    return;
+  }
+  const t = 0.07;
+  // 背板（給作品厚度、產生陰影；被外框包住看不到邊）
+  const back = new THREE.Mesh(new THREE.BoxGeometry(w + t, h + t, 0.04), new THREE.MeshStandardMaterial({ color: '#161619', roughness: 0.8 }));
+  back.position.z = -0.02; back.castShadow = true; back.receiveShadow = true; group.add(back);
+  const ring = ringExtrude(w + 2 * t, h + 2 * t, t, 0.07, frameMat(style));
+  ring.position.z = -0.015;   // 擠出範圍 z∈[-0.03, 0.07]，畫面在 0.06 → 框略凸於畫面
+  group.add(ring);
+}
+function makeWallArt(d, tex) {
+  const sz = d.size || { w: 2.2, h: 1.6 };
+  const group = new THREE.Group();
+  const stickerText = d.type === 'text' && ['vinyl', 'clear', 'frosted', 'mirror'].includes(d.textStyle);   // 貼紙類：直接貼牆、無框
+  const frameStyle = stickerText ? 'none' : (d.frame || STYLE.frameDefault);
+  const mat = (tex && tex.isMaterial) ? tex : new THREE.MeshStandardMaterial({ map: tex, roughness: 0.7, metalness: 0 });
+  const panel = new THREE.Mesh(new THREE.PlaneGeometry(sz.w, sz.h), mat);
+  panel.position.z = stickerText ? 0.004 : (frameStyle === 'none') ? 0.015 : 0.06; group.add(panel); group.userData.panel = panel;
+  build3DFrame(group, sz.w, sz.h, frameStyle);
+  // 美術館畫作打光：牆面柔和光暈＋上方燈條
+  if (d.type !== 'text') {
+    const glowTex = cachedTex('artglow', 256, 256, (g, w, h) => { g.clearRect(0, 0, w, h); const gr = g.createRadialGradient(128, 118, 10, 128, 118, 128); gr.addColorStop(0, 'rgba(255,248,230,0.42)'); gr.addColorStop(0.55, 'rgba(255,248,230,0.14)'); gr.addColorStop(1, 'rgba(255,248,230,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, h); });
+    const glow = new THREE.Mesh(new THREE.PlaneGeometry(sz.w * 2.1, sz.h * 2.3), new THREE.MeshBasicMaterial({ map: glowTex, transparent: true, depthWrite: false }));
+    glow.position.set(0, sz.h * 0.12, -0.08); group.add(glow);
+    const bar = roundedBox(Math.min(sz.w * 0.7, 1.4), 0.035, 0.09, new THREE.MeshStandardMaterial({ color: '#f0efeb', emissive: '#fff3d6', emissiveIntensity: 0.9, roughness: 0.5 }), 0.012);
+    bar.position.set(0, sz.h / 2 + 0.26, 0.04); group.add(bar);
+  }
+  if (d.mount) { group.position.set(d.mount.p[0], d.mount.p[1], d.mount.p[2]); group.rotation.y = d.mount.ry; }
+  else { const slot = wallSlot(d.wall || 'north', d.offset || 0, d.height ?? 1.7); group.position.set(...slot.pos); group.rotation.y = slot.ry; }
+  return group;
+}
+function fitObject(obj, holder, scale) {
+  obj.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+  const box = new THREE.Box3().setFromObject(obj); const s2 = box.getSize(new THREE.Vector3());
+  const s = (scale || 1) * (0.9 / Math.max(s2.x, s2.y, s2.z, 0.001)); obj.scale.setScalar(s);
+  const ctr = box.getCenter(new THREE.Vector3()); obj.position.sub(ctr.multiplyScalar(s)); holder.add(obj);
+}
+function buildItem(d, i) {
+  let group;
+  if (d.type === 'image' || d.type === 'text' || d.type === 'video') {
+    let tex;
+    if (d.type === 'image') tex = d.src ? texLoader.load(d.src, t => { t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = MAX_ANISO; }, undefined, () => showToast('「' + (d.title || '圖片') + '」的圖片載入失敗：此網址不允許跨網域使用（Notion／Google Drive 等都不行）。請改用「上傳檔案」，或把圖放進 assets/img/ 後填 assets/img/檔名。', 9000)) : placeholderTexture(d.title, d.color);
+    else if (d.type === 'text') tex = textMaterial(d.title, d.description || '', d.textStyle || 'board', d.textColor);
+    else { if (d.src) { const v = document.createElement('video'); v.src = d.src; v.crossOrigin = 'anonymous'; v.loop = true; v.muted = true; v.playsInline = true; v.play().catch(() => {}); d._video = v; tex = new THREE.VideoTexture(v); tex.colorSpace = THREE.SRGBColorSpace; } else tex = placeholderTexture('▶  影片展品', '#444'); }
+    group = makeWallArt(d, tex);
+    if (d.type === 'video') group.userData.panel.material.emissive = new THREE.Color('#111');
+  } else if (d.type === 'model') {
+    group = new THREE.Group(); group.position.set(d.x || 0, 0, d.z || 0);
+    const base = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.4, 1.0, 32), new THREE.MeshStandardMaterial({ color: '#efece6', roughness: 0.6 }));
+    base.position.y = 0.5; base.castShadow = true; base.receiveShadow = true; group.add(base);
+    addBlob(group, 0.5);
+    const holder = new THREE.Group(); holder.position.y = 1.4; group.add(holder);
+    const isStl = d.format === 'stl' || (d.src && /\.stl(\?|$)/i.test(d.src));
+    if (d.src && isStl) stlLoader.load(d.src, geo => { geo.computeVertexNormals(); fitObject(new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: d.color || '#c9c6be', roughness: 0.55, metalness: 0.1 })), holder, d.scale); }, undefined, () => {});
+    else if (d.src) gltfLoader.load(d.src, gltf => fitObject(gltf.scene, holder, d.scale), undefined, () => {});
+    else { const ico = new THREE.Mesh(new THREE.IcosahedronGeometry(0.5 * (d.scale || 1), 0), new THREE.MeshStandardMaterial({ color: d.color || '#7a6ff0', roughness: 0.25, metalness: 0.5, flatShading: true })); ico.castShadow = true; holder.add(ico); }
+    animated.push({ obj: holder, spin: 0.4, _i: i });
+  } else if (d.type === 'prop') {
+    if (d.shape === 'doorway') { if (d.target == null) d.target = (roomIdx + 1) % EX.rooms.length; snapDoorToWall(d); }   // 門戶吸附到牆
+    group = window.PROPS ? PROPS.build(THREE, d.shape, { color: d.color, roomHeight: R.height, prim: propMaterial(d.mat, d.color) }) : new THREE.Group();
+    if (d.shape && d.shape.startsWith('glb:')) loadGlbProp(group, d.shape.slice(4), d.y);   // 真實模型（d.y＝自訂離地高度）
+    if (d.shape === 'acrylic_stand' && d.src) {   // 圖直接印在壓克力板上
+      texLoader.load(d.src, tex => {
+        tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = MAX_ANISO;
+        const iw = tex.image.width || 1, ih = tex.image.height || 1;
+        let h = 1.55, w = h * iw / ih; if (w > 1.34) { w = 1.34; h = w * ih / iw; }
+        const img = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.6, side: THREE.DoubleSide }));
+        img.position.set(0, 1.22, 0.0075); group.add(img);
+      }, undefined, () => showToast('壓克力展示架的圖片載入失敗：請改用「上傳檔案」或 assets/img/ 路徑。', 7000));
+    }
+    group.position.set(d.x || 0, 0, d.z || 0); group.rotation.y = (d.rot || 0) * Math.PI / 180;
+    if (!CEILING_PROP[d.shape]) group.scale.setScalar(d.scale || 1);   // 天花板物件不縮放（否則高度會跑掉）
+    if (!CEILING_PROP[d.shape] && d.shape !== 'doorway') { const br = propRadius(d.shape); if (br > 0.05) addBlob(group, br); }   // 接觸陰影暈
+    if (MOUNTABLE_PROP[d.shape]) group.userData.mountable = true;       // 可掛展品的結構（隔板等）
+  } else if (d.type === 'light') {
+    // 三種燈具：spot 投射燈（窄束重點打光）／wash 洗牆燈（寬束柔光）／up 上照燈（地面向上，戲劇感）
+    const kind = d.kind || 'spot';
+    const up = kind === 'up';
+    group = new THREE.Group(); group.position.set(d.x || 0, up ? 0.02 : (d.height ?? (R.height - 0.4)), d.z || 0);
+    const metal = new THREE.MeshStandardMaterial({ color: '#1c1c20', metalness: 0.7, roughness: 0.4 });
+    const pan = (d.pan ?? 0) * Math.PI / 180, tilt = (d.tilt ?? 0) * Math.PI / 180;
+    const dir = up
+      ? new THREE.Vector3(Math.sin(tilt) * Math.sin(pan), Math.cos(tilt), Math.sin(tilt) * Math.cos(pan))
+      : new THREE.Vector3(Math.sin(tilt) * Math.sin(pan), -Math.cos(tilt), Math.sin(tilt) * Math.cos(pan));
+    if (up) {   // 上照燈：地面小圓筒
+      const can = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.11, 0.12, 16), metal); can.position.y = 0.06; can.castShadow = true; group.add(can);
+      const lens = new THREE.Mesh(new THREE.CircleGeometry(0.07, 16), new THREE.MeshStandardMaterial({ color: '#222', emissive: d.color || '#fff4e0', emissiveIntensity: 2.4 })); lens.position.y = 0.125; lens.rotation.x = -Math.PI / 2; group.add(lens);
+    } else {
+      const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.3, 8), metal); arm.position.y = 0.15; group.add(arm);
+      const headG = new THREE.Group();
+      headG.add(new THREE.Mesh(new THREE.CylinderGeometry(kind === 'wash' ? 0.11 : 0.08, kind === 'wash' ? 0.13 : 0.11, 0.22, 16), metal));
+      const lens = new THREE.Mesh(new THREE.CircleGeometry(kind === 'wash' ? 0.1 : 0.075, 16), new THREE.MeshStandardMaterial({ color: '#222', emissive: d.color || '#fff4e0', emissiveIntensity: 2.2 })); lens.position.y = -0.115; lens.rotation.x = -Math.PI / 2; headG.add(lens);
+      headG.quaternion.setFromUnitVectors(new THREE.Vector3(0, -1, 0), dir.clone().normalize());
+      group.add(headG);
+    }
+    if (lightCount < LIGHT_CAP) {
+      lightCount++;
+      const ang = (d.angle ?? (kind === 'wash' ? 62 : kind === 'up' ? 45 : 32)) * Math.PI / 180;
+      const pen = kind === 'wash' ? 0.85 : kind === 'up' ? 0.6 : 0.45;
+      const sp = new THREE.SpotLight(d.color || '#fff4e0', d.intensity ?? 6, 20, ang, pen, 1.1);
+      sp.position.set(0, up ? 0.12 : 0, 0); sp.target.position.copy(dir.clone().multiplyScalar(4)); group.add(sp); group.add(sp.target);
+    }
+  } else if (d.type === 'hotspot') {
+    group = new THREE.Group(); group.position.set(d.x || 0, d.height ?? 1.5, d.z || 0);
+    const core = new THREE.Mesh(new THREE.SphereGeometry(0.13, 20, 20), new THREE.MeshStandardMaterial({ color: '#3a2f00', emissive: '#ffd34d', emissiveIntensity: 2.4, roughness: 0.3 }));
+    const halo = new THREE.Mesh(new THREE.SphereGeometry(0.3, 20, 20), new THREE.MeshBasicMaterial({ color: '#ffd34d', transparent: true, opacity: 0.16, depthWrite: false }));
+    group.add(halo); group.add(core); pulses.push({ obj: halo });
+  }
+  if (group) { group.userData.index = i; scene.add(group); built[i] = group; interactables.push({ mesh: group, index: i }); }
+  return group;
+}
+function disposeItem(i) { if (built[i]) { scene.remove(built[i]); built[i] = null; } for (let k = interactables.length - 1; k >= 0; k--) if (interactables[k].index === i) interactables.splice(k, 1); for (let k = animated.length - 1; k >= 0; k--) if (animated[k]._i === i) animated.splice(k, 1); }
+// 碰撞障礙物（圓形足跡）：傢俱／道具／3D 物件擋住玩家；門戶、燈、熱點、牆上展品不擋
+const obstacles = [];
+const OBS_R = { bench: 0.85, bench_pad: 0.85, sofa: 1.1, coffee_table: 0.7, desk: 0.95, reception_desk: 1.1, bookshelf: 0.7, cabinet: 0.6, shelf_unit: 0.6, partition: 1.3, glass_partition: 0.7, plinth: 0.4, plinth_low: 0.45, plinth_wide: 0.6, vitrine: 0.5, acrylic_riser: 0.35, column: 0.45, plant_large: 0.45, plant_small: 0.25, rope_barrier: 0.9, info_stand: 0.45, easel: 0.5, card_rail: 0.9, locker_grid: 1.0, hex_shelf: 0, floor_lamp: 0.25, sphere_lamp: 0.25, track_light: 0, doorway: 0, curved_bench: 1.25, slat_wall: 1.3, slat_screen: 1.05, hanging_panel: 0, banner: 0, acrylic_stand: 0.95, wall_seg: 0, wall_arch: 0, wall_door: 0 };
+function propRadius(shape) { if (shape && shape.startsWith('glb:')) { const i = GLB_INFO[shape.slice(4)]; return i ? (i.r ?? 0.5) : 0.5; } return OBS_R[shape] ?? 0.5; }
+function rebuildObstacles() {
+  obstacles.length = 0;
+  for (const d of (EX.items || [])) {
+    if (d.type === 'prop' && WALL_OBS[d.shape]) {   // 牆體：沿長度佈碰撞點，開口留通道
+      const info = WALL_OBS[d.shape], s = d.scale || 1, rr = (d.rot || 0) * Math.PI / 180, c = Math.cos(rr), si = Math.sin(rr);
+      for (let ox = -info.w / 2 + 0.2; ox <= info.w / 2 - 0.2 + 1e-6; ox += 0.4) {
+        if (info.gap && ox > info.gap[0] && ox < info.gap[1]) continue;
+        obstacles.push({ x: (d.x || 0) + ox * s * c, z: (d.z || 0) - ox * s * si, r: 0.28 * s });
+      }
+      continue;
+    }
+    let r = 0;
+    if (d.type === 'model') r = 0.55;
+    else if (d.type === 'prop') r = propRadius(d.shape) * (d.scale || 1);
+    if (r > 0.05) obstacles.push({ x: d.x || 0, z: d.z || 0, r });
+  }
+}
+function rebuildAll() { for (const g of built) if (g) scene.remove(g); built.length = 0; interactables.length = 0; animated.length = 0; pulses.length = 0; lightCount = 0; (EX.items || []).forEach((d, i) => buildItem(d, i)); rebuildObstacles(); }
+rebuildAll();
+const PLAYER_R = 0.34;
+function blocked(x, z) { for (const o of obstacles) { const dx = x - o.x, dz = z - o.z, rr = o.r + PLAYER_R; if (dx * dx + dz * dz < rr * rr) return true; } return false; }
+
+/* ===== 移動（含慣性平滑：起步／停下都有緩衝，Shift 加速）===== */
+const move = { f: 0, b: 0, l: 0, r: 0 }, joy = { x: 0, y: 0 };
+const SPEED = 3.2; const clock = new THREE.Clock();
+const vel = { x: 0, z: 0 }; let runHeld = false;
+function updateMovement(dt) {
+  let mx = 0, mz = 0;
+  if (isTouch) { mx = joy.x; mz = joy.y; } else { mz = (move.f ? 1 : 0) - (move.b ? 1 : 0); mx = (move.r ? 1 : 0) - (move.l ? 1 : 0); }
+  let tx = 0, tz = 0;
+  if (mx !== 0 || mz !== 0) {
+    if (tour.active) exitTour();
+    const len = Math.hypot(mx, mz); mx /= len; mz /= len;
+    const sp = SPEED * (runHeld ? 1.9 : 1);
+    const sin = Math.sin(yaw), cos = Math.cos(yaw);
+    tx = (-sin * mz + cos * mx) * sp; tz = (-cos * mz - sin * mx) * sp;
+  }
+  const k = 1 - Math.exp(-dt * 9);   // 阻尼：往目標速度靠攏
+  vel.x += (tx - vel.x) * k; vel.z += (tz - vel.z) * k;
+  if (Math.abs(vel.x) < 0.005 && Math.abs(vel.z) < 0.005) { vel.x = vel.z = 0; return; }
+  const nx = THREE.MathUtils.clamp(yawObj.position.x + vel.x * dt, -hw + MARGIN, hw - MARGIN);
+  const nz = THREE.MathUtils.clamp(yawObj.position.z + vel.z * dt, -hd + MARGIN, hd - MARGIN);
+  if (isEdit) { yawObj.position.x = nx; yawObj.position.z = nz; return; }   // 編輯模式自由移動
+  if (!blocked(nx, yawObj.position.z)) yawObj.position.x = nx; else vel.x = 0;   // 軸分離 → 可沿物件滑行
+  if (!blocked(yawObj.position.x, nz)) yawObj.position.z = nz; else vel.z = 0;
+}
+const PITCH_LIMIT = Math.PI / 2 - 0.05;
+function applyLook() { yawObj.rotation.y = yaw; pitchObj.rotation.x = THREE.MathUtils.clamp(pitch, -PITCH_LIMIT, PITCH_LIMIT); }
+
+/* ===== 拾取 ===== */
+const raycaster = new THREE.Raycaster();
+const centerNDC = new THREE.Vector2(0, 0);
+function ndc(e) { return new THREE.Vector2((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1); }
+let lastHitPoint = null;
+function pickIndex(coords, maxDist) {
+  raycaster.setFromCamera(coords, camera);
+  const hits = raycaster.intersectObjects(interactables.map(o => o.mesh), true);
+  if (!hits.length || (maxDist && hits[0].distance > maxDist)) { lastHitPoint = null; return -1; }
+  lastHitPoint = hits[0].point.clone();
+  let obj = hits[0].object; while (obj) { if (obj.userData.index !== undefined) return obj.userData.index; obj = obj.parent; } return -1;
+}
+
+/* ===== 資訊面板 + 互動 ===== */
+const infoEl = document.getElementById('info'), reactBox = document.getElementById('reactBox');
+const likeBtn = document.getElementById('likeBtn'), likeCount = document.getElementById('likeCount');
+const commentList = document.getElementById('commentList'), cName = document.getElementById('cName'), cText = document.getElementById('cText'), cSend = document.getElementById('cSend');
+let infoItemId = null;
+const KIND = { image: '圖片', text: '文字', video: '影片', model: '立體物件', prop: '立體作品', light: '燈具', hotspot: '彩蛋' };
+const NONINTERACTIVE = { prop: 1, light: 1 };   // 觀展時不可點開（無介紹）
+function isInteractive(d) { return !!d && (!NONINTERACTIVE[d.type] || (d.type === 'prop' && !!(d.description && d.description.trim()))); }   // 有說明的道具（展台上的立體作品）也可點、可導覽
+function likedKey(id) { return `liked:${EX.id}:${id}`; }
+function renderReactions(id) {
+  const r = Store.getReactions(EX.id, id); likeCount.textContent = r.likes;
+  const liked = localStorage.getItem(likedKey(id)) === '1';
+  likeBtn.classList.toggle('liked', liked); likeBtn.firstChild.textContent = (liked ? '♥ ' : '♡ ');
+  commentList.innerHTML = r.comments.length ? r.comments.slice().reverse().map(c => `<div class="c"><div class="n">${(c.name || '訪客').replace(/</g, '&lt;')}</div><div class="t">${(c.text || '').replace(/</g, '&lt;')}</div></div>`).join('') : `<div class="none">還沒有人留言，當第一個吧。</div>`;
+}
+function openInfo(index) {
+  const d = EX.items[index]; if (!isInteractive(d)) return;
+  infoEl.classList.add('open'); document.getElementById('editPanel').classList.remove('open'); document.getElementById('scenePanel').classList.remove('open');
+  infoEl.querySelector('.kind').textContent = KIND[d.type] || '';
+  infoEl.querySelector('h2').textContent = d.title + (d.artist ? ` · ${d.artist}` : '');
+  infoEl.querySelector('.body').textContent = d.description || '';
+  const media = infoEl.querySelector('.media'); media.innerHTML = '';
+  if (d.type === 'video' && d.src) { const v = document.createElement('video'); v.src = d.src; v.controls = true; v.playsInline = true; media.appendChild(v); }
+  else if (d.type === 'image' && d.src) { const img = document.createElement('img'); img.src = d.src; media.appendChild(img); }
+  if (d.type === 'hotspot') { reactBox.classList.add('hidden'); if (d.src) { const a = new Audio(d.src); a.play().catch(() => {}); } infoItemId = null; }
+  else if (EX.id) { reactBox.classList.remove('hidden'); infoItemId = d.id; renderReactions(d.id); }
+  else { reactBox.classList.add('hidden'); infoItemId = null; }
+}
+infoEl.querySelector('.close').addEventListener('click', () => infoEl.classList.remove('open'));
+likeBtn.addEventListener('click', () => { if (!infoItemId || !EX.id) return; const nl = localStorage.getItem(likedKey(infoItemId)) !== '1'; localStorage.setItem(likedKey(infoItemId), nl ? '1' : '0'); Store.setLike(EX.id, infoItemId, nl); renderReactions(infoItemId); });
+cSend.addEventListener('click', () => { if (!infoItemId || !EX.id) return; const t = cText.value.trim(); if (!t) return; const nm = cName.value.trim() || (me ? me.name : '訪客'); if (cName.value.trim()) localStorage.setItem('visitor_name', cName.value.trim()); Store.addComment(EX.id, infoItemId, nm, t); cText.value = ''; renderReactions(infoItemId); });
+cName.value = localStorage.getItem('visitor_name') || (me ? me.name : '');
+
+/* ===== 編輯模式 ===== */
+let isEdit = false, selected = -1;
+const boxHelper = new THREE.BoxHelper(new THREE.Object3D(), 0xffd34d); boxHelper.visible = false; scene.add(boxHelper);
+const editToggle = document.getElementById('editToggle'), editbar = document.getElementById('editbar');
+const editPanel = document.getElementById('editPanel'), epFields = document.getElementById('epFields');
+const scenePanel = document.getElementById('scenePanel'), spFields = document.getElementById('spFields');
+/* 復原（快照制）：每次存檔前把上一版收進堆疊，Ctrl+Z 還原 */
+const undoStack = []; let lastSnap = null;
+function snapItems() { return JSON.stringify(EX.items); }
+function saveEx() {
+  if (!EX.id) return;
+  if (lastSnap !== null && lastSnap !== snapItems()) { undoStack.push(lastSnap); if (undoStack.length > 30) undoStack.shift(); }
+  lastSnap = snapItems();
+  Store.update(EX.id, { rooms: EX.rooms, style: EX.style });
+  scheduleThumb();
+}
+/* 展覽縮圖：存檔後 2 秒自動用目前視角拍一張，顯示在首頁卡片 */
+let _thumbTimer = null;
+function scheduleThumb() { if (!EX.id || !isOwner) return; clearTimeout(_thumbTimer); _thumbTimer = setTimeout(captureThumb, 2000); }
+function captureThumb() {
+  try {
+    const W = 400, H = 250, rt = new THREE.WebGLRenderTarget(W, H);
+    const cam = new THREE.PerspectiveCamera(66, W / H, 0.1, 100);
+    cam.position.copy(yawObj.position); cam.rotation.order = 'YXZ'; cam.rotation.y = yaw; cam.rotation.x = THREE.MathUtils.clamp(pitch, -0.4, 0.4);
+    renderer.setRenderTarget(rt); renderer.render(scene, cam); renderer.setRenderTarget(null);
+    const buf = new Uint8Array(W * H * 4); renderer.readRenderTargetPixels(rt, 0, 0, W, H, buf); rt.dispose();
+    const cv = document.createElement('canvas'); cv.width = W; cv.height = H; const ctx = cv.getContext('2d'); const img = ctx.createImageData(W, H);
+    for (let y = 0; y < H; y++) { const s = (H - 1 - y) * W * 4; img.data.set(buf.subarray(s, s + W * 4), y * W * 4); }
+    ctx.putImageData(img, 0, 0);
+    Store.update(EX.id, { thumb: cv.toDataURL('image/jpeg', 0.65) });
+  } catch (e) { /* 縮圖失敗不影響功能 */ }
+}
+function doUndo() {
+  if (!undoStack.length) { showToast('沒有可復原的步驟', 1800); return; }
+  const prev = JSON.parse(undoStack.pop());
+  EX.items.splice(0, EX.items.length, ...prev);   // 保持 room.items 同一個陣列
+  setSelected(-1); rebuildAll(); refreshCount();
+  lastSnap = snapItems(); Store.update(EX.id, { rooms: EX.rooms, style: EX.style });
+  showToast('已復原', 1400);
+}
+function deleteSelected() {
+  const i = selected; if (i < 0) return;
+  EX.items.splice(i, 1); setSelected(-1); rebuildAll(); saveEx(); refreshCount();
+  showToast('已刪除（Ctrl+Z 可復原）', 2200);
+}
+function duplicateSelected() {
+  const i = selected; if (i < 0) return;
+  const c = JSON.parse(JSON.stringify(EX.items[i])); c.id = Store.newId('it'); delete c._video;
+  if (c.wall !== undefined && !c.mount) c.offset = (c.offset || 0) + (c.size ? c.size.w + 0.3 : 1);
+  else if (c.mount) c.mount.p[0] += 0.5;
+  else { c.x = (c.x || 0) + 0.6; c.z = (c.z || 0) + 0.3; }
+  EX.items.push(c); const ni = EX.items.length - 1; buildItem(c, ni); setSelected(ni); saveEx(); refreshCount();
+  showToast('已複製（可直接拖到定位）', 2000);
+}
+function switchRoom(i, instant) {
+  if (i < 0 || i >= EX.rooms.length) return;
+  if (!instant) {   // 淡出 → 換房間 → 淡入（避免瞬間閃切）
+    const ov = document.getElementById('fadeOv'); ov.classList.add('show');
+    setTimeout(() => { switchRoom(i, true); setTimeout(() => ov.classList.remove('show'), 60); }, 240);
+    return;
+  }
+  roomIdx = i; room = EX.rooms[i]; EX.items = room.items;
+  lastSnap = isEdit ? snapItems() : null; undoStack.length = 0; tour.idx = 0;
+  buildRoomGeometry(); rebuildAll(); applyPortals();
+  yawObj.position.set(0, EYE, Math.max(1, hd - 1.5)); yaw = 0; pitch = 0; applyLook();
+  setSelected(-1); infoEl.classList.remove('open'); refreshCount(); renderRoomBar();
+  if (tour.active) exitTour();
+}
+
+/* ===== 門戶：把每個房間渲染成快照，貼到門戶的窗上（看見另一個空間）===== */
+const portalTex = {};
+function capturePortals() {
+  if (EX.rooms.length < 2) return;
+  try {
+    const saved = roomIdx, W = 448, H = 640;   // 直式：配合門洞比例
+    const rt = new THREE.WebGLRenderTarget(W, H);
+    const cam = new THREE.PerspectiveCamera(74, W / H, 0.1, 100);
+    for (let k = 0; k < EX.rooms.length; k++) {
+      roomIdx = k; room = EX.rooms[k]; EX.items = room.items; buildRoomGeometry(); rebuildAll();
+      cam.position.set(0, 1.6, hd - 2.2); cam.lookAt(0, 1.4, -hd * 0.35); cam.updateProjectionMatrix();
+      renderer.setRenderTarget(rt); renderer.render(scene, cam); renderer.setRenderTarget(null);
+      const buf = new Uint8Array(W * H * 4); renderer.readRenderTargetPixels(rt, 0, 0, W, H, buf);
+      const cv = document.createElement('canvas'); cv.width = W; cv.height = H; const ctx = cv.getContext('2d'); const img = ctx.createImageData(W, H);
+      for (let y = 0; y < H; y++) { const s = (H - 1 - y) * W * 4; img.data.set(buf.subarray(s, s + W * 4), y * W * 4); }
+      ctx.putImageData(img, 0, 0);
+      const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; portalTex[EX.rooms[k].id] = t;
+    }
+    rt.dispose();
+    roomIdx = saved; room = EX.rooms[saved]; EX.items = room.items; buildRoomGeometry(); rebuildAll();
+  } catch (e) { console.warn('portal capture failed', e); }
+}
+function applyPortals() {
+  EX.items.forEach((d, i) => {
+    if (d.type === 'prop' && d.shape === 'doorway' && built[i]) {
+      const tr = EX.rooms[+d.target]; const t = tr ? portalTex[tr.id] : null;
+      built[i].traverse(o => { if (o.userData.portal) { if (t) { o.material.map = t; o.material.color.set('#ffffff'); o.material.opacity = 1; o.material.transparent = false; } else { o.material.opacity = 0.22; o.material.transparent = true; } o.material.needsUpdate = true; } });
+    }
+  });
+}
+function renderRoomBar() {
+  const bar = document.getElementById('roomBar'); if (!bar) return;
+  if (EX.rooms.length <= 1) { bar.innerHTML = ''; return; }
+  bar.innerHTML = EX.rooms.map((rm, k) => `<button data-rm="${k}" class="${k === roomIdx ? 'on' : ''}">${(rm.name || ('展廳' + (k + 1))).replace(/</g, '&lt;')}</button>`).join('');
+  bar.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => switchRoom(+b.dataset.rm));
+}
+function setSelected(i) { selected = i; if (i >= 0 && built[i]) { boxHelper.setFromObject(built[i]); boxHelper.visible = true; renderEditPanel(i); editPanel.classList.add('open'); scenePanel.classList.remove('open'); } else { boxHelper.visible = false; editPanel.classList.remove('open'); } }
+function rangeRow(label, field, val, min, max, step) { return `<label>${label}</label><div class="rr"><input type="range" data-ef="${field}" data-num="1" min="${min}" max="${max}" step="${step}" value="${val}"><output>${(+val).toFixed(step < 1 ? 1 : 0)}</output></div>`; }
+function setPath(o, p, v) { const ks = p.split('.'); let x = o; for (let j = 0; j < ks.length - 1; j++) x = x[ks[j]]; x[ks[ks.length - 1]] = v; }
+
+const SIZE_PRESETS = [{ n: '小 50×40', a: 0.5, b: 0.4 }, { n: '中 70×50', a: 0.7, b: 0.5 }, { n: '大 90×60', a: 0.9, b: 0.6 }, { n: '特大 120×80', a: 1.2, b: 0.8 }, { n: '巨幅 150×100', a: 1.5, b: 1.0 }, { n: '正方 80×80', a: 0.8, b: 0.8 }];
+const FRAME_OPTS = [['black', '黑框'], ['white', '白框'], ['wood', '木框'], ['gold', '金框'], ['acrylic', '鋁框壓克力'], ['none', '無框']];
+
+function renderEditPanel(i) {
+  const d = EX.items[i];
+  document.getElementById('epKind').textContent = KIND[d.type] || '';
+  document.getElementById('epHead').textContent = '編輯' + (KIND[d.type] || '展品');
+  let f = `<label>標題</label><input type="text" data-ef="title" value="${(d.title || '').replace(/"/g, '&quot;')}">`;
+  if (d.type === 'image') f += `<label>作者／副標</label><input type="text" data-ef="artist" value="${(d.artist || '').replace(/"/g, '&quot;')}">`;
+  if (!NONINTERACTIVE[d.type] || d.type === 'prop') f += `<label>說明文字${d.type === 'prop' ? '（填了就會成為可點選的導覽站）' : ''}</label><textarea data-ef="description">${d.description || ''}</textarea>`;
+  if (!NONINTERACTIVE[d.type] || d.type === 'prop') f += `<label>章節／展區（策展導覽依此分章，進入新章節會顯示標題卡）</label><input type="text" data-ef="section" placeholder="例如：第一章 光的起點" value="${(d.section || '').replace(/"/g, '&quot;')}">`;
+
+  if (d.type === 'image') f += `<label>換照片（網址或 assets/img/檔名）</label><input type="text" data-ef="src" placeholder="assets/img/work01.jpg 或 https://…/image.jpg" value="${(d.src || '').slice(0, 200).replace(/"/g, '&quot;')}"><div class="ph">最穩：把圖放進專案的 assets/img/ 後填「assets/img/檔名」。外部網址需允許跨網域（GitHub、Cloudflare、Imgur 可；Notion、Google Drive 不行）。</div><div class="ph">或上傳：</div><input type="file" accept="image/*" data-eupload="1" style="margin-top:6px;font-size:12px;">`;
+  else if (d.type === 'video') f += `<label>影片網址（MP4 / HLS）</label><input type="url" data-ef="src" value="${(d.src || '').replace(/"/g, '&quot;')}"><div class="ph">需開放 CORS；YouTube 不可用。</div>`;
+  else if (d.type === 'model') f += `<label>3D 模型網址（.glb / .stl）</label><input type="url" data-ef="src" placeholder="https://…/model.glb" value="${(d.src && d.src.startsWith('data:') ? '（已上傳檔案）' : (d.src || '')).replace(/"/g, '&quot;')}" ${d.src && d.src.startsWith('data:') ? 'disabled' : ''}>
+    <div class="ph">或從電腦上傳 .glb / .stl 檔：</div>
+    <input type="file" accept=".glb,.gltf,.stl,model/gltf-binary" data-mupload="1" style="margin-top:6px;font-size:12px;">
+    ${d.src ? '<button class="delBtn" id="mClear" style="margin-top:8px;color:#ccc">清除模型（顯示示範體）</button>' : ''}
+    <div class="ph">沒有模型檔？可到 <b>poly.pizza</b> 或 <b>Sketchfab</b>（篩選可下載／CC 授權）下載 .glb，再上傳這裡。檔案請盡量小於 3MB。</div>`;
+  else if (d.type === 'hotspot') f += `<label>音效／語音（網址，選填）</label><input type="url" data-ef="src" value="${(d.src || '').replace(/"/g, '&quot;')}">`;
+
+  if (d.type === 'text') {
+    f += `<label>文字材質（展場工法）</label><div class="seg" id="textStyleSeg">${TEXT_STYLES.map(([v, n]) => `<button data-tstyle="${v}" class="${(d.textStyle || 'board') === v ? 'sel' : ''}">${n}</button>`).join('')}</div>`;
+    f += `<label>文字顏色</label><input type="color" data-ef="textColor" value="${d.textColor || (d.textStyle === 'foil' ? '#d4af37' : '#1a1a1f')}"><div class="ph">割字／透明貼紙常用黑或白；燙金箔可換成銀（#c9ccd2）或玫瑰金。</div>`;
+  }
+  if (d.type === 'image' || d.type === 'video' || d.type === 'text') {
+    const isPortrait = (d.size.h > d.size.w);
+    f += `<label>方向</label><div class="seg" id="orientSeg"><button data-orient="land" class="${!isPortrait ? 'sel' : ''}">橫式</button><button data-orient="port" class="${isPortrait ? 'sel' : ''}">直式</button></div>`;
+    f += `<label>尺寸（標準畫框）</label><select data-presets="1"><option value="">— 自訂 —</option>${SIZE_PRESETS.map((p, k) => `<option value="${k}">${p.n}</option>`).join('')}</select>`;
+    f += `<div class="row"><div>${rangeRow('寬(m)', 'size.w', d.size.w, 0.3, 5, 0.05)}</div><div>${rangeRow('高(m)', 'size.h', d.size.h, 0.3, 4, 0.05)}</div></div>`;
+    f += `<label>展框材質</label><div class="seg" id="frameSeg">${FRAME_OPTS.map(([v, n]) => `<button data-frame="${v}" class="${(d.frame || STYLE.frameDefault) === v ? 'sel' : ''}">${n}</button>`).join('')}</div>`;
+    if (d.type === 'image') f += `<label>佔位圖顏色</label><input type="color" data-ef="color" value="${d.color || '#6b8cae'}">`;
+  } else if (d.type === 'model') { f += rangeRow('大小', 'scale', d.scale ?? 1, 0.3, 3, 0.1); f += `<label>示範體顏色</label><input type="color" data-ef="color" value="${d.color || '#7a6ff0'}">`; }
+  else if (d.type === 'prop') {
+    const cat = (window.PROPS ? PROPS.catalog : []).map(grp => `<optgroup label="${grp.cat}">${grp.items.map(([v, n]) => `<option value="${v}" ${d.shape === v ? 'selected' : ''}>${n}</option>`).join('')}</optgroup>`).join('');
+    f += `<label>道具類型</label><select data-ef="shape">${cat}</select>`;
+    if (d.shape === 'acrylic_stand') {
+      f += `<label>壓克力上的圖片（網址或 assets/img/檔名）</label><input type="text" data-ef="src" placeholder="assets/img/work01.jpg" value="${(d.src && d.src.startsWith('data:') ? '（已上傳檔案）' : (d.src || '')).replace(/"/g, '&quot;')}" ${d.src && d.src.startsWith('data:') ? 'disabled' : ''}>
+        <div class="ph">或上傳：</div><input type="file" accept="image/*" data-eupload="1" style="margin-top:6px;font-size:12px;">
+        <div class="ph">圖會直接印在透明壓克力板中央，不用另外掛畫。</div>`;
+    }
+    if (d.shape && d.shape.startsWith('glb:')) { const gi = GLB_INFO[d.shape.slice(4)] || {}; if (!gi.ceiling) f += rangeRow('離地高度（放展台就調高）', 'y', d.y ?? (gi.y || 0), 0, 3, 0.05); }
+    if (MAT_PROPS[d.shape]) f += `<label>材質</label><div class="seg" id="matSeg">${MAT_OPTS.map(([v, n]) => `<button data-pmat="${v}" class="${(d.mat || '') === v ? 'sel' : ''}">${n}</button>`).join('')}</div>`;
+    f += rangeRow('大小', 'scale', d.scale ?? 1, 0.4, 3, 0.1); f += rangeRow('旋轉', 'rot', d.rot ?? 0, 0, 360, 15);
+    f += `<label>主色</label><input type="color" data-ef="color" value="${d.color || '#e8e5dd'}">`;
+  } else if (d.type === 'light') {
+    f += `<label>燈具類型</label><div class="seg" id="lkindSeg">${[['spot', '投射燈'], ['wash', '洗牆燈'], ['up', '上照燈']].map(([v, n]) => `<button data-lkind="${v}" class="${(d.kind || 'spot') === v ? 'sel' : ''}">${n}</button>`).join('')}</div>`;
+    if ((d.kind || 'spot') !== 'up') f += rangeRow('離地高度', 'height', d.height ?? 3.6, 1, 4.8, 0.1);
+    f += rangeRow('亮度', 'intensity', d.intensity ?? 6, 1, 16, 0.5);
+    f += rangeRow('光束粗細（角度）', 'angle', d.angle ?? 32, 8, 60, 1);
+    f += rangeRow('照射方向（水平 °）', 'pan', d.pan ?? 0, 0, 360, 5);
+    f += rangeRow('照射傾角（0=向下）', 'tilt', d.tilt ?? 0, 0, 75, 5);
+    f += `<label>燈光顏色</label><input type="color" data-ef="color" value="${d.color || '#fff4e0'}">`;
+  } else if (d.type === 'hotspot') f += rangeRow('離地高度', 'height', d.height ?? 1.5, 0.5, 3.5, 0.1);
+
+  if (d.type === 'prop' && d.shape === 'doorway') {
+    f += `<label>通往房間</label><select data-ef="target">${EX.rooms.map((rm, k) => `<option value="${k}" ${(+d.target) === k ? 'selected' : ''}>${(rm.name || ('展廳' + (k + 1))).replace(/</g, '&lt;')}</option>`).join('')}</select><div class="ph">觀眾走到此門戶會自動進入該房間。</div>`;
+  }
+
+  const isWallItem = (d.type === 'image' || d.type === 'video' || d.type === 'text');
+  f += `<div class="ph" style="margin-top:14px;">位置：在 3D 場景中直接拖曳此展品來移動${isWallItem ? '（可拖到隔板牆等其他垂直面上）' : ''}。</div>`;
+  if (isWallItem && d.mount) f += `<button class="delBtn" id="epUnmount" style="color:#ccc">貼回房間牆面</button>`;
+  f += `<div class="seg" style="margin-top:10px;"><button id="epLock" class="${d.locked ? 'sel' : ''}">${d.locked ? '已鎖定（點此解鎖）' : '鎖定此物件（防誤觸）'}</button></div>`;
+  f += `<div class="seg" style="margin-top:8px;"><button id="epDup">複製此展品（Ctrl+D）</button></div>`;
+  f += `<button class="delBtn" id="epDelete">刪除此展品</button>`;
+  epFields.innerHTML = f; bindEditFields(i);
+}
+function rebuildSelected(i) { disposeItem(i); buildItem(EX.items[i], i); if (built[i]) boxHelper.setFromObject(built[i]); }
+function bindEditFields(i) {
+  const d = EX.items[i];
+  let typeTimer = null;
+  epFields.querySelectorAll('[data-ef]').forEach(inp => {
+    const isTyping = (inp.tagName === 'TEXTAREA' || inp.type === 'text' || inp.type === 'url');   // 打字欄位：停止輸入才重建，避免卡頓
+    inp.oninput = () => {
+      let v = inp.value; if (inp.dataset.num) { v = parseFloat(v); const o = inp.parentElement.querySelector('output'); if (o) o.textContent = v.toFixed(+inp.step < 1 ? 1 : 0); }
+      setPath(d, inp.dataset.ef, v);
+      const apply = () => {
+        if (inp.dataset.ef === 'rot') { built[i].rotation.y = parseFloat(v) * Math.PI / 180; boxHelper.setFromObject(built[i]); }
+        else if (d.type === 'light') { rebuildAll(); if (built[i]) boxHelper.setFromObject(built[i]); }   // 重建以正確計算燈光數
+        else if (inp.dataset.ef === 'height' && d.type === 'hotspot') { built[i].position.y = parseFloat(v); boxHelper.setFromObject(built[i]); }
+        else rebuildSelected(i);
+        saveEx();
+      };
+      if (isTyping) { clearTimeout(typeTimer); typeTimer = setTimeout(apply, 350); } else apply();
+    };
+  });
+  epFields.querySelectorAll('[data-orient]').forEach(b => b.onclick = () => { const port = b.dataset.orient === 'port'; const lo = Math.max(d.size.w, d.size.h), sh = Math.min(d.size.w, d.size.h); d.size.w = port ? sh : lo; d.size.h = port ? lo : sh; rebuildSelected(i); saveEx(); renderEditPanel(i); });
+  const ps = epFields.querySelector('[data-presets]'); if (ps) ps.onchange = () => { const p = SIZE_PRESETS[+ps.value]; if (!p) return; const port = (d.size.h > d.size.w); d.size.w = port ? p.b : p.a; d.size.h = port ? p.a : p.b; rebuildSelected(i); saveEx(); renderEditPanel(i); };
+  epFields.querySelectorAll('[data-frame]').forEach(b => b.onclick = () => { d.frame = b.dataset.frame; rebuildSelected(i); saveEx(); renderEditPanel(i); });
+  epFields.querySelectorAll('[data-pmat]').forEach(b => b.onclick = () => { d.mat = b.dataset.pmat || undefined; rebuildSelected(i); saveEx(); renderEditPanel(i); });
+  epFields.querySelectorAll('[data-tstyle]').forEach(b => b.onclick = () => { d.textStyle = b.dataset.tstyle; if (d.textStyle === 'foil' && (!d.textColor || d.textColor === '#1a1a1f')) d.textColor = '#d4af37'; rebuildSelected(i); saveEx(); renderEditPanel(i); });
+  epFields.querySelectorAll('[data-lkind]').forEach(b => b.onclick = () => { d.kind = b.dataset.lkind; if (d.kind === 'up') { d.tilt = d.tilt ?? 12; } else if ((d.height ?? 0) < 1) d.height = 3.6; rebuildAll(); if (built[i]) boxHelper.setFromObject(built[i]); saveEx(); renderEditPanel(i); });
+  epFields.querySelectorAll('[data-eupload]').forEach(fi => fi.onchange = e => { const file = e.target.files[0]; if (!file) return; const img = new Image(), url = URL.createObjectURL(file); img.onload = () => { const max = 1024, s = Math.min(1, max / Math.max(img.width, img.height)); const c = document.createElement('canvas'); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url); d.src = c.toDataURL('image/jpeg', 0.82); rebuildSelected(i); saveEx(); renderEditPanel(i); }; img.src = url; });
+  epFields.querySelectorAll('[data-mupload]').forEach(fi => fi.onchange = e => {
+    const file = e.target.files[0]; if (!file) return;
+    if (file.size > 8 * 1024 * 1024) { alert('檔案太大（' + Math.round(file.size / 1048576) + 'MB），請用小於 8MB 的模型。'); return; }
+    const reader = new FileReader();
+    reader.onload = () => { d.src = reader.result; d.format = /\.stl$/i.test(file.name) ? 'stl' : 'glb'; rebuildSelected(i); saveEx(); renderEditPanel(i); };
+    reader.readAsDataURL(file);
+  });
+  const mClear = document.getElementById('mClear'); if (mClear) mClear.onclick = () => { d.src = ''; delete d.format; rebuildSelected(i); saveEx(); renderEditPanel(i); };
+  const dup = document.getElementById('epDup'); if (dup) dup.onclick = () => duplicateSelected();
+  const lock = document.getElementById('epLock'); if (lock) lock.onclick = () => { d.locked = !d.locked; saveEx(); renderEditPanel(i); };
+  const unmount = document.getElementById('epUnmount'); if (unmount) unmount.onclick = () => { delete d.mount; rebuildSelected(i); saveEx(); renderEditPanel(i); };
+  const del = document.getElementById('epDelete'); if (del) del.onclick = () => { if (!confirm('刪除「' + (d.title || '此展品') + '」？')) return; EX.items.splice(i, 1); setSelected(-1); rebuildAll(); saveEx(); refreshCount(); };
+}
+function addItemEdit(type) {
+  const sin = Math.sin(yaw), cos = Math.cos(yaw);
+  const fx = THREE.MathUtils.clamp(yawObj.position.x - sin * 2.5, -hw + 1, hw - 1), fz = THREE.MathUtils.clamp(yawObj.position.z - cos * 2.5, -hd + 1, hd - 1);
+  const cx = THREE.MathUtils.clamp(yawObj.position.x, -hw + 1.5, hw - 1.5);
+  const id = Store.newId('it'); let d;
+  if (type === 'image') d = { id, type, title: '新圖片', artist: '', description: '', src: '', wall: 'north', offset: cx, height: 1.6, size: { w: 0.9, h: 0.6 }, frame: STYLE.frameDefault, color: '#6b8cae' };
+  else if (type === 'text') d = { id, type, title: '新說明牌', description: '說明文字…', wall: 'north', offset: cx, height: 1.6, size: { w: 0.9, h: 0.6 }, frame: STYLE.frameDefault };
+  else if (type === 'video') d = { id, type, title: '新影片', description: '', src: '', wall: 'north', offset: cx, height: 1.7, size: { w: 1.6, h: 0.9 }, frame: STYLE.frameDefault };
+  else if (type === 'prop') d = { id, type, shape: 'plinth', title: '展台', x: fx, z: fz, rot: 0, scale: 1, color: '#e8e5dd' };
+  else if (type === 'light') d = { id, type, title: '投射燈', x: fx, z: fz, height: Math.min(R.height - 0.5, 3.6), color: '#fff4e0', intensity: 7, angle: 30 };
+  else if (type === 'hotspot') d = { id, type, title: '新熱點', description: '點我看隱藏內容。', src: '', x: fx, z: fz, height: 1.5 };
+  else d = { id, type: 'model', title: '新立體展品', description: '', src: '', x: fx, z: fz, scale: 1, color: '#7a6ff0' };
+  EX.items.push(d); const i = EX.items.length - 1; buildItem(d, i); setSelected(i); saveEx(); refreshCount();
+}
+function refreshCount() { const c = document.querySelector('#topbar .count'); if (c) c.textContent = `${(EX.items || []).length} 件展品`; }
+editbar.querySelectorAll('[data-eadd]').forEach(b => b.onclick = () => addItemEdit(b.dataset.eadd));
+editPanel.querySelector('.close').addEventListener('click', () => setSelected(-1));
+
+/* ===== 場景設定面板 ===== */
+function renderScenePanel() {
+  const wc = STYLE.wallColors;
+  let f = '';
+  // 房間管理
+  f += `<label>房間（${EX.rooms.length} / 5）</label><div class="seg" id="roomList">${EX.rooms.map((rm, k) => `<button data-roomsel="${k}" class="${k === roomIdx ? 'sel' : ''}">${(rm.name || ('展廳' + (k + 1))).replace(/</g, '&lt;')}</button>`).join('')}</div>`;
+  f += `<div class="row" style="margin-top:8px;"><div><input type="text" id="roomName" value="${(room.name || '').replace(/"/g, '&quot;')}" placeholder="房間名稱"></div></div>`;
+  f += `<div class="seg" style="margin-top:8px;"><button id="roomAdd" ${EX.rooms.length >= 5 ? 'disabled style="opacity:.4"' : ''}>＋ 新增房間</button><button id="roomDel" ${EX.rooms.length <= 1 ? 'disabled style="opacity:.4"' : ''}>刪除此房間</button></div>`;
+  f += `<div class="ph">一個展覽可有 1~5 個房間，觀眾用上方「房間」鈕切換。以下設定為「當前房間」。</div>`;
+  f += `<label style="margin-top:18px;">此房間模板</label><select id="spTpl">${Object.entries(TEMPLATES).map(([k, t]) => `<option value="${k}" ${room.template === k ? 'selected' : ''}>${t.name}</option>`).join('')}</select><div class="ph">換模板會套用新的尺寸與基礎配色。</div>`;
+  f += `<label>各牆面顏色</label><div class="row"><div><div class="ph">前牆</div><input type="color" data-wall="north" value="${wc.north || R.wallColor}"></div><div><div class="ph">後牆</div><input type="color" data-wall="south" value="${wc.south || R.wallColor}"></div><div><div class="ph">左牆</div><input type="color" data-wall="west" value="${wc.west || R.wallColor}"></div><div><div class="ph">右牆</div><input type="color" data-wall="east" value="${wc.east || R.wallColor}"></div></div>`;
+  f += `<label>說明牌字體</label><div class="seg" id="fontSeg">${[['sans', '黑體'], ['serif', '襯線體'], ['rounded', '圓體']].map(([v, n]) => `<button data-font="${v}" class="${STYLE.font === v ? 'sel' : ''}">${n}</button>`).join('')}</div>`;
+  f += `<label>預設展框</label><div class="seg" id="dframeSeg">${FRAME_OPTS.map(([v, n]) => `<button data-dframe="${v}" class="${STYLE.frameDefault === v ? 'sel' : ''}">${n}</button>`).join('')}</div>`;
+  f += `<label>地板材質</label><div class="seg" id="floorTexSeg">${[['auto', '依模板'], ['wood', '木地板'], ['darkwood', '深色亮面木'], ['tatami', '榻榻米'], ['osb', 'OSB 木板'], ['plain', '淺灰水泥']].map(([v, n]) => `<button data-floortex="${v}" class="${(STYLE.floorTex || 'auto') === v ? 'sel' : ''}">${n}</button>`).join('')}</div>`;
+  f += `<label>戶外環境（HDRI 全景照片）</label><select id="spHdri">${Object.entries(HDRIS).map(([k, h]) => `<option value="${k}" ${(STYLE.hdri || 'park') === k ? 'selected' : ''}>${h.name}</option>`).join('')}</select><div class="ph">決定天窗／玻璃外的景色與整體環境反射。</div>`;
+  f += rangeRow('自然光強度', '__sun', STYLE.sun, 0.3, 4, 0.1);
+  f += rangeRow('光源方向（角度）', '__az', STYLE.sunAzimuth, 0, 360, 5);
+  f += rangeRow('光線仰角（低＝斜陽長影）', '__el', STYLE.sunElev ?? 58, 12, 80, 2);
+  f += `<label>背景音樂（網址，選填）</label><input type="url" id="spBgm" placeholder="https://…/music.mp3（需開放 CORS）" value="${(STYLE.bgm || '').replace(/"/g, '&quot;')}"><div class="ph">進場後自動播放，可用右上「音樂」鈕靜音。</div>`;
+  spFields.innerHTML = f; bindScenePanel();
+}
+function bindScenePanel() {
+  document.getElementById('spTpl').onchange = e => { room.template = e.target.value; buildRoomGeometry(); rebuildAll(); saveEx(); renderScenePanel(); };
+  document.querySelectorAll('#roomList [data-roomsel]').forEach(b => b.onclick = () => { switchRoom(+b.dataset.roomsel); renderScenePanel(); });
+  const rn = document.getElementById('roomName'); if (rn) rn.oninput = () => { room.name = rn.value; saveEx(); renderRoomBar(); document.querySelectorAll('#roomList [data-roomsel]')[roomIdx] && (document.querySelectorAll('#roomList [data-roomsel]')[roomIdx].textContent = rn.value || ('展廳' + (roomIdx + 1))); };
+  const ra = document.getElementById('roomAdd'); if (ra) ra.onclick = () => { if (EX.rooms.length >= 5) return; const nr = { id: 'rm' + Date.now().toString(36), name: '展廳 ' + (EX.rooms.length + 1), template: room.template, items: [] }; EX.rooms.push(nr); saveEx(); switchRoom(EX.rooms.length - 1); renderScenePanel(); };
+  const rd = document.getElementById('roomDel'); if (rd) rd.onclick = () => { if (EX.rooms.length <= 1) return; if (!confirm('刪除房間「' + (room.name || '') + '」及其所有展品？')) return; EX.rooms.splice(roomIdx, 1); saveEx(); switchRoom(Math.max(0, roomIdx - 1)); renderScenePanel(); };
+  spFields.querySelectorAll('[data-wall]').forEach(inp => inp.oninput = () => { STYLE.wallColors[inp.dataset.wall] = inp.value; if (wallMats[inp.dataset.wall]) wallMats[inp.dataset.wall].color.set(inp.value); saveEx(); });
+  spFields.querySelectorAll('[data-font]').forEach(b => b.onclick = () => { STYLE.font = b.dataset.font; rebuildAll(); saveEx(); renderScenePanel(); });
+  spFields.querySelectorAll('[data-dframe]').forEach(b => b.onclick = () => { STYLE.frameDefault = b.dataset.dframe; rebuildAll(); saveEx(); renderScenePanel(); });
+  spFields.querySelectorAll('[data-num]').forEach(inp => inp.oninput = () => { const v = parseFloat(inp.value); const o = inp.parentElement.querySelector('output'); if (o) o.textContent = v.toFixed(+inp.step < 1 ? 1 : 0); if (inp.dataset.ef === '__sun') STYLE.sun = v; else if (inp.dataset.ef === '__az') STYLE.sunAzimuth = v; else if (inp.dataset.ef === '__el') STYLE.sunElev = v; placeSun(); saveEx(); });
+  document.getElementById('spBgm').oninput = e => { STYLE.bgm = e.target.value.trim(); setupBgm(); saveEx(); };
+  document.getElementById('spHdri').onchange = e => { STYLE.hdri = e.target.value; loadHDRI(STYLE.hdri); saveEx(); };
+  spFields.querySelectorAll('[data-floortex]').forEach(b => b.onclick = () => { STYLE.floorTex = b.dataset.floortex; buildRoomGeometry(); rebuildAll(); saveEx(); renderScenePanel(); });
+}
+document.getElementById('sceneBtn').onclick = () => { setSelected(-1); renderScenePanel(); scenePanel.classList.add('open'); };
+scenePanel.querySelector('.close').addEventListener('click', () => scenePanel.classList.remove('open'));
+
+function enterEdit() { isEdit = true; lastSnap = snapItems(); undoStack.length = 0; editToggle.classList.add('on'); editToggle.textContent = '完成編輯'; editbar.classList.add('show'); canvas.classList.add('editing'); infoEl.classList.remove('open'); showToast('編輯技巧：Ctrl+Z 復原 · Ctrl+D 複製選取的展品 · Delete 刪除', 5000); }
+function exitEdit() { isEdit = false; editToggle.classList.remove('on'); editToggle.textContent = '編輯展場'; editbar.classList.remove('show'); canvas.classList.remove('editing'); setSelected(-1); scenePanel.classList.remove('open'); }
+editToggle.addEventListener('click', () => isEdit ? exitEdit() : enterEdit());
+
+/* ===== 拖曳移動 ===== */
+const dragPlane = new THREE.Plane(), hitPt = new THREE.Vector3(); let itemDrag = false, dragY = 0;
+const FLOOR_ITEM = { model: 1, hotspot: 1, prop: 1, light: 1 };
+const _nmat = new THREE.Matrix3();
+// 牆上展品：拖曳時吸附到任何垂直面（房間牆＋隔板等可掛結構）
+function mountSurfaces() {
+  const list = wallMeshes.slice();
+  built.forEach((g, k) => { if (g && g.userData.mountable) list.push(g); });
+  return list;
+}
+function dragItemTo(coords) {
+  const d = EX.items[selected]; if (!d) return;
+  raycaster.setFromCamera(coords, camera);
+  const snap = (v) => Math.round(v * 20) / 20;   // 5cm 吸附，方便對齊
+  if (FLOOR_ITEM[d.type]) {
+    // 在「點擊高度」的水平面上拖曳 → 即使抬頭看天花板物件也能移動
+    dragPlane.set(new THREE.Vector3(0, 1, 0), -dragY);
+    if (!raycaster.ray.intersectPlane(dragPlane, hitPt)) return;
+    d.x = snap(THREE.MathUtils.clamp(hitPt.x, -hw + 0.4, hw - 0.4)); d.z = snap(THREE.MathUtils.clamp(hitPt.z, -hd + 0.4, hd - 0.4));
+    if (d.shape === 'doorway') { snapDoorToWall(d); built[selected].rotation.y = d.rot * Math.PI / 180; }   // 門戶貼牆
+    built[selected].position.x = d.x; built[selected].position.z = d.z;
+  } else {
+    // 牆上展品：吸附到游標所指的垂直面
+    const hits = raycaster.intersectObjects(mountSurfaces(), true);
+    if (!hits.length || !hits[0].face) return;
+    const p = hits[0].point;
+    let n = hits[0].face.normal.clone().applyNormalMatrix(_nmat.getNormalMatrix(hits[0].object.matrixWorld)).normalize();
+    if (Math.abs(n.y) > 0.6) return;          // 只吸附垂直面，略過地板/天花板
+    n.y = 0; n.normalize();
+    const ry = Math.atan2(n.x, n.z);
+    d.mount = { p: [p.x + n.x * 0.07, snap(THREE.MathUtils.clamp(p.y, 0.4 + d.size.h / 2, R.height - 0.2 - d.size.h / 2)), p.z + n.z * 0.07], ry };
+    built[selected].position.set(...d.mount.p); built[selected].rotation.y = ry;
+  }
+  boxHelper.setFromObject(built[selected]);
+}
+
+/* ===== 滑鼠 ===== */
+let dragging = false, movedFlag = false, lastX = 0, lastY = 0;
+canvas.addEventListener('mousedown', e => {
+  if (e.button !== 0) return; lastX = e.clientX; lastY = e.clientY; movedFlag = false;
+  if (isEdit) {
+    const i = pickIndex(ndc(e));
+    if (i >= 0) {
+      setSelected(i);
+      if (EX.items[i].locked) return;                       // 鎖定的物件：可選取但不可拖曳
+      dragY = lastHitPoint ? lastHitPoint.y : (built[i] ? built[i].position.y : 0);
+      itemDrag = true; return;
+    }
+    setSelected(-1); dragging = true; canvas.classList.add('grabbing'); return;
+  }
+  dragging = true; canvas.classList.add('grabbing');
+});
+addEventListener('mousemove', e => {
+  if (itemDrag) { dragItemTo(ndc(e)); return; }
+  if (!dragging) return; const dx = e.clientX - lastX, dy = e.clientY - lastY;
+  if (Math.abs(dx) + Math.abs(dy) > 3) { movedFlag = true; if (tour.active && tour.tween) exitTour(); }
+  yaw -= dx * 0.004; pitch -= dy * 0.004; lastX = e.clientX; lastY = e.clientY; applyLook();
+});
+addEventListener('mouseup', e => {
+  if (e.button !== 0) return;
+  if (itemDrag) { itemDrag = false; rebuildObstacles(); saveEx(); return; }
+  if (!dragging) return; dragging = false; canvas.classList.remove('grabbing');
+  if (!isEdit && !movedFlag && focused >= 0 && !infoEl.classList.contains('open')) openInfo(focused);
+});
+
+/* ===== 鍵盤 ===== */
+const keymap = { KeyW: 'f', ArrowUp: 'f', KeyS: 'b', ArrowDown: 'b', KeyA: 'l', ArrowLeft: 'l', KeyD: 'r', ArrowRight: 'r' };
+addEventListener('keydown', e => {
+  if (e.key === 'Shift') runHeld = true;
+  if (e.target.matches && e.target.matches('input,textarea,select')) return;
+  if (keymap[e.code]) move[keymap[e.code]] = 1;
+  if (isEdit && (e.key === 'Delete' || e.key === 'Backspace') && selected >= 0) { e.preventDefault(); deleteSelected(); }
+  if (isEdit && (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); doUndo(); }
+  if (isEdit && (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'd' && selected >= 0) { e.preventDefault(); duplicateSelected(); }
+});
+addEventListener('keyup', e => { if (e.key === 'Shift') runHeld = false; if (keymap[e.code]) move[keymap[e.code]] = 0; });
+
+/* ===== 行動裝置 ===== */
+const joyEl = document.getElementById('joystick'), joyKnob = joyEl.querySelector('i');
+let joyId = null, joyCx = 0, joyCy = 0; const JOY_R = 46;
+joyEl.addEventListener('touchstart', e => { const t = e.changedTouches[0]; joyId = t.identifier; const r = joyEl.getBoundingClientRect(); joyCx = r.left + r.width / 2; joyCy = r.top + r.height / 2; e.preventDefault(); }, { passive: false });
+function moveJoy(t) { let dx = t.clientX - joyCx, dy = t.clientY - joyCy; const dd = Math.hypot(dx, dy); if (dd > JOY_R) { dx = dx / dd * JOY_R; dy = dy / dd * JOY_R; } joyKnob.style.transform = `translate(${dx}px,${dy}px)`; joy.x = dx / JOY_R; joy.y = -dy / JOY_R; }
+addEventListener('touchmove', e => { for (const t of e.changedTouches) if (t.identifier === joyId) { moveJoy(t); e.preventDefault(); } }, { passive: false });
+function endJoy(e) { for (const t of e.changedTouches) if (t.identifier === joyId) { joyId = null; joy.x = joy.y = 0; joyKnob.style.transform = 'translate(0,0)'; } }
+addEventListener('touchend', endJoy); addEventListener('touchcancel', endJoy);
+let lookId = null, lkX = 0, lkY = 0;
+canvas.addEventListener('touchstart', e => { for (const t of e.changedTouches) if (t.clientX > innerWidth * 0.4 && lookId === null) { lookId = t.identifier; lkX = t.clientX; lkY = t.clientY; } }, { passive: false });
+canvas.addEventListener('touchmove', e => { for (const t of e.changedTouches) if (t.identifier === lookId) { yaw -= (t.clientX - lkX) * 0.005; pitch -= (t.clientY - lkY) * 0.005; lkX = t.clientX; lkY = t.clientY; applyLook(); e.preventDefault(); } }, { passive: false });
+function endLook(e) { for (const t of e.changedTouches) if (t.identifier === lookId) lookId = null; }
+addEventListener('touchend', endLook); addEventListener('touchcancel', endLook);
+
+const crosshair = document.getElementById('crosshair'), tapHint = document.getElementById('tapHint');
+tapHint.addEventListener('click', () => { if (focused >= 0) openInfo(focused); });
+
+/* ===== 小地圖 ===== */
+const minimap = document.getElementById('minimap'), mmx = minimap.getContext('2d');
+const mapBtn = document.getElementById('mapBtn'); let mapOn = true;
+mapBtn.onclick = () => { mapOn = !mapOn; minimap.classList.toggle('show', mapOn); };
+const MM_COLORS = { image: '#185fa5', text: '#854f0b', video: '#993556', model: '#534ab7', prop: '#888', light: '#e0a020', hotspot: '#0f6e56' };
+function drawMinimap() {
+  const W = 150, pad = 14, s = Math.min((W - pad * 2) / R.width, (W - pad * 2) / R.depth);
+  const rw = R.width * s, rh = R.depth * s, ox = (W - rw) / 2, oy = (W - rh) / 2;
+  const px = x => ox + (x + hw) * s, py = z => oy + (z + hd) * s;
+  mmx.clearRect(0, 0, W, W);
+  mmx.fillStyle = 'rgba(255,255,255,.06)'; mmx.fillRect(ox, oy, rw, rh);
+  mmx.strokeStyle = 'rgba(255,255,255,.4)'; mmx.lineWidth = 1.5; mmx.strokeRect(ox, oy, rw, rh);
+  for (const d of EX.items) {
+    let x, z; if (FLOOR_ITEM[d.type]) { x = px(d.x); z = py(d.z); } else if (d.mount) { x = px(d.mount.p[0]); z = py(d.mount.p[2]); } else { const sl = wallSlot(d.wall, d.offset, 0).pos; x = px(sl[0]); z = py(sl[2]); }
+    mmx.fillStyle = MM_COLORS[d.type] || '#888'; mmx.beginPath(); mmx.arc(x, z, 3.2, 0, 7); mmx.fill();
+  }
+  // 玩家
+  const px0 = px(yawObj.position.x), py0 = py(yawObj.position.z);
+  mmx.save(); mmx.translate(px0, py0); mmx.rotate(-yaw);
+  mmx.fillStyle = '#ffd34d'; mmx.beginPath(); mmx.moveTo(0, -7); mmx.lineTo(-5, 5); mmx.lineTo(5, 5); mmx.closePath(); mmx.fill(); mmx.restore();
+}
+
+/* ===== 導覽動線 ===== */
+const tourbar = document.getElementById('tourbar'), tourBtn = document.getElementById('tourBtn'), tourLabel = document.getElementById('tourLabel');
+const tour = { active: false, idx: 0, list: [], tween: null, lastSection: null };
+function tourStops() { return EX.items.map((d, i) => i).filter(i => isInteractive(EX.items[i])); }
+// 展品在世界中的位置與「面向房間」的法向量
+function stopWorld(i) {
+  const d = EX.items[i];
+  if (d.type === 'model' || d.type === 'hotspot' || d.type === 'prop') return { item: new THREE.Vector3(d.x, d.type === 'prop' ? (d.y || 0) + 0.5 : (d.height ?? 1.4), d.z), n: new THREE.Vector3(0, 0, 1) };
+  if (d.mount) return { item: new THREE.Vector3(d.mount.p[0], d.mount.p[1], d.mount.p[2]), n: new THREE.Vector3(Math.sin(d.mount.ry), 0, Math.cos(d.mount.ry)) };
+  const sl = wallSlot(d.wall, d.offset, d.height ?? 1.7).pos; return { item: new THREE.Vector3(sl[0], sl[1], sl[2]), n: wallNormal(d.wall) };
+}
+function tourPose(i) {
+  const { item, n } = stopWorld(i);
+  const target = item.clone().addScaledVector(n, 3.0); target.y = EYE;
+  target.x = THREE.MathUtils.clamp(target.x, -hw + MARGIN, hw - MARGIN); target.z = THREE.MathUtils.clamp(target.z, -hd + MARGIN, hd - MARGIN);
+  const dir = new THREE.Vector3(item.x - target.x, 0, item.z - target.z).normalize();
+  const tyaw = Math.atan2(-dir.x, -dir.z);
+  const tpitch = Math.atan2(item.y - EYE, Math.hypot(item.x - target.x, item.z - target.z));
+  return { pos: target, yaw: tyaw, pitch: tpitch };
+}
+/* 導覽編號標記（漂浮在每個導覽站上方）*/
+const markerGroup = new THREE.Group(); markerGroup.visible = false; scene.add(markerGroup);
+function numberSprite(n, active) {
+  const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d');
+  g.beginPath(); g.arc(64, 64, 52, 0, 7); g.fillStyle = active ? '#ffd34d' : 'rgba(255,255,255,0.92)'; g.fill();
+  g.lineWidth = 4; g.strokeStyle = 'rgba(0,0,0,0.18)'; g.stroke();
+  g.fillStyle = '#1a1a1f'; g.font = '700 52px -apple-system, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(String(n), 64, 66);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, transparent: true, depthTest: false })); s.scale.setScalar(0.42); s.renderOrder = 5; return s;
+}
+function rebuildMarkers() {
+  while (markerGroup.children.length) markerGroup.remove(markerGroup.children[0]);
+  tour.list.forEach((i, k) => { const { item, n } = stopWorld(i); const s = numberSprite(k + 1, k === tour.idx); s.position.copy(item).addScaledVector(n, 0.25); s.position.y = Math.min(R.height - 0.3, item.y + (EX.items[i].size ? EX.items[i].size.h / 2 : 0.6) + 0.45); markerGroup.add(s); });
+}
+/* 地面引導光點（從腳下流向下一站）*/
+const guideGroup = new THREE.Group(); guideGroup.visible = false; scene.add(guideGroup);
+const guideDots = []; for (let k = 0; k < 30; k++) { const m = new THREE.Mesh(new THREE.CircleGeometry(0.055, 14), new THREE.MeshBasicMaterial({ color: '#ffd34d', transparent: true, opacity: 0.85, depthWrite: false })); m.rotation.x = -Math.PI / 2; m.position.y = 0.012; guideGroup.add(m); guideDots.push(m); }
+function updateGuide() {
+  if (!tour.active || tour._target == null) { guideGroup.visible = false; return; }
+  const tw = tour.tween || tourPose(tour._target); const tx = tw.pos.x, tz = tw.pos.z;
+  const px = yawObj.position.x, pz = yawObj.position.z, dist = Math.hypot(tx - px, tz - pz);
+  if (dist < 0.9) { guideGroup.visible = false; return; }
+  guideGroup.visible = true; const step = 0.55, off = (tms * 1.4) % step;
+  guideDots.forEach((m, k) => { const s = off + k * step; if (s >= dist) { m.visible = false; return; } m.visible = true; const t = s / dist; m.position.x = px + (tx - px) * t; m.position.z = pz + (tz - pz) * t; m.material.opacity = 0.25 + 0.6 * Math.min(1, s / 1.2) * (1 - t * 0.5); });
+}
+/* 章節標題卡 */
+const chapterCard = document.getElementById('chapterCard'); let chapterTimer = null;
+function showChapter(sec, k) {
+  chapterCard.querySelector('.k').textContent = EX.title || ''; chapterCard.querySelector('.t').textContent = sec;
+  chapterCard.classList.add('show'); clearTimeout(chapterTimer); chapterTimer = setTimeout(() => chapterCard.classList.remove('show'), 2600);
+}
+function sectionIndex(sec) { const seen = []; for (const i of tour.list) { const s = EX.items[i].section || ''; if (s && !seen.includes(s)) seen.push(s); } return Math.max(0, seen.indexOf(sec)); }
+function gotoStop(k) {
+  tour.list = tourStops(); if (!tour.list.length) return;
+  tour.idx = (k + tour.list.length) % tour.list.length;
+  const i = tour.list[tour.idx], d = EX.items[i];
+  tour.tween = tourPose(i); tour.active = true; infoEl.classList.remove('open');
+  const sec = d.section || '';
+  tourLabel.textContent = (sec ? sec + ' · ' : '') + `${tour.idx + 1} / ${tour.list.length} · ${d.title || ''}`;
+  if (sec && sec !== tour.lastSection) showChapter(sec, sectionIndex(sec));
+  tour.lastSection = sec;
+  tour._target = i; rebuildMarkers(); markerGroup.visible = true;
+}
+function startTour() { tour.lastSection = null; tourbar.classList.add('show'); tourBtn.classList.add('on'); mapOn = true; minimap.classList.add('show'); gotoStop(tour.idx || 0); }   // 從上次中斷的站續播
+function exitTour() { tour.active = false; tour.tween = null; tour._target = null; tourbar.classList.remove('show'); tourBtn.classList.remove('on'); markerGroup.visible = false; guideGroup.visible = false; document.getElementById('focusVig').classList.remove('show'); }
+tourBtn.onclick = () => tour.active ? exitTour() : startTour();
+document.getElementById('tourPrev').onclick = () => gotoStop(tour.idx - 1);
+document.getElementById('tourNext').onclick = () => gotoStop(tour.idx + 1);
+document.getElementById('tourExit').onclick = exitTour;
+function angLerp(a, b, t) { const d = Math.atan2(Math.sin(b - a), Math.cos(b - a)); return a + d * t; }
+function updateTour() {
+  if (!tour.tween) return;
+  const tw = tour.tween, k = 0.08;
+  yawObj.position.x += (tw.pos.x - yawObj.position.x) * k;
+  yawObj.position.z += (tw.pos.z - yawObj.position.z) * k;
+  yaw = angLerp(yaw, tw.yaw, k); pitch += (tw.pitch - pitch) * k; applyLook();
+  if (Math.abs(tw.pos.x - yawObj.position.x) < 0.03 && Math.abs(tw.pos.z - yawObj.position.z) < 0.03) {
+    tour.tween = null; if (tour._target != null) openInfo(tour._target);
+  }
+}
+
+/* ===== 背景音樂 ===== */
+let bgmAudio = null, muted = false;
+const muteBtn = document.getElementById('muteBtn');
+function setupBgm() { if (!STYLE.bgm) { if (bgmAudio) bgmAudio.pause(); bgmAudio = null; muteBtn.classList.add('hidden'); return; } if (!bgmAudio) bgmAudio = new Audio(); if (bgmAudio.src !== STYLE.bgm) bgmAudio.src = STYLE.bgm; bgmAudio.loop = true; bgmAudio.volume = STYLE.bgmVolume; muteBtn.classList.remove('hidden'); }
+muteBtn.onclick = () => { muted = !muted; muteBtn.textContent = muted ? '已靜音' : '音樂'; if (bgmAudio) { if (muted) bgmAudio.pause(); else bgmAudio.play().catch(() => {}); } };
+
+/* ===== 視角切換 + 聊天泡泡 ===== */
+const viewBtn = document.getElementById('viewBtn');
+function setView(tp) {
+  thirdPerson = tp; avatar.visible = tp;
+  camera.position.set(0, tp ? 0.9 : 0, tp ? 4.4 : 0);
+  viewBtn.classList.toggle('on', tp); viewBtn.textContent = tp ? '第一人稱' : '第三人稱';
+}
+viewBtn.onclick = () => setView(!thirdPerson);
+
+const chatBar = document.getElementById('chatBar'), chatInput = document.getElementById('chatInput'), chatBubble = document.getElementById('chatBubble');
+let bubbleText = '', bubbleUntil = 0;
+chatInput.addEventListener('keydown', e => {
+  e.stopPropagation();
+  if (e.key === 'Enter') { const t = chatInput.value.trim(); if (t) { bubbleText = t; bubbleUntil = tms + 6; if (!thirdPerson) setView(true); } chatInput.value = ''; chatInput.blur(); }
+  if (e.key === 'Escape') chatInput.blur();
+});
+const _proj = new THREE.Vector3();
+function updateAvatarAndChat() {
+  // 化身永遠跟著玩家位置與朝向（第一人稱時隱藏）
+  avatar.position.set(yawObj.position.x, 0, yawObj.position.z);
+  avatar.rotation.y = yaw + Math.PI;
+  // 聊天泡泡：投影頭頂世界座標到螢幕
+  if (bubbleText && tms < bubbleUntil) {
+    _proj.set(yawObj.position.x, 2.05, yawObj.position.z).project(camera);
+    if (_proj.z < 1) {
+      chatBubble.textContent = bubbleText;
+      chatBubble.style.left = ((_proj.x * 0.5 + 0.5) * innerWidth) + 'px';
+      chatBubble.style.top = ((-_proj.y * 0.5 + 0.5) * innerHeight) + 'px';
+      chatBubble.classList.add('show');
+    } else chatBubble.classList.remove('show');
+  } else chatBubble.classList.remove('show');
+}
+
+/* ===== 主迴圈 ===== */
+let focused = -1, tms = 0;
+let warpCooldown = false;
+function checkDoors() {
+  if (isEdit) return;
+  let nearAny = false;
+  for (const d of EX.items) {
+    if (d.type !== 'prop' || d.shape !== 'doorway') continue;
+    const dist = Math.hypot(yawObj.position.x - d.x, yawObj.position.z - d.z);
+    if (dist < 2) nearAny = true;
+    if (dist < 1.0 && !warpCooldown && d.target != null && +d.target !== roomIdx) { warpCooldown = true; switchRoom(+d.target); return; }
+  }
+  if (!nearAny) warpCooldown = false;
+}
+function tick() {
+  const dt = Math.min(clock.getDelta(), 0.05); tms += dt;
+  if (tour.active && tour.tween) updateTour();
+  else if (!isEdit || !itemDrag) updateMovement(dt);
+  checkDoors();
+  for (const a of animated) a.obj.rotation.y += a.spin * dt;
+  for (const p of pulses) p.obj.scale.setScalar(1 + Math.sin(tms * 2.4) * 0.18);
+  if (!isEdit) {
+    focused = pickIndex(centerNDC, 6); const hot = focused >= 0 && isInteractive(EX.items[focused]);
+    crosshair.classList.toggle('hot', hot); if (isTouch) tapHint.classList.toggle('show', hot);
+    const tip = document.getElementById('aimTip');   // 準心對到作品 → 顯示名稱
+    if (hot && !infoEl.classList.contains('open')) { const fd = EX.items[focused]; tip.innerHTML = '<b>' + String(fd.title || '').replace(/</g, '&lt;') + '</b>' + (isTouch ? '' : ' · 點一下查看'); tip.classList.add('show'); }
+    else tip.classList.remove('show');
+  }
+  else { crosshair.classList.remove('hot'); document.getElementById('aimTip').classList.remove('show'); if (isTouch) tapHint.classList.remove('show'); }
+  if (boxHelper.visible && selected >= 0 && built[selected]) boxHelper.update();
+  updateAvatarAndChat(); updateGuide();
+  document.getElementById('focusVig').classList.toggle('show', tour.active && !tour.tween && infoEl.classList.contains('open'));
+  if (mapOn && minimap.classList.contains('show')) drawMinimap();
+  renderer.render(scene, camera);
+  requestAnimationFrame(tick);
+}
+
+/* ===== 開場 ===== */
+const intro = document.getElementById('intro'), enterBtn = document.getElementById('enterBtn');
+document.title = EX.title || '觀展';
+document.getElementById('introTitle').textContent = EX.title || '展覽';
+document.getElementById('introSub').textContent = isTouch ? '左下搖桿移動，滑右側畫面轉視角。可開小地圖、按「導覽」自動帶你逛。走近展品點一下互動。' : '按住滑鼠左鍵拖曳轉視角，W/A/S/D 移動。可開小地圖、按「導覽」自動帶你逛。準心對準展品點一下互動、按讚、留言。';
+document.getElementById('controlsHint').innerHTML = isTouch ? '' : '<kbd>W</kbd> 前進 <kbd>S</kbd> 後退 <kbd>A</kbd> <kbd>D</kbd> 左右 &nbsp;·&nbsp; 按住左鍵 轉視角 &nbsp;·&nbsp; 點擊展品 互動';
+const topbar = document.getElementById('topbar');
+topbar.querySelector('.title').textContent = EX.title || '展覽';
+refreshCount(); renderRoomBar();
+tourBtn.classList.remove('hidden'); mapBtn.classList.remove('hidden');
+if (isOwner) { editToggle.classList.remove('hidden'); if (isTouch) editToggle.textContent = '編輯（建議用電腦）'; }
+THREE.DefaultLoadingManager.onProgress = (u, l, t) => { document.querySelector('#loadBar > i').style.width = Math.round(l / t * 100) + '%'; };
+function ready() { document.querySelector('#loadBar > i').style.width = '100%'; document.getElementById('enterRow').classList.remove('hidden'); document.getElementById('loadBar').classList.add('hidden'); }
+THREE.DefaultLoadingManager.onLoad = ready; setTimeout(ready, 900);
+function enterExhibition(withTour) {
+  intro.classList.add('hidden'); topbar.classList.add('show'); crosshair.classList.add('show');
+  minimap.classList.add('show'); chatBar.classList.add('show');
+  capturePortals(); applyPortals();   // 渲染各房間快照，貼到門戶窗上
+  for (const it of (EX.items || [])) if (it._video) it._video.play().catch(() => {});
+  setupBgm(); if (bgmAudio && !muted) bgmAudio.play().catch(() => {});
+  if (isOwner && wantEdit && !isTouch) enterEdit();
+  else if (withTour) startTour();
+}
+enterBtn.addEventListener('click', () => enterExhibition(false));
+document.getElementById('tourEnterBtn').addEventListener('click', () => enterExhibition(true));
+addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
+applyLook(); tick();
+
+/* ===== 即時協作：訂閱這檔展覽，協作者的變更即時同步進場景 ===== */
+if (EX.id) {
+  const tryWatch = setInterval(() => {
+    if (!window.Cloud || !Cloud.enabled) return;
+    clearInterval(tryWatch);
+    Cloud.watch(EX.id, () => {
+      if (itemDrag) return;   // 拖曳中先不動，放開後下一次更新會套用
+      const fresh = Store.get(EX.id); if (!fresh) return;
+      EX.rooms = fresh.rooms; EX.style = fresh.style || EX.style; ensureRooms(EX);
+      roomIdx = Math.min(roomIdx, EX.rooms.length - 1); room = EX.rooms[roomIdx]; EX.items = room.items;
+      lastSnap = isEdit ? JSON.stringify(EX.items) : null;
+      buildRoomGeometry(); rebuildAll(); refreshCount(); renderRoomBar();
+      showToast('已同步協作者的變更', 2200);
+    });
+  }, 800);
+}
+</script>
+<script type="module" src="js/cloud.js?v=20260823"></script>
+</body>
+</html>

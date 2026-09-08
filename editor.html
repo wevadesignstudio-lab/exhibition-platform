@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>策展編輯器</title>
+<style>
+  :root { color-scheme: dark; --gold: #ffd34d; --bg: #0a0a0c; --card: #16161c; --line: rgba(255,255,255,.09); --muted: #9a9aa4; }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { background: var(--bg); color: #f2f2f4; font-family: -apple-system, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif; }
+  a { color: inherit; }
+
+  header { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 12px; padding: 12px 18px; background: rgba(10,10,12,.92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+  header .title { font-weight: 700; font-size: 15px; }
+  header .saved { font-size: 12px; color: #1d9e75; opacity: 0; transition: opacity .3s; }
+  header .saved.show { opacity: 1; }
+  header .spacer { flex: 1; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 15px; border-radius: 999px; font-size: 14px; font-weight: 600; border: 1px solid var(--line); background: rgba(255,255,255,.04); color: #f2f2f4; cursor: pointer; text-decoration: none; transition: transform .12s, background .2s; }
+  .btn:hover { transform: translateY(-1px); }
+  .btn.primary { background: var(--gold); color: #0a0a0c; border-color: var(--gold); }
+  .btn.sm { padding: 5px 11px; font-size: 13px; }
+  .btn.ghost { background: transparent; }
+  .btn.danger:hover { background: rgba(226,75,74,.15); border-color: #e24b4a; color: #f09595; }
+
+  .layout { display: grid; grid-template-columns: 1fr 360px; gap: 24px; max-width: 1180px; margin: 0 auto; padding: 24px 20px 100px; }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .side { position: static !important; } }
+
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; margin-bottom: 18px; }
+  .panel h2 { font-size: 13px; color: var(--muted); font-weight: 600; letter-spacing: 1px; margin-bottom: 14px; }
+  label { display: block; font-size: 12px; color: var(--muted); margin: 12px 0 6px; }
+  input[type=text], input[type=url], textarea, select { width: 100%; padding: 10px 12px; font-size: 14px; background: #0e0e12; border: 1px solid var(--line); border-radius: 9px; color: #fff; font-family: inherit; }
+  textarea { resize: vertical; min-height: 64px; line-height: 1.6; }
+  input[type=range] { width: 100%; accent-color: var(--gold); }
+  input[type=color] { width: 44px; height: 32px; padding: 0; border: 1px solid var(--line); border-radius: 8px; background: #0e0e12; }
+  .row { display: flex; gap: 10px; }
+  .row > div { flex: 1; }
+  .rangeRow { display: flex; align-items: center; gap: 10px; }
+  .rangeRow output { font-size: 12px; color: var(--muted); min-width: 42px; text-align: right; }
+
+  /* 模板選擇 */
+  .tpls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .tpl { border: 1px solid var(--line); border-radius: 10px; padding: 12px; cursor: pointer; text-align: center; transition: border-color .2s; }
+  .tpl:hover { border-color: rgba(255,255,255,.3); }
+  .tpl.active { border-color: var(--gold); background: rgba(255,211,77,.06); }
+  .tpl .swatch { height: 36px; border-radius: 6px; margin-bottom: 8px; }
+  .tpl .n { font-size: 13px; font-weight: 600; }
+  .tpl .d { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+  /* 新增展品 */
+  .addbar { display: flex; gap: 8px; flex-wrap: wrap; }
+  .addbar .btn { flex: 1; justify-content: center; }
+
+  /* 展品卡 */
+  .item { border: 1px solid var(--line); border-radius: 11px; margin-bottom: 12px; overflow: hidden; }
+  .item > .head { display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: pointer; background: #0e0e12; }
+  .item .kind { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; background: #34343c; color: #ddd; }
+  .item .kind.image { background: #185fa5; } .item .kind.text { background: #854f0b; } .item .kind.video { background: #993556; } .item .kind.model { background: #534ab7; } .item .kind.hotspot { background: #0f6e56; }
+  .item .nm { font-weight: 600; font-size: 14px; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .item .chev { color: var(--muted); transition: transform .2s; }
+  .item.open .chev { transform: rotate(90deg); }
+  .item > .fields { padding: 4px 14px 16px; display: none; }
+  .item.open > .fields { display: block; }
+  .item .preview-img { width: 100%; max-height: 120px; object-fit: cover; border-radius: 8px; margin-top: 8px; }
+  .hint { font-size: 11px; color: #6f6f78; margin-top: 5px; line-height: 1.6; }
+
+  /* 平面圖 */
+  .side { position: sticky; top: 76px; align-self: start; }
+  #plan { width: 100%; border-radius: 10px; background: #0e0e12; display: block; }
+  .legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; font-size: 12px; color: var(--muted); }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
+  .empty { color: var(--muted); font-size: 13px; text-align: center; padding: 20px; border: 1px dashed var(--line); border-radius: 10px; }
+</style>
+</head>
+<body>
+<header>
+  <a class="btn ghost sm" href="index.html">返回列表</a>
+  <span class="title" id="hdrTitle">編輯展覽</span>
+  <span class="saved" id="savedFlag">已儲存</span>
+  <span class="spacer"></span>
+  <a class="btn sm" id="edit3dBtn">在展場中編輯</a>
+  <a class="btn primary sm" id="previewBtn" target="_blank">在 3D 中預覽</a>
+</header>
+
+<div class="layout">
+  <!-- 左：設定 -->
+  <main>
+    <div class="panel">
+      <h2>展覽資訊</h2>
+      <label>展覽標題</label>
+      <input type="text" id="exTitle" maxlength="40" />
+      <label>展覽說明</label>
+      <textarea id="exDesc" maxlength="500" placeholder="介紹這檔展覽的主題、策展理念…"></textarea>
+      <label>編輯房間（一個展覽 1~5 個房間）</label>
+      <div class="row" style="display:flex;gap:8px;align-items:center;">
+        <select id="roomSelect" style="flex:1;padding:9px 12px;font-size:14px;background:#0e0e12;border:1px solid var(--line);border-radius:9px;color:#fff;"></select>
+        <button class="btn sm" id="roomAddBtn">＋房間</button>
+        <button class="btn sm danger ghost" id="roomDelBtn">刪除</button>
+      </div>
+      <div class="hint">房間之間的切換、佈燈與完整道具庫，建議用「在展場中編輯」。</div>
+    </div>
+
+    <div class="panel">
+      <h2>此房間模板</h2>
+      <div class="tpls" id="tpls"></div>
+    </div>
+
+    <div class="panel">
+      <h2>展品（<span id="itemCount">0</span>）</h2>
+      <div class="addbar">
+        <button class="btn sm" data-add="image">＋ 圖片</button>
+        <button class="btn sm" data-add="text">＋ 文字</button>
+        <button class="btn sm" data-add="video">＋ 影片</button>
+        <button class="btn sm" data-add="prop">＋ 道具/展架</button>
+        <button class="btn sm" data-add="light">＋ 燈具</button>
+        <button class="btn sm" data-add="hotspot">＋ 熱點／彩蛋</button>
+      </div>
+      <div id="items" style="margin-top:14px;"></div>
+    </div>
+  </main>
+
+  <!-- 右：平面圖 -->
+  <aside class="side">
+    <div class="panel">
+      <h2>展間平面圖（俯視）</h2>
+      <canvas id="plan" width="320" height="320"></canvas>
+      <div class="legend">
+        <span><i style="background:#185fa5"></i>圖片</span>
+        <span><i style="background:#854f0b"></i>文字</span>
+        <span><i style="background:#993556"></i>影片</span>
+        <span><i style="background:#534ab7"></i>3D</span>
+        <span><i style="background:#0f6e56;transform:rotate(45deg)"></i>熱點</span>
+        <span><i style="background:#1d9e75"></i>入口</span>
+      </div>
+      <p class="hint">綠色三角是觀眾進場位置與面向。牆上展品顯示在對應牆面，3D 物件顯示在地面座標。</p>
+    </div>
+  </aside>
+</div>
+
+<script src="js/store.js?v=20260823"></script>
+<script src="js/auth.js?v=20260823"></script>
+<script src="js/templates.js?v=20260823"></script>
+<script src="js/props.js?v=20260823"></script>
+<script>
+Auth.requireOrRedirect();
+const params = new URLSearchParams(location.search);
+const exId = params.get('id');
+let ex = Store.get(exId);
+if (!ex || ex.ownerId !== Auth.current().id) { alert('找不到這檔展覽，或你沒有編輯權限。'); location.href = 'index.html'; }
+
+// 多房間遷移（與觀展器一致）。此表單編輯器一次編輯一個房間。
+if (!ex.rooms || !ex.rooms.length) ex.rooms = [{ id: 'rm0', name: '展廳 1', template: ex.template || 'white', items: ex.items || [] }];
+ex.rooms.forEach((rm, i) => { if (!rm.id) rm.id = 'rm' + i; if (!rm.name) rm.name = '展廳 ' + (i + 1); if (!rm.items) rm.items = []; if (!rm.template) rm.template = 'white'; });
+Store.ensureIds({ items: ex.rooms.flatMap(r => r.items), id: exId });
+let roomSel = 0;
+let room = ex.rooms[roomSel];
+ex.items = room.items;          // 別名：下方程式都用 ex.items / ex.template 指向當前房間
+Object.defineProperty(ex, 'template', { get() { return room.template; }, set(v) { room.template = v; }, configurable: true });
+
+document.getElementById('previewBtn').href = 'view.html?id=' + exId;
+document.getElementById('edit3dBtn').href = 'view.html?id=' + exId + '&edit=1';
+
+/* ---- 儲存（防抖）---- */
+let saveTimer = null;
+function save() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    Store.update(exId, { title: ex.title, description: ex.description, rooms: ex.rooms });
+    const f = document.getElementById('savedFlag'); f.classList.add('show'); setTimeout(() => f.classList.remove('show'), 1200);
+  }, 350);
+}
+function switchRoom(i) { roomSel = i; room = ex.rooms[i]; ex.items = room.items; renderRoomSelect(); renderTemplates(); renderItems(); drawPlan(); }
+function renderRoomSelect() {
+  const el = document.getElementById('roomSelect'); if (!el) return;
+  el.innerHTML = ex.rooms.map((rm, k) => `<option value="${k}" ${k === roomSel ? 'selected' : ''}>${(rm.name || ('展廳' + (k + 1))).replace(/</g, '&lt;')}</option>`).join('');
+}
+function setPath(obj, path, val) { const ks = path.split('.'); let o = obj; for (let i = 0; i < ks.length - 1; i++) o = o[ks[i]]; o[ks[ks.length - 1]] = val; }
+
+/* ---- 展覽資訊 ---- */
+const titleEl = document.getElementById('exTitle'), descEl = document.getElementById('exDesc');
+titleEl.value = ex.title; descEl.value = ex.description || '';
+document.getElementById('hdrTitle').textContent = ex.title || '編輯展覽';
+titleEl.oninput = () => { ex.title = titleEl.value; document.getElementById('hdrTitle').textContent = ex.title || '編輯展覽'; save(); };
+descEl.oninput = () => { ex.description = descEl.value; save(); };
+
+/* ---- 房間選擇 ---- */
+renderRoomSelect();
+document.getElementById('roomSelect').onchange = e => switchRoom(+e.target.value);
+document.getElementById('roomAddBtn').onclick = () => { if (ex.rooms.length >= 5) { alert('最多 5 個房間'); return; } ex.rooms.push({ id: 'rm' + Date.now().toString(36), name: '展廳 ' + (ex.rooms.length + 1), template: room.template, items: [] }); save(); switchRoom(ex.rooms.length - 1); };
+document.getElementById('roomDelBtn').onclick = () => { if (ex.rooms.length <= 1) { alert('至少保留一個房間'); return; } if (!confirm('刪除房間「' + (room.name || '') + '」？')) return; ex.rooms.splice(roomSel, 1); save(); switchRoom(Math.max(0, roomSel - 1)); };
+
+/* ---- 模板 ---- */
+const tplsEl = document.getElementById('tpls');
+function renderTemplates() {
+  tplsEl.innerHTML = Object.entries(TEMPLATES).map(([k, t]) =>
+    `<div class="tpl ${ex.template === k ? 'active' : ''}" data-tpl="${k}">
+       <div class="swatch" style="background:linear-gradient(135deg, ${t.room.wallColor}, ${t.room.floorColor})"></div>
+       <div class="n">${t.name}</div><div class="d">${t.desc}</div>
+     </div>`).join('');
+  tplsEl.querySelectorAll('.tpl').forEach(el => el.onclick = () => {
+    ex.template = el.dataset.tpl;
+    tplsEl.querySelectorAll('.tpl').forEach(x => x.classList.toggle('active', x === el));
+    save(); drawPlan();
+  });
+}
+renderTemplates();
+
+/* ---- 展品 ---- */
+const itemsEl = document.getElementById('items');
+function defaultItem(type) {
+  if (type === 'image') return { type, title: '新圖片', artist: '', description: '', src: '', wall: 'north', offset: 0, height: 1.7, size: { w: 2.4, h: 1.7 }, color: '#6b8cae' };
+  if (type === 'text')  return { type, title: '新說明牌', description: '', wall: 'north', offset: 0, height: 1.6, size: { w: 2.4, h: 1.7 } };
+  if (type === 'video') return { type, title: '新影片', description: '', src: '', wall: 'east', offset: 0, height: 1.8, size: { w: 3.2, h: 1.85 } };
+  if (type === 'hotspot') return { type, title: '新熱點', description: '點擊我會彈出這段說明。', src: '', x: 0, z: 0, height: 1.5 };
+  if (type === 'prop') return { type, shape: 'plinth', title: '展台', x: 0, z: 0, rot: 0, scale: 1, color: '#e8e5dd' };
+  if (type === 'light') return { type, title: '投射燈', x: 0, z: -2, height: 3.6, color: '#fff4e0', intensity: 7, angle: 30 };
+  return { type: 'model', title: '新立體展品', description: '', src: '', x: 0, z: -2, scale: 1, color: '#7a6ff0' };
+}
+const KIND = { image: '圖片', text: '文字', video: '影片', model: '3D', prop: '道具', light: '燈具', hotspot: '熱點' };
+const FLOOR_T = { model: 1, hotspot: 1, prop: 1, light: 1 };
+
+function rangeField(label, path, val, min, max, step) {
+  return `<label>${label}</label>
+    <div class="rangeRow">
+      <input type="range" data-field="${path}" data-num="1" min="${min}" max="${max}" step="${step}" value="${val}">
+      <output>${(+val).toFixed(step < 1 ? 1 : 0)}</output>
+    </div>`;
+}
+function itemFields(it, i) {
+  let f = `<label>標題</label><input type="text" data-field="title" value="${(it.title||'').replace(/"/g,'&quot;')}">`;
+  if (it.type === 'image') f += `<label>作者 / 副標（選填）</label><input type="text" data-field="artist" value="${(it.artist||'').replace(/"/g,'&quot;')}">`;
+  if (it.type !== 'prop' && it.type !== 'light') f += `<label>說明文字</label><textarea data-field="description">${it.description||''}</textarea>`;
+
+  if (it.type === 'prop') {
+    const cat = (window.PROPS ? PROPS.catalog : []).map(grp => `<optgroup label="${grp.cat}">${grp.items.map(([v, n]) => `<option value="${v}" ${it.shape === v ? 'selected' : ''}>${n}</option>`).join('')}</optgroup>`).join('');
+    f += `<label>道具類型</label><select data-field="shape">${cat}</select>`;
+  }
+  if (it.type === 'light') {
+    f += rangeField('亮度', 'intensity', it.intensity ?? 6, 1, 16, 0.5);
+    f += rangeField('光束角度', 'angle', it.angle ?? 30, 8, 60, 1);
+  }
+
+  if (it.type === 'image' || it.type === 'video') {
+    const ph = it.type === 'video' ? 'https://…/video.mp4 或 .m3u8（需開放 CORS）' : 'https://…/image.jpg';
+    f += `<label>${it.type === 'video' ? '影片網址' : '圖片網址'}</label><input type="url" data-field="src" placeholder="${ph}" value="${(it.src||'').slice(0,200).replace(/"/g,'&quot;')}">`;
+    if (it.type === 'image') {
+      f += `<div class="hint">或從電腦上傳（會自動縮圖存到本機）：</div>
+            <input type="file" accept="image/*" data-upload="${i}" style="margin-top:6px; font-size:12px;">`;
+      if (it.src) f += `<img class="preview-img" src="${it.src}">`;
+    } else {
+      f += `<div class="hint">影片建議用 Cloudflare Stream / Mux 的 HLS 網址，不要直接放大檔。YouTube 連結無法當 3D 材質。</div>`;
+    }
+  }
+
+  if (it.type === 'model') {
+    f += `<label>3D 模型網址（.glb）</label><input type="url" data-field="src" placeholder="https://…/model.glb" value="${(it.src||'').replace(/"/g,'&quot;')}">
+          <div class="hint">留空顯示示範幾何體。上傳前建議做 Draco 壓縮、限制面數。</div>`;
+  }
+
+  if (it.type === 'hotspot') {
+    f += `<label>音效 / 語音導覽網址（選填）</label><input type="url" data-field="src" placeholder="https://…/audio.mp3（需開放 CORS）" value="${(it.src||'').replace(/"/g,'&quot;')}">
+          <div class="hint">熱點是空間中會發光的點。觀眾點擊時彈出上面的「說明文字」，並播放這段音效（若有填）。</div>`;
+  }
+
+  // 位置
+  if (FLOOR_T[it.type]) {
+    f += `<label>地面位置</label><div class="row">
+      <div>${rangeField('左右 X', 'x', it.x, -9, 9, 0.5)}</div>
+      <div>${rangeField('前後 Z', 'z', it.z, -7, 7, 0.5)}</div></div>`;
+    if (it.type === 'model') {
+      f += rangeField('大小', 'scale', it.scale, 0.3, 3, 0.1);
+      f += `<label>示範體顏色</label><input type="color" data-field="color" value="${it.color||'#7a6ff0'}">`;
+    } else if (it.type === 'prop') {
+      f += rangeField('大小', 'scale', it.scale ?? 1, 0.4, 3, 0.1) + rangeField('旋轉', 'rot', it.rot ?? 0, 0, 360, 15);
+      f += `<label>主色</label><input type="color" data-field="color" value="${it.color||'#e8e5dd'}">`;
+    } else if (it.type === 'light') {
+      f += rangeField('離地高度', 'height', it.height ?? 3.6, 1, 4.8, 0.1);
+      f += `<label>燈光顏色</label><input type="color" data-field="color" value="${it.color||'#fff4e0'}">`;
+    } else {
+      f += rangeField('離地高度', 'height', it.height, 0.5, 3.5, 0.1);
+    }
+  } else {
+    f += `<label>牆面</label><select data-field="wall">
+      ${['north','east','south','west'].map(w => `<option value="${w}" ${it.wall===w?'selected':''}>${({north:'前牆',east:'右牆',south:'後牆',west:'左牆'})[w]}</option>`).join('')}
+    </select>`;
+    f += rangeField('沿牆位置', 'offset', it.offset, -8, 8, 0.5);
+    f += rangeField('掛高', 'height', it.height, 0.5, 3.5, 0.1);
+    f += `<label>尺寸（公尺）</label><div class="row">
+      <div>${rangeField('寬', 'size.w', it.size.w, 0.6, 5, 0.1)}</div>
+      <div>${rangeField('高', 'size.h', it.size.h, 0.6, 4, 0.1)}</div></div>`;
+    if (it.type === 'image') f += `<label>佔位圖顏色（無圖時）</label><input type="color" data-field="color" value="${it.color||'#6b8cae'}">`;
+  }
+
+  f += `<div style="margin-top:14px;"><button class="btn sm danger ghost" data-del="${i}">刪除此展品</button></div>`;
+  return f;
+}
+function renderItems() {
+  document.getElementById('itemCount').textContent = ex.items.length;
+  if (!ex.items.length) { itemsEl.innerHTML = `<div class="empty">還沒有展品。用上方按鈕新增。</div>`; drawPlan(); return; }
+  itemsEl.innerHTML = ex.items.map((it, i) => `
+    <div class="item ${it._open ? 'open' : ''}" data-i="${i}">
+      <div class="head" data-toggle="${i}">
+        <span class="kind ${it.type}">${KIND[it.type]}</span>
+        <span class="nm">${(it.title||'未命名').replace(/</g,'&lt;')}</span>
+        <span class="chev">▸</span>
+      </div>
+      <div class="fields">${itemFields(it, i)}</div>
+    </div>`).join('');
+  bindItems();
+  drawPlan();
+}
+function bindItems() {
+  itemsEl.querySelectorAll('[data-toggle]').forEach(h => h.onclick = () => {
+    const i = +h.dataset.toggle; ex.items[i]._open = !ex.items[i]._open;
+    h.closest('.item').classList.toggle('open');
+  });
+  itemsEl.querySelectorAll('[data-field]').forEach(inp => {
+    const handler = () => {
+      const i = +inp.closest('.item').dataset.i;
+      let v = inp.value;
+      if (inp.dataset.num) { v = parseFloat(v); const out = inp.parentElement.querySelector('output'); if (out) out.textContent = v.toFixed(+inp.step < 1 ? 1 : 0); }
+      setPath(ex.items[i], inp.dataset.field, v);
+      if (inp.dataset.field === 'title') inp.closest('.item').querySelector('.nm').textContent = v || '未命名';
+      save(); drawPlan();
+    };
+    inp.oninput = handler;
+    if (inp.tagName === 'SELECT') inp.onchange = handler;
+  });
+  itemsEl.querySelectorAll('[data-upload]').forEach(fi => fi.onchange = e => {
+    const i = +fi.dataset.upload, file = e.target.files[0]; if (!file) return;
+    readImageDownscaled(file, dataUrl => {
+      ex.items[i].src = dataUrl; save();
+      let img = fi.parentElement.querySelector('.preview-img');
+      if (!img) { img = document.createElement('img'); img.className = 'preview-img'; fi.after(img); }
+      img.src = dataUrl;
+    });
+  });
+  itemsEl.querySelectorAll('[data-del]').forEach(b => b.onclick = () => {
+    const i = +b.dataset.del;
+    if (confirm('刪除「' + (ex.items[i].title || '此展品') + '」？')) { ex.items.splice(i, 1); save(); renderItems(); }
+  });
+}
+document.querySelectorAll('[data-add]').forEach(b => b.onclick = () => {
+  const it = defaultItem(b.dataset.add); it._open = true; ex.items.push(it); save(); renderItems();
+});
+
+function readImageDownscaled(file, cb) {
+  const img = new Image(), url = URL.createObjectURL(file);
+  img.onload = () => {
+    const max = 1024, s = Math.min(1, max / Math.max(img.width, img.height));
+    const c = document.createElement('canvas'); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    URL.revokeObjectURL(url);
+    try { cb(c.toDataURL('image/jpeg', 0.82)); } catch (e) { alert('圖片處理失敗'); }
+  };
+  img.onerror = () => { URL.revokeObjectURL(url); alert('無法讀取圖片'); };
+  img.src = url;
+}
+
+/* ---- 平面圖（俯視）---- */
+const plan = document.getElementById('plan'), pctx = plan.getContext('2d');
+function drawPlan() {
+  const room = TEMPLATES[ex.template].room;
+  const W = plan.width, H = plan.height, pad = 24;
+  const sx = (W - pad * 2) / room.width, sy = (H - pad * 2) / room.depth;
+  const s = Math.min(sx, sy);
+  const rw = room.width * s, rh = room.depth * s;
+  const ox = (W - rw) / 2, oy = (H - rh) / 2;
+  // worldX [-hw,hw] -> [ox, ox+rw]；worldZ [-hd(前),hd(後)] -> [oy, oy+rh]
+  const hw = room.width / 2, hd = room.depth / 2;
+  const px = x => ox + (x + hw) * s;
+  const py = z => oy + (z + hd) * s;
+
+  pctx.clearRect(0, 0, W, H);
+  pctx.fillStyle = '#0e0e12'; pctx.fillRect(0, 0, W, H);
+  // 地板
+  pctx.fillStyle = 'rgba(255,255,255,.03)'; pctx.fillRect(ox, oy, rw, rh);
+  pctx.strokeStyle = 'rgba(255,255,255,.25)'; pctx.lineWidth = 2; pctx.strokeRect(ox, oy, rw, rh);
+  pctx.fillStyle = '#6f6f78'; pctx.font = '11px sans-serif'; pctx.textAlign = 'center';
+  pctx.fillText('前牆', W / 2, oy - 8);
+  pctx.fillText('後牆', W / 2, oy + rh + 16);
+  pctx.save(); pctx.translate(ox - 8, H / 2); pctx.rotate(-Math.PI / 2); pctx.fillText('左牆', 0, 0); pctx.restore();
+  pctx.save(); pctx.translate(ox + rw + 14, H / 2); pctx.rotate(Math.PI / 2); pctx.fillText('右牆', 0, 0); pctx.restore();
+
+  const colors = { image: '#185fa5', text: '#854f0b', video: '#993556', model: '#534ab7', prop: '#888', light: '#e0a020', hotspot: '#0f6e56' };
+  for (const it of ex.items) {
+    let x, z;
+    if (FLOOR_T[it.type]) { x = px(it.x); z = py(it.z); }
+    else {
+      if (it.wall === 'north') { x = px(it.offset); z = py(-hd); }
+      else if (it.wall === 'south') { x = px(it.offset); z = py(hd); }
+      else if (it.wall === 'west') { x = px(-hw); z = py(it.offset); }
+      else { x = px(hw); z = py(it.offset); }
+    }
+    pctx.fillStyle = colors[it.type] || '#888';
+    if (it.type === 'model' || it.type === 'prop') { pctx.beginPath(); pctx.arc(x, z, 6, 0, 7); pctx.fill(); }
+    else if (it.type === 'hotspot' || it.type === 'light') { pctx.save(); pctx.translate(x, z); pctx.rotate(Math.PI / 4); pctx.fillRect(-5, -5, 10, 10); pctx.restore(); }
+    else { pctx.fillRect(x - 6, z - 6, 12, 12); }
+  }
+  // 入口（start）
+  const st = ex.start || { x: 0, z: 4.5, lookAt: { x: 0, z: -1 } };
+  const ex0 = px(st.x), ez0 = py(st.z);
+  pctx.fillStyle = '#1d9e75'; pctx.beginPath();
+  pctx.moveTo(ex0, ez0 - 8); pctx.lineTo(ex0 - 6, ez0 + 6); pctx.lineTo(ex0 + 6, ez0 + 6); pctx.closePath(); pctx.fill();
+}
+
+renderItems();
+drawPlan();
+addEventListener('resize', drawPlan);
+</script>
+<script type="module" src="js/cloud.js?v=20260823"></script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>線上展覽平台</title>
+<style>
+  :root { color-scheme: dark; --gold: #ffd34d; --bg: #0a0a0c; --card: #16161c; --line: rgba(255,255,255,.09); --muted: #9a9aa4; }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { background: var(--bg); color: #f2f2f4; font-family: -apple-system, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif; min-height: 100vh; }
+  a { color: inherit; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px 80px; }
+
+  header { display: flex; align-items: center; gap: 14px; padding: 22px 0; border-bottom: 1px solid var(--line); margin-bottom: 32px; flex-wrap: wrap; }
+  header .logo { font-size: 18px; font-weight: 800; letter-spacing: .5px; }
+  header .logo b { color: var(--gold); }
+  header .spacer { flex: 1; }
+  header .who { font-size: 14px; color: var(--muted); }
+  header .who b { color: #f2f2f4; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px; border-radius: 999px; font-size: 14px; font-weight: 600; border: 1px solid var(--line); background: rgba(255,255,255,.04); color: #f2f2f4; cursor: pointer; text-decoration: none; transition: transform .12s, background .2s; }
+  .btn:hover { transform: translateY(-1px); }
+  .btn.primary { background: var(--gold); color: #0a0a0c; border-color: var(--gold); }
+  .btn.ghost { background: transparent; }
+  .btn.sm { padding: 6px 12px; font-size: 13px; }
+  .btn.danger:hover { background: rgba(226,75,74,.15); border-color: #e24b4a; color: #f09595; }
+
+  h2.section { font-size: 15px; color: var(--muted); font-weight: 600; letter-spacing: 1px; margin: 36px 0 16px; }
+
+  /* 帳號區 */
+  .auth { max-width: 460px; margin: 8vh auto 0; text-align: center; }
+  .auth h1 { font-size: 30px; font-weight: 800; }
+  .auth h1 b { color: var(--gold); }
+  .auth p { color: var(--muted); margin-top: 12px; line-height: 1.7; font-size: 14px; }
+  .auth .panel { margin-top: 30px; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 24px; text-align: left; }
+  .auth label { font-size: 13px; color: var(--muted); }
+  .auth input { width: 100%; margin-top: 8px; padding: 13px 14px; font-size: 15px; background: #0e0e12; border: 1px solid var(--line); border-radius: 10px; color: #fff; }
+  .auth .btn { width: 100%; justify-content: center; margin-top: 16px; }
+  .profiles { margin-top: 18px; display: flex; flex-direction: column; gap: 8px; }
+  .profiles .p { display: flex; align-items: center; gap: 10px; padding: 11px 14px; background: #0e0e12; border: 1px solid var(--line); border-radius: 10px; cursor: pointer; }
+  .profiles .p:hover { border-color: var(--gold); }
+  .profiles .p .av { width: 30px; height: 30px; border-radius: 50%; background: var(--gold); color: #0a0a0c; display: grid; place-items: center; font-weight: 700; font-size: 14px; }
+  .note { font-size: 12px; color: #6f6f78; margin-top: 16px; line-height: 1.7; }
+
+  /* 展覽卡片 */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; }
+  .card .thumb { height: 130px; position: relative; display: grid; place-items: center; }
+  .card .thumb .badge { position: absolute; top: 10px; right: 10px; font-size: 11px; font-weight: 700; padding: 4px 9px; border-radius: 999px; }
+  .badge.pub { background: #1d9e75; color: #04342c; }
+  .badge.draft { background: #34343c; color: #b9b9c2; }
+  .card .body { padding: 16px; flex: 1; display: flex; flex-direction: column; }
+  .card h3 { font-size: 16px; font-weight: 700; }
+  .card .meta { font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .card .desc { font-size: 13px; color: #b9b9c2; margin-top: 10px; line-height: 1.6; flex: 1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .card .actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .empty { background: var(--card); border: 1px dashed var(--line); border-radius: 14px; padding: 40px; text-align: center; color: var(--muted); }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- 未登入：帳號畫面 -->
+<div id="authView" class="wrap hidden">
+  <div class="auth">
+    <h1>線上<b>展覽</b>平台</h1>
+    <p>建立你自己的 3D 展間，放上影音、文字、立體物件，<br>讓觀眾用第一人稱走進來看展。</p>
+    <div class="panel">
+      <label for="nameInput">策展人名稱</label>
+      <input id="nameInput" placeholder="例如：王小明" maxlength="20" />
+      <button class="btn primary" id="createUserBtn">建立帳號，開始策展</button>
+      <div id="profilesWrap" class="hidden">
+        <div class="note">或以現有帳號繼續：</div>
+        <div class="profiles" id="profiles"></div>
+      </div>
+      <div class="note">目前為「本機帳號」（資料存在這台瀏覽器，免費、零設定）。之後可無痛升級為雲端帳號（Firebase）。</div>
+    </div>
+  </div>
+</div>
+
+<!-- 已登入：主控台 -->
+<div id="dashView" class="wrap hidden">
+  <header>
+    <span class="logo">線上<b>展覽</b>平台</span>
+    <span class="spacer"></span>
+    <span class="who">策展人 <b id="whoName"></b></span>
+    <button class="btn ghost sm" id="signOutBtn">登出</button>
+  </header>
+
+  <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+    <button class="btn primary" id="newStarterBtn">＋ 基礎展覽空間（建議起點）</button>
+    <button class="btn" id="newExBtn">＋ 空白展覽</button>
+    <button class="btn" id="joinBtn">加入協作展覽</button>
+    <span style="color:var(--muted); font-size:13px;">基礎空間已規劃好動線與章節；「加入協作」貼上同學的展覽連結即可共編。</span>
+  </div>
+  <div id="cloudStatus" style="margin-top:10px; font-size:12px; color:var(--muted);">雲端同步：連線中…</div>
+
+  <h2 class="section">我的展覽</h2>
+  <div id="mine" class="grid"></div>
+
+  <h2 class="section">公開展覽</h2>
+  <div id="published" class="grid"></div>
+</div>
+
+<script src="js/store.js?v=20260823"></script>
+<script src="js/auth.js?v=20260823"></script>
+<script src="js/templates.js?v=20260823"></script>
+<script src="js/starter.js?v=20260823"></script>
+<script>
+const authView = document.getElementById('authView');
+const dashView = document.getElementById('dashView');
+
+function fmtDate(ts) { const d = new Date(ts); return `${d.getFullYear()}/${(d.getMonth()+1)}/${d.getDate()}`; }
+function thumbColor(tpl) { return (TEMPLATES[tpl]?.room.wallColor) || '#2a2a32'; }
+function esc(s) { return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+function renderAuth() {
+  authView.classList.remove('hidden');
+  dashView.classList.add('hidden');
+  const profiles = Auth.list();
+  const wrap = document.getElementById('profilesWrap');
+  const list = document.getElementById('profiles');
+  if (profiles.length) {
+    wrap.classList.remove('hidden');
+    list.innerHTML = profiles.map(u =>
+      `<div class="p" data-id="${u.id}"><span class="av">${esc(u.name[0]||'?')}</span><span>${esc(u.name)}</span></div>`
+    ).join('');
+    list.querySelectorAll('.p').forEach(el => el.onclick = () => { Auth.signIn(el.dataset.id); route(); });
+  } else wrap.classList.add('hidden');
+}
+
+function exCard(ex, owned) {
+  const tpl = TEMPLATES[ex.template]?.name || ex.template;
+  const badge = ex.published ? '<span class="badge pub">已發佈</span>' : '<span class="badge draft">草稿</span>';
+  const actions = owned
+    ? `<a class="btn sm primary" href="editor.html?id=${ex.id}">編輯</a>
+       <a class="btn sm" href="view.html?id=${ex.id}">預覽</a>
+       <button class="btn sm ghost" data-act="pub" data-id="${ex.id}">${ex.published ? '取消發佈' : '發佈'}</button>
+       <button class="btn sm danger ghost" data-act="del" data-id="${ex.id}">刪除</button>`
+    : `<a class="btn sm primary" href="view.html?id=${ex.id}">進入觀展</a>`;
+  const thumbStyle = ex.thumb ? `background:url('${ex.thumb}') center/cover` : `background:linear-gradient(135deg, ${thumbColor(ex.template)} 0%, #16161c 100%)`;
+  return `<div class="card">
+    <div class="thumb" style="${thumbStyle}">${owned ? badge : ''}</div>
+    <div class="body">
+      <h3>${esc(ex.title)}</h3>
+      <div class="meta">${esc(tpl)} · ${(ex.items||[]).length} 件展品 · ${fmtDate(ex.updatedAt)}</div>
+      <div class="desc">${esc(ex.description) || '（尚無展覽說明）'}</div>
+      <div class="actions">${actions}</div>
+    </div>
+  </div>`;
+}
+
+function renderDash() {
+  const me = Auth.current();
+  authView.classList.add('hidden');
+  dashView.classList.remove('hidden');
+  document.getElementById('whoName').textContent = me.name;
+
+  const mine = Store.listByOwner(me.id);
+  document.getElementById('mine').innerHTML = mine.length
+    ? mine.map(ex => exCard(ex, true)).join('')
+    : `<div class="empty">還沒有展覽。點上方「＋ 建立新展覽」開始吧。</div>`;
+
+  const pub = Store.listPublished();
+  document.getElementById('published').innerHTML = pub.length
+    ? pub.map(ex => exCard(ex, false)).join('')
+    : `<div class="empty">目前沒有已發佈的公開展覽。</div>`;
+
+  // 綁定卡片動作
+  dashView.querySelectorAll('[data-act]').forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.dataset.id;
+      if (btn.dataset.act === 'pub') { const ex = Store.get(id); Store.update(id, { published: !ex.published }); renderDash(); }
+      else if (btn.dataset.act === 'del') { if (confirm('確定刪除這檔展覽？此動作無法復原。')) { Store.remove(id); renderDash(); } }
+    };
+  });
+}
+
+function route() { if (Auth.current()) renderDash(); else renderAuth(); }
+
+// 事件
+document.getElementById('createUserBtn').onclick = () => {
+  const name = document.getElementById('nameInput').value;
+  Auth.signUp(name); route();
+};
+document.getElementById('nameInput').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('createUserBtn').click(); });
+document.getElementById('signOutBtn').onclick = () => { Auth.signOut(); route(); };
+document.getElementById('newExBtn').onclick = () => {
+  const ex = Store.create(Auth.current().id, { title: '未命名展覽' });
+  location.href = 'editor.html?id=' + ex.id;
+};
+document.getElementById('newStarterBtn').onclick = () => {
+  const st = STARTER_EXHIBITION('我的展覽');
+  // 每件展品給新的 id，避免多檔展覽互相衝突
+  st.rooms.forEach(rm => rm.items.forEach(it => { it.id = Store.newId('it'); }));
+  const ex = Store.create(Auth.current().id, { title: st.title, description: st.description, style: st.style, rooms: st.rooms });
+  location.href = 'view.html?id=' + ex.id + '&edit=1';   // 直接進展場編輯
+};
+
+route();
+
+/* ===== 雲端協作 ===== */
+function cloudUI() {
+  const el = document.getElementById('cloudStatus');
+  if (el && window.Cloud) el.textContent = '雲端同步：' + Cloud.status + (Cloud.err ? '（' + Cloud.err + '）' : '');
+}
+addEventListener('cloud-status', cloudUI);
+addEventListener('cloud-sync', () => { cloudUI(); if (Auth.current()) renderDash(); });   // 雲端拉到新資料 → 重畫列表
+setInterval(cloudUI, 3000);
+document.getElementById('joinBtn').onclick = async () => {
+  if (!window.Cloud || !Cloud.enabled) { alert('雲端尚未連線（' + (window.Cloud ? Cloud.status : '載入中') + '）'); return; }
+  const v = prompt('貼上同學的展覽連結或展覽 ID：'); if (!v) return;
+  try { const ex = await Cloud.join(v); alert('已加入協作：' + (ex.title || '')); renderDash(); }
+  catch (e) { alert('加入失敗：' + (e.message || e)); }
+};
+</script>
+<script type="module" src="js/cloud.js?v=20260823"></script>
+</body>
+</html>
