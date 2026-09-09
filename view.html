@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<title>觀展中…</title>
+<title>觀展中…｜展境 EXHIBIA</title>
 <style>
   :root { color-scheme: dark; --gold: #ffd34d; }
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -17,6 +17,7 @@
   #crosshair.show { opacity: 1; } #crosshair.hot { transform: scale(1.9); background: var(--gold); }
 
   #intro { position: fixed; inset: 0; z-index: 60; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px; background: radial-gradient(120% 90% at 50% 30%, #16161c 0%, #0a0a0c 70%); color: #f2f2f4; }
+  #intro .brand { font-size: 11px; letter-spacing: 4px; color: #ffd34d; margin-bottom: 16px; }
   #intro h1 { font-size: clamp(22px, 5vw, 34px); font-weight: 700; }
   #intro .sub { margin-top: 10px; color: #9a9aa4; font-size: 14px; max-width: 470px; line-height: 1.7; }
   #enterRow { margin-top: 30px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
@@ -204,6 +205,7 @@
 <div id="chatBar"><input id="chatInput" maxlength="60" placeholder="輸入訊息，按 Enter 顯示在頭上…" /></div>
 
 <div id="intro">
+  <div class="brand">展境 EXHIBIA</div>
   <h1 id="introTitle">載入中…</h1>
   <p class="sub" id="introSub"></p>
   <div id="enterRow" class="hidden">
