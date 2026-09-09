@@ -26,6 +26,19 @@
       if (Store.db.users[id]) { localStorage.setItem(CUR, id); return Store.db.users[id]; }
       return null;
     },
+    /* Google 登入：以 Firebase 使用者建立／更新本機檔案（id 固定 g_<uid>，跨裝置一致） */
+    signInCloud(info) {
+      const id = 'g_' + info.uid;
+      const u = Store.db.users[id] || { id, createdAt: Date.now() };
+      u.name = info.displayName || info.name || u.name || '策展人';
+      if (info.email) u.email = info.email;
+      if (info.photoURL || info.photo) u.photo = info.photoURL || info.photo;
+      u.cloud = true;
+      Store.db.users[id] = u;
+      Store._commit();
+      localStorage.setItem(CUR, id);
+      return u;
+    },
     signOut() { localStorage.removeItem(CUR); },
     requireOrRedirect() { if (!this.current()) location.href = 'index.html'; }
   };

@@ -4,6 +4,9 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>觀展中…｜展境 EXHIBIA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet" />
 <style>
   :root { color-scheme: dark; --gold: #ffd34d; }
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -17,8 +20,8 @@
   #crosshair.show { opacity: 1; } #crosshair.hot { transform: scale(1.9); background: var(--gold); }
 
   #intro { position: fixed; inset: 0; z-index: 60; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px; background: radial-gradient(120% 90% at 50% 30%, #16161c 0%, #0a0a0c 70%); color: #f2f2f4; }
-  #intro .brand { font-size: 11px; letter-spacing: 4px; color: #ffd34d; margin-bottom: 16px; }
-  #intro h1 { font-size: clamp(22px, 5vw, 34px); font-weight: 700; }
+  #intro .brand { font-size: 11px; letter-spacing: 6px; color: #c8ab6e; margin-bottom: 18px; }
+  #intro h1 { font-family: "Noto Serif TC", serif; font-size: clamp(22px, 5vw, 34px); font-weight: 600; letter-spacing: 4px; }
   #intro .sub { margin-top: 10px; color: #9a9aa4; font-size: 14px; max-width: 470px; line-height: 1.7; }
   #enterRow { margin-top: 30px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
   #tourEnterBtn { padding: 14px 36px; font-size: 16px; font-weight: 700; color: #0a0a0c; background: var(--gold); border: none; border-radius: 999px; cursor: pointer; box-shadow: 0 8px 30px rgba(255,211,77,.25); }
@@ -217,11 +220,11 @@
   <div id="loadBar"><i></i></div>
 </div>
 
-<script src="js/store.js?v=20260823"></script>
-<script src="js/auth.js?v=20260823"></script>
-<script src="js/templates.js?v=20260823"></script>
-<script src="js/props.js?v=20260823"></script>
-<script src="js/starter.js?v=20260823"></script>
+<script src="js/store.js?v=20260909"></script>
+<script src="js/auth.js?v=20260909"></script>
+<script src="js/templates.js?v=20260909"></script>
+<script src="js/props.js?v=20260909"></script>
+<script src="js/starter.js?v=20260909"></script>
 
 <script type="importmap">
 { "imports": {
@@ -1595,6 +1598,6 @@ if (EX.id) {
   }, 800);
 }
 </script>
-<script type="module" src="js/cloud.js?v=20260823"></script>
+<script type="module" src="js/cloud.js?v=20260909"></script>
 </body>
 </html>

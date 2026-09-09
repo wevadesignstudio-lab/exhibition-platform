@@ -4,166 +4,209 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>展境 EXHIBIA｜線上策展平台</title>
-<meta name="description" content="免下載、免註冊的 3D 線上策展平台——佈展、佈光、設計動線，邀請觀眾以第一人稱走進你的展覽。支援多人即時協作。" />
+<meta name="description" content="在瀏覽器中佈展、佈光、設計動線——邀請觀眾以第一人稱走進你的展覽。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;600;700&display=swap" rel="stylesheet" />
 <style>
-  :root { color-scheme: dark; --gold: #ffd34d; --bg: #0a0a0c; --card: #141418; --card2: #17171c; --line: rgba(255,255,255,.08); --muted: #9a9aa4; --dim: #6f6f78; }
+  :root { color-scheme: light; --paper: #f7f5f0; --card: #fffdf9; --ink: #1a1916; --muted: #7a7468; --faint: #a8a294; --line: rgba(26,25,22,.16); --hair: rgba(26,25,22,.09); --accent: #8a6f45; }
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  body { background: var(--bg); color: #f2f2f4; font-family: -apple-system, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif; min-height: 100vh; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--paper); color: var(--ink); font-family: "Noto Sans TC", -apple-system, "PingFang TC", sans-serif; font-weight: 400; min-height: 100vh; }
   a { color: inherit; }
-  ::selection { background: rgba(255,211,77,.3); }
-  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px 90px; }
+  ::selection { background: rgba(138,111,69,.18); }
+  .serif { font-family: "Noto Serif TC", "Songti TC", serif; }
+  .en { font-family: "Cormorant Garamond", "Noto Serif TC", serif; letter-spacing: .38em; text-transform: uppercase; font-size: 11px; color: var(--muted); }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 0 28px 100px; }
 
-  .wordmark { display: inline-flex; align-items: baseline; gap: 10px; text-decoration: none; }
-  .wordmark .zh { font-size: 20px; font-weight: 800; letter-spacing: 6px; }
-  .wordmark .en { font-size: 11px; font-weight: 600; letter-spacing: 3px; color: var(--gold); }
+  .wordmark { display: inline-flex; align-items: baseline; gap: 12px; text-decoration: none; }
+  .wordmark .zh { font-family: "Noto Serif TC", serif; font-size: 21px; font-weight: 700; letter-spacing: 10px; margin-right: -10px; white-space: nowrap; }
+  .wordmark .we { font-family: "Cormorant Garamond", serif; font-size: 12px; letter-spacing: .42em; color: var(--accent); }
 
-  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 18px; border-radius: 999px; font-size: 14px; font-weight: 600; border: 1px solid var(--line); background: rgba(255,255,255,.04); color: #f2f2f4; cursor: pointer; text-decoration: none; transition: transform .12s, background .2s, border-color .2s; }
-  .btn:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.22); }
-  .btn.primary { background: var(--gold); color: #141414; border-color: var(--gold); }
-  .btn.primary:hover { box-shadow: 0 6px 24px rgba(255,211,77,.25); }
-  .btn.ghost { background: transparent; }
-  .btn.sm { padding: 6px 13px; font-size: 13px; }
-  .btn.danger:hover { background: rgba(226,75,74,.12); border-color: rgba(226,75,74,.6); color: #f09595; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 26px; font-size: 13px; letter-spacing: .22em; text-indent: .22em; font-weight: 500; color: var(--ink); background: transparent; border: 1px solid var(--ink); border-radius: 0; cursor: pointer; text-decoration: none; font-family: inherit; transition: background .25s, color .25s, border-color .25s; }
+  .btn:hover { background: var(--ink); color: var(--paper); }
+  .btn.fill { background: var(--ink); color: var(--paper); }
+  .btn.fill:hover { background: #3a372f; border-color: #3a372f; }
+  .btn.quiet { border-color: var(--line); color: var(--muted); }
+  .btn.quiet:hover { border-color: var(--ink); color: var(--paper); background: var(--ink); }
+  .btn.sm { padding: 8px 16px; font-size: 12px; letter-spacing: .16em; text-indent: .16em; }
+  .btn.danger:hover { background: #8c3b34; border-color: #8c3b34; color: #fff; }
+  .textlink { background: none; border: none; cursor: pointer; font-family: inherit; font-size: 12px; letter-spacing: .2em; color: var(--muted); padding: 8px 4px; border-bottom: 1px solid transparent; transition: color .2s, border-color .2s; }
+  .textlink:hover { color: var(--ink); border-color: var(--ink); }
 
-  /* ───────── 入口（未登入） ───────── */
-  .landing { min-height: 100vh; display: grid; grid-template-columns: 1.1fr 1fr; gap: 60px; align-items: center; max-width: 1080px; margin: 0 auto; padding: 60px 24px; }
-  @media (max-width: 880px) { .landing { grid-template-columns: 1fr; gap: 40px; padding-top: 48px; } }
-  .hero .kicker { margin-top: 44px; font-size: 12px; letter-spacing: 4px; color: var(--gold); }
-  .hero h1 { margin-top: 14px; font-size: clamp(32px, 4.6vw, 46px); font-weight: 800; line-height: 1.28; letter-spacing: 1px; }
-  .hero .lead { margin-top: 18px; font-size: 15px; line-height: 1.9; color: var(--muted); max-width: 42ch; }
-  .features { margin-top: 36px; border-top: 1px solid var(--line); }
-  .feat { display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--line); align-items: baseline; }
-  .feat .no { font-size: 12px; color: var(--gold); font-variant-numeric: tabular-nums; }
-  .feat .tt { font-size: 14px; font-weight: 700; min-width: 9em; }
-  .feat .dd { font-size: 13px; color: var(--muted); line-height: 1.7; }
+  /* ───────── 入口 ───────── */
+  .landing { max-width: 1060px; margin: 0 auto; padding: 0 28px 90px; }
+  .topbar { display: flex; align-items: baseline; justify-content: space-between; padding: 34px 0 0; }
+  .topbar .en { font-size: 10px; }
+  .hero { text-align: center; padding: 96px 0 72px; }
+  .hero .en { display: block; margin-bottom: 30px; }
+  .hero h1 { font-family: "Noto Serif TC", serif; font-size: clamp(34px, 5.4vw, 56px); font-weight: 600; line-height: 1.5; letter-spacing: 6px; }
+  .hero .lead { margin: 30px auto 0; font-size: 15px; line-height: 2.1; color: var(--muted); letter-spacing: 1.5px; max-width: 34em; }
 
-  .gate { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 30px 28px 24px; box-shadow: 0 30px 80px rgba(0,0,0,.5); }
-  .gate h2 { font-size: 16px; font-weight: 700; }
-  .gate .sub { margin-top: 6px; font-size: 13px; color: var(--muted); line-height: 1.7; }
-  .gate label { display: block; margin-top: 22px; font-size: 12px; color: var(--muted); letter-spacing: 1px; }
-  .gate input { width: 100%; margin-top: 8px; padding: 13px 15px; font-size: 15px; background: #0e0e12; border: 1px solid var(--line); border-radius: 12px; color: #fff; transition: border-color .2s; }
-  .gate input:focus { outline: none; border-color: rgba(255,211,77,.5); }
-  .gate .btn { width: 100%; margin-top: 16px; padding: 13px; font-size: 15px; }
-  .profiles-label { margin-top: 24px; font-size: 12px; color: var(--dim); letter-spacing: 1px; }
-  .profiles { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
-  .profiles .p { display: flex; align-items: center; gap: 11px; padding: 11px 14px; background: #0e0e12; border: 1px solid var(--line); border-radius: 12px; cursor: pointer; transition: border-color .15s; }
-  .profiles .p:hover { border-color: rgba(255,211,77,.5); }
-  .profiles .p .av { width: 30px; height: 30px; border-radius: 50%; background: var(--gold); color: #141414; display: grid; place-items: center; font-weight: 700; font-size: 14px; flex: none; }
-  .gate .fine { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 12px; color: var(--dim); line-height: 1.8; }
+  .gate { max-width: 430px; margin: 0 auto; background: var(--card); border: 1px solid var(--line); padding: 42px 44px 36px; box-shadow: 0 24px 60px rgba(26,25,22,.06); }
+  .gate .en { display: block; text-align: center; }
+  .gate h2 { font-family: "Noto Serif TC", serif; text-align: center; font-size: 19px; font-weight: 600; letter-spacing: 8px; text-indent: 8px; margin-top: 10px; }
+  .gbtn { width: 100%; margin-top: 30px; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 13px; font-size: 14px; letter-spacing: 2px; background: #fff; border: 1px solid var(--line); cursor: pointer; font-family: inherit; color: var(--ink); transition: border-color .2s, box-shadow .2s; }
+  .gbtn:hover { border-color: var(--ink); box-shadow: 0 4px 16px rgba(26,25,22,.08); }
+  .divider { display: flex; align-items: center; gap: 16px; margin: 26px 0 4px; color: var(--faint); font-size: 12px; letter-spacing: 4px; }
+  .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--hair); }
+  .gate label { display: block; margin-top: 20px; font-size: 12px; letter-spacing: 3px; color: var(--muted); }
+  .gate input { width: 100%; margin-top: 10px; padding: 12px 2px; font-size: 15px; letter-spacing: 1px; background: transparent; border: none; border-bottom: 1px solid var(--line); color: var(--ink); font-family: inherit; transition: border-color .25s; }
+  .gate input:focus { outline: none; border-color: var(--ink); }
+  .gate input::placeholder { color: var(--faint); }
+  .gate .btn { width: 100%; margin-top: 24px; padding: 13px; }
+  .profiles-label { margin-top: 30px; font-size: 12px; letter-spacing: 3px; color: var(--faint); }
+  .profiles { margin-top: 12px; display: flex; flex-direction: column; }
+  .profiles .p { display: flex; align-items: center; gap: 13px; padding: 13px 4px; border-top: 1px solid var(--hair); cursor: pointer; transition: padding-left .2s; }
+  .profiles .p:last-child { border-bottom: 1px solid var(--hair); }
+  .profiles .p:hover { padding-left: 10px; }
+  .profiles .p .av { width: 32px; height: 32px; border-radius: 50%; background: var(--ink); color: var(--paper); display: grid; place-items: center; font-size: 14px; flex: none; overflow: hidden; }
+  .profiles .p .av img { width: 100%; height: 100%; object-fit: cover; }
+  .profiles .p .nm { font-size: 14px; letter-spacing: 1px; }
+  .gate .fine { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--hair); font-size: 12px; color: var(--faint); line-height: 2; letter-spacing: .5px; }
 
-  /* ───────── 主控台（已登入） ───────── */
-  nav.top { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 16px; padding: 16px 0; background: rgba(10,10,12,.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); margin-bottom: 36px; }
+  .triad { max-width: 1060px; margin: 90px auto 0; padding: 0 28px; }
+  .triad .row { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .triad .cell { padding: 34px 26px; border-left: 1px solid var(--hair); }
+  .triad .cell:first-child { border-left: none; }
+  .triad .en { display: block; font-size: 10px; }
+  .triad h3 { font-family: "Noto Serif TC", serif; font-size: 16px; font-weight: 600; letter-spacing: 4px; margin-top: 12px; }
+  .triad p { margin-top: 12px; font-size: 13px; color: var(--muted); line-height: 2; letter-spacing: .5px; }
+  @media (max-width: 760px) {
+    .topbar > .en { display: none; }
+    .hero { padding: 70px 0 56px; }
+    .gate { padding: 34px 26px 30px; }
+    .triad .row { grid-template-columns: 1fr; }
+    .triad .cell { border-left: none; border-top: 1px solid var(--hair); }
+    .triad .cell:first-child { border-top: none; }
+  }
+
+  /* ───────── 主控台 ───────── */
+  nav.top { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 22px; padding: 22px 0; background: rgba(247,245,240,.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); margin-bottom: 54px; }
   nav.top .spacer { flex: 1; }
-  .pill { display: inline-flex; align-items: center; gap: 7px; padding: 6px 13px; border-radius: 999px; font-size: 12px; color: var(--muted); border: 1px solid var(--line); background: rgba(255,255,255,.03); }
-  .pill i { width: 7px; height: 7px; border-radius: 50%; background: #6f6f78; flex: none; }
-  .pill[data-state="ok"] i { background: #35c98e; box-shadow: 0 0 8px rgba(53,201,142,.6); }
-  .pill[data-state="warn"] i { background: #eea23e; }
-  .who { font-size: 13px; color: var(--muted); }
-  .who b { color: #f2f2f4; font-weight: 700; }
+  .pill { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; letter-spacing: 2px; color: var(--muted); }
+  .pill i { width: 6px; height: 6px; border-radius: 50%; background: var(--faint); flex: none; }
+  .pill[data-state="ok"] i { background: #4c8f6e; }
+  .pill[data-state="warn"] i { background: #c08a3e; }
+  .who { display: inline-flex; align-items: center; gap: 10px; font-size: 13px; letter-spacing: 1px; color: var(--muted); }
+  .who b { color: var(--ink); font-weight: 500; }
+  .who .avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; display: none; }
 
-  .studio { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; padding: 26px 28px; background: linear-gradient(120deg, rgba(255,211,77,.08), rgba(255,255,255,.02) 55%); border: 1px solid var(--line); border-radius: 18px; }
-  .studio h1 { font-size: 20px; font-weight: 800; letter-spacing: .5px; }
-  .studio p { margin-top: 6px; font-size: 13px; color: var(--muted); line-height: 1.7; max-width: 52ch; }
-  .studio .acts { display: flex; gap: 10px; flex-wrap: wrap; }
+  .studio { display: flex; align-items: flex-end; justify-content: space-between; gap: 28px; flex-wrap: wrap; padding-bottom: 40px; border-bottom: 1px solid var(--line); }
+  .studio .en { display: block; }
+  .studio h1 { font-family: "Noto Serif TC", serif; font-size: 30px; font-weight: 600; letter-spacing: 10px; margin-top: 14px; }
+  .studio p { margin-top: 16px; font-size: 13px; color: var(--muted); line-height: 2.1; letter-spacing: .5px; max-width: 46em; }
+  .studio .acts { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
 
-  h2.section { display: flex; align-items: baseline; gap: 10px; font-size: 14px; font-weight: 700; letter-spacing: 2px; color: #d8d8de; margin: 44px 0 16px; }
-  h2.section small { font-size: 12px; color: var(--dim); font-weight: 400; letter-spacing: 0; }
+  h2.section { display: flex; align-items: baseline; gap: 18px; margin: 60px 0 24px; }
+  h2.section .zh { font-family: "Noto Serif TC", serif; font-size: 19px; font-weight: 600; letter-spacing: 6px; }
+  h2.section .en { font-size: 10px; }
 
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 18px; }
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; transition: transform .15s, border-color .2s; }
-  .card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,.18); }
-  .card .thumb { height: 140px; position: relative; display: grid; place-items: center; }
-  .card .thumb .badge { position: absolute; top: 10px; right: 10px; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; backdrop-filter: blur(6px); }
-  .badge.pub { background: rgba(29,158,117,.9); color: #eafff6; }
-  .badge.draft { background: rgba(30,30,36,.8); color: #b9b9c2; }
-  .card .body { padding: 16px 18px 18px; flex: 1; display: flex; flex-direction: column; }
-  .card h3 { font-size: 16px; font-weight: 700; letter-spacing: .3px; }
-  .card .meta { font-size: 12px; color: var(--dim); margin-top: 6px; }
-  .card .desc { font-size: 13px; color: #b9b9c2; margin-top: 10px; line-height: 1.65; flex: 1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .card .actions { display: flex; gap: 8px; margin-top: 15px; flex-wrap: wrap; }
-  .empty { grid-column: 1/-1; background: var(--card); border: 1px dashed var(--line); border-radius: 16px; padding: 44px; text-align: center; color: var(--dim); font-size: 14px; line-height: 1.8; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 26px; }
+  .card { background: var(--card); border: 1px solid var(--line); display: flex; flex-direction: column; transition: box-shadow .3s, transform .3s; }
+  .card:hover { box-shadow: 0 20px 44px rgba(26,25,22,.1); transform: translateY(-2px); }
+  .card .thumb { height: 165px; position: relative; border-bottom: 1px solid var(--hair); }
+  .card .thumb .badge { position: absolute; top: 12px; right: 12px; font-size: 10px; letter-spacing: 3px; padding: 5px 10px 5px 13px; background: rgba(255,253,249,.92); border: 1px solid var(--line); color: var(--ink); }
+  .card .thumb .badge.pub { color: #3d7258; border-color: rgba(61,114,88,.4); }
+  .card .body { padding: 20px 22px 22px; flex: 1; display: flex; flex-direction: column; }
+  .card h3 { font-family: "Noto Serif TC", serif; font-size: 17px; font-weight: 600; letter-spacing: 2px; }
+  .card .meta { font-size: 11px; letter-spacing: 1.5px; color: var(--faint); margin-top: 8px; }
+  .card .desc { font-size: 13px; color: var(--muted); margin-top: 12px; line-height: 1.9; flex: 1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .card .actions { display: flex; gap: 8px; margin-top: 18px; flex-wrap: wrap; }
+  .empty { grid-column: 1/-1; border: 1px dashed var(--line); padding: 56px 30px; text-align: center; color: var(--faint); font-size: 13px; line-height: 2.2; letter-spacing: 1px; }
 
-  footer { margin-top: 70px; padding-top: 22px; border-top: 1px solid var(--line); display: flex; gap: 16px; flex-wrap: wrap; align-items: baseline; font-size: 12px; color: var(--dim); }
+  footer { margin-top: 90px; padding-top: 24px; border-top: 1px solid var(--line); display: flex; gap: 18px; flex-wrap: wrap; align-items: baseline; font-size: 11px; letter-spacing: 2px; color: var(--faint); }
   footer .spacer { flex: 1; }
   .hidden { display: none !important; }
 </style>
 </head>
 <body>
 
-<!-- ───────── 入口（未登入） ───────── -->
+<!-- ───────── 入口 ───────── -->
 <div id="authView" class="hidden">
   <div class="landing">
+    <div class="topbar">
+      <a class="wordmark" href="./"><span class="zh">展境</span><span class="we">Exhibia</span></a>
+      <span class="en">Online Curation Platform</span>
+    </div>
     <div class="hero">
-      <a class="wordmark" href="./"><span class="zh">展境</span><span class="en">EXHIBIA</span></a>
-      <div class="kicker">ONLINE CURATION PLATFORM</div>
-      <h1>把展覽，<br>搬進 3D 空間。</h1>
-      <p class="lead">在瀏覽器中佈展、佈光、設計觀展動線——免下載、免安裝，邀請觀眾以第一人稱走進你的展覽。</p>
-      <div class="features">
-        <div class="feat"><span class="no">01</span><span class="tt">沉浸式觀展</span><span class="dd">第一人稱步行、自然光影與真實材質，桌機與行動裝置皆可觀展。</span></div>
-        <div class="feat"><span class="no">02</span><span class="tt">策展導覽</span><span class="dd">章節敘事、地面動線引導、作品解說與互動——動線由你設計。</span></div>
-        <div class="feat"><span class="no">03</span><span class="tt">多人協作</span><span class="dd">以展覽連結即時共編，適合團隊策展與課堂分組創作。</span></div>
-      </div>
+      <span class="en">A Museum in the Browser</span>
+      <h1>策一檔展覽，<br>邀請世界走進來。</h1>
+      <p class="lead">在瀏覽器中佈展、佈光、設計動線，<br>讓觀眾以第一人稱，緩步走進你的展。</p>
     </div>
     <div class="gate">
-      <h2>以策展人身分進入</h2>
-      <p class="sub">免註冊——輸入名稱即可開始。</p>
-      <label for="nameInput">策展人名稱</label>
-      <input id="nameInput" placeholder="你的名字或團隊名" maxlength="20" autocomplete="off" />
-      <button class="btn primary" id="createUserBtn">開始策展</button>
+      <span class="en">Register / Sign in</span>
+      <h2>註冊・登入</h2>
+      <button class="gbtn" id="googleBtn">
+        <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        以 Google 帳戶繼續
+      </button>
+      <div class="divider">或</div>
+      <label for="nameInput">以訪客身分進入</label>
+      <input id="nameInput" placeholder="你的名字" maxlength="20" autocomplete="off" />
+      <button class="btn" id="createUserBtn">進入</button>
       <div id="profilesWrap" class="hidden">
-        <div class="profiles-label">這台裝置上的策展人</div>
+        <div class="profiles-label">此裝置上的策展人</div>
         <div class="profiles" id="profiles"></div>
       </div>
-      <div class="fine">展覽會自動同步至雲端。策展人身分綁定此瀏覽器；跨裝置接續編輯時，在新裝置以展覽連結「加入協作」即可。</div>
+      <div class="fine">以 Google 登入，展覽會跟著你的帳戶，任何裝置都能繼續策展；訪客身分僅保存於此瀏覽器。</div>
+    </div>
+    <div class="triad">
+      <div class="row">
+        <div class="cell"><span class="en">Immersive</span><h3>沉浸式觀展</h3><p>第一人稱步行、自然光影與真實材質，如親臨展場。</p></div>
+        <div class="cell"><span class="en">Guided Tour</span><h3>策展導覽</h3><p>章節敘事與地面動線引導，帶觀眾走到每件作品前。</p></div>
+        <div class="cell"><span class="en">Collaboration</span><h3>共同策展</h3><p>與夥伴即時共編同一檔展覽，各自佈展、彼此可見。</p></div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- ───────── 主控台（已登入） ───────── -->
+<!-- ───────── 主控台 ───────── -->
 <div id="dashView" class="wrap hidden">
   <nav class="top">
-    <a class="wordmark" href="./"><span class="zh">展境</span><span class="en">EXHIBIA</span></a>
+    <a class="wordmark" href="./"><span class="zh">展境</span><span class="we">Exhibia</span></a>
     <span class="spacer"></span>
-    <span class="pill" id="cloudStatus"><i></i><span>雲端連線中…</span></span>
-    <span class="who">策展人 <b id="whoName"></b></span>
-    <button class="btn ghost sm" id="signOutBtn">登出</button>
+    <span class="pill" id="cloudStatus"><i></i><span>連線中</span></span>
+    <span class="who"><img class="avatar" id="whoAvatar" alt="" /><b id="whoName"></b></span>
+    <button class="textlink" id="signOutBtn">登出</button>
   </nav>
 
   <div class="studio">
     <div>
+      <span class="en">Curatorial Studio</span>
       <h1>策展工作室</h1>
-      <p>「基礎展覽空間」已規劃好觀展動線、章節與打光——換上你的作品即可開展；也可以從空白展間自由發揮。</p>
+      <p>從「基礎展覽空間」開始——動線、章節與光線都已就位，換上作品即可開展；或從空白展間自由發揮。</p>
     </div>
     <div class="acts">
-      <button class="btn primary" id="newStarterBtn">建立展覽（基礎空間）</button>
+      <button class="btn fill" id="newStarterBtn">建立展覽</button>
       <button class="btn" id="newExBtn">空白展間</button>
-      <button class="btn ghost" id="joinBtn">加入協作</button>
+      <button class="textlink" id="joinBtn">加入協作</button>
     </div>
   </div>
 
-  <h2 class="section">我的展覽 <small>編輯・預覽・發佈</small></h2>
+  <h2 class="section"><span class="zh">我的展覽</span><span class="en">My Exhibitions</span></h2>
   <div id="mine" class="grid"></div>
 
-  <h2 class="section">公開展覽 <small>所有人皆可觀展</small></h2>
+  <h2 class="section"><span class="zh">公開展覽</span><span class="en">On View</span></h2>
   <div id="published" class="grid"></div>
 
   <footer>
-    <span>展境 EXHIBIA — 線上策展平台</span>
+    <span>展境 EXHIBIA</span>
     <span class="spacer"></span>
-    <span>素材授權見 assets/CREDITS.md</span>
+    <span>線上策展平台</span>
   </footer>
 </div>
 
-<script src="js/store.js?v=20260823"></script>
-<script src="js/auth.js?v=20260823"></script>
-<script src="js/templates.js?v=20260823"></script>
-<script src="js/starter.js?v=20260823"></script>
+<script src="js/store.js?v=20260909"></script>
+<script src="js/auth.js?v=20260909"></script>
+<script src="js/templates.js?v=20260909"></script>
+<script src="js/starter.js?v=20260909"></script>
 <script>
 const authView = document.getElementById('authView');
 const dashView = document.getElementById('dashView');
 
-function fmtDate(ts) { if (!ts) return '—'; const d = new Date(ts); return `${d.getFullYear()}/${(d.getMonth()+1)}/${d.getDate()}`; }
-function thumbColor(tpl) { return (TEMPLATES[tpl]?.room.wallColor) || '#2a2a32'; }
+function fmtDate(ts) { if (!ts) return '—'; const d = new Date(ts); return `${d.getFullYear()}.${(d.getMonth()+1)}.${d.getDate()}`; }
+function thumbColor(tpl) { return (TEMPLATES[tpl]?.room.wallColor) || '#dedbd2'; }
 function esc(s) { return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
 function renderAuth() {
@@ -175,30 +218,29 @@ function renderAuth() {
   if (profiles.length) {
     wrap.classList.remove('hidden');
     list.innerHTML = profiles.map(u =>
-      `<div class="p" data-id="${u.id}"><span class="av">${esc(u.name[0]||'?')}</span><span>${esc(u.name)}</span></div>`
+      `<div class="p" data-id="${u.id}"><span class="av">${u.photo ? `<img src="${esc(u.photo)}" alt="" />` : esc(u.name[0]||'?')}</span><span class="nm">${esc(u.name)}</span></div>`
     ).join('');
     list.querySelectorAll('.p').forEach(el => el.onclick = () => { Auth.signIn(el.dataset.id); route(); });
   } else wrap.classList.add('hidden');
 }
 
 function exCard(ex, owned) {
-  const tpl = TEMPLATES[ex.template]?.name || (ex.rooms && ex.rooms[0] && TEMPLATES[ex.rooms[0].template]?.name) || '多展間';
   const rooms = (ex.rooms || []).length || 1;
   const items = (ex.rooms || []).reduce((n, r) => n + (r.items || []).length, (ex.items || []).length);
-  const badge = ex.published ? '<span class="badge pub">已發佈</span>' : '<span class="badge draft">草稿</span>';
+  const badge = ex.published ? '<span class="badge pub">展出中</span>' : '<span class="badge">籌備中</span>';
   const actions = owned
-    ? `<a class="btn sm primary" href="view.html?id=${ex.id}&edit=1">佈展</a>
+    ? `<a class="btn sm fill" href="view.html?id=${ex.id}&edit=1">佈展</a>
        <a class="btn sm" href="view.html?id=${ex.id}">預覽</a>
-       <button class="btn sm ghost" data-act="pub" data-id="${ex.id}">${ex.published ? '取消發佈' : '發佈'}</button>
-       <button class="btn sm danger ghost" data-act="del" data-id="${ex.id}">刪除</button>`
-    : `<a class="btn sm primary" href="view.html?id=${ex.id}">進入觀展</a>`;
-  const thumbStyle = ex.thumb ? `background:url('${ex.thumb}') center/cover` : `background:linear-gradient(135deg, ${thumbColor(ex.template)} 0%, #16161c 100%)`;
+       <button class="btn sm quiet" data-act="pub" data-id="${ex.id}">${ex.published ? '取消公開' : '公開展出'}</button>
+       <button class="btn sm quiet danger" data-act="del" data-id="${ex.id}">刪除</button>`
+    : `<a class="btn sm fill" href="view.html?id=${ex.id}">進入觀展</a>`;
+  const thumbStyle = ex.thumb ? `background:url('${ex.thumb}') center/cover` : `background:linear-gradient(150deg, ${thumbColor(ex.template)} 0%, #efece4 100%)`;
   return `<div class="card">
     <div class="thumb" style="${thumbStyle}">${owned ? badge : ''}</div>
     <div class="body">
       <h3>${esc(ex.title)}</h3>
-      <div class="meta">${rooms} 個展間 · ${items} 件展品 · 更新於 ${fmtDate(ex.updatedAt || ex.createdAt)}</div>
-      <div class="desc">${esc(ex.description) || '尚未填寫展覽介紹。'}</div>
+      <div class="meta">${rooms} 個展間 · ${items} 件作品 · ${fmtDate(ex.updatedAt || ex.createdAt)}</div>
+      <div class="desc">${esc(ex.description) || '尚未撰寫展覽介紹。'}</div>
       <div class="actions">${actions}</div>
     </div>
   </div>`;
@@ -209,16 +251,18 @@ function renderDash() {
   authView.classList.add('hidden');
   dashView.classList.remove('hidden');
   document.getElementById('whoName').textContent = me.name;
+  const av = document.getElementById('whoAvatar');
+  if (me.photo) { av.src = me.photo; av.style.display = 'block'; } else av.style.display = 'none';
 
   const mine = Store.listByOwner(me.id);
   document.getElementById('mine').innerHTML = mine.length
     ? mine.map(ex => exCard(ex, true)).join('')
-    : `<div class="empty">還沒有展覽。<br>從「建立展覽（基礎空間）」開始——動線與章節都已備好，換上作品即可開展。</div>`;
+    : `<div class="empty">尚無展覽。<br>從「建立展覽」開始——動線與章節已備好，換上作品即可開展。</div>`;
 
   const pub = Store.listPublished();
   document.getElementById('published').innerHTML = pub.length
     ? pub.map(ex => exCard(ex, false)).join('')
-    : `<div class="empty">尚無公開展覽。發佈你的第一檔展覽，讓大家走進來看看。</div>`;
+    : `<div class="empty">目前沒有公開中的展覽。</div>`;
 
   dashView.querySelectorAll('[data-act]').forEach(btn => {
     btn.onclick = () => {
@@ -236,7 +280,11 @@ document.getElementById('createUserBtn').onclick = () => {
   Auth.signUp(name); route();
 };
 document.getElementById('nameInput').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('createUserBtn').click(); });
-document.getElementById('signOutBtn').onclick = () => { Auth.signOut(); route(); };
+document.getElementById('signOutBtn').onclick = () => {
+  Auth.signOut();
+  if (window.Cloud && Cloud.user && Cloud.signOutGoogle) Cloud.signOutGoogle().catch(() => {});
+  route();
+};
 document.getElementById('newExBtn').onclick = () => {
   const ex = Store.create(Auth.current().id, { title: '未命名展覽' });
   location.href = 'editor.html?id=' + ex.id;
@@ -250,24 +298,40 @@ document.getElementById('newStarterBtn').onclick = () => {
 
 route();
 
-/* ===== 雲端協作 ===== */
+/* ===== 雲端 ===== */
 function cloudUI() {
   const el = document.getElementById('cloudStatus');
   if (!el || !window.Cloud) return;
   const ok = (Cloud.status || '').startsWith('已連線');
   el.dataset.state = ok ? 'ok' : (Cloud.enabled ? 'warn' : '');
-  el.querySelector('span').textContent = ok ? '雲端同步' : ('雲端：' + Cloud.status);
+  el.querySelector('span').textContent = ok ? '已同步' : '未同步';
 }
 addEventListener('cloud-status', cloudUI);
 addEventListener('cloud-sync', () => { cloudUI(); if (Auth.current()) renderDash(); });
 setInterval(cloudUI, 3000);
+
+/* Google 登入 */
+document.getElementById('googleBtn').onclick = async () => {
+  if (!window.Cloud || !Cloud.signInGoogle) { alert('連線中，請稍候再試。'); return; }
+  try { const u = await Cloud.signInGoogle(); Auth.signInCloud(u); route(); }
+  catch (e) {
+    const code = e.code || '';
+    if (code !== 'auth/popup-closed-by-user' && code !== 'auth/cancelled-popup-request')
+      alert('登入未完成，請再試一次。');
+  }
+};
+/* 已登入過 Google（此瀏覽器記得你）→ 自動進入工作室 */
+addEventListener('cloud-auth', () => {
+  if (window.Cloud && Cloud.user && !Auth.current()) { Auth.signInCloud(Cloud.user); route(); }
+});
+
 document.getElementById('joinBtn').onclick = async () => {
-  if (!window.Cloud || !Cloud.enabled) { alert('雲端尚未連線（' + (window.Cloud ? Cloud.status : '載入中') + '）'); return; }
-  const v = prompt('貼上展覽連結或展覽 ID：'); if (!v) return;
+  if (!window.Cloud || !Cloud.enabled) { alert('連線中，請稍候再試。'); return; }
+  const v = prompt('貼上展覽連結或展覽編號：'); if (!v) return;
   try { const ex = await Cloud.join(v); alert('已加入協作：' + (ex.title || '')); renderDash(); }
   catch (e) { alert('加入失敗：' + (e.message || e)); }
 };
 </script>
-<script type="module" src="js/cloud.js?v=20260823"></script>
+<script type="module" src="js/cloud.js?v=20260909"></script>
 </body>
 </html>

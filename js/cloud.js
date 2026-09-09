@@ -8,7 +8,7 @@
      { data:<整個展覽物件>, owner:<uid>, members:[uid...], published, updatedAt, client }
    ========================================================================= */
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+import { getAuth, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 import { getFirestore, doc, getDoc, getDocs, setDoc, updateDoc, collection, query, where, onSnapshot, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
 const firebaseConfig = {
@@ -23,15 +23,31 @@ const COL = 'vex_exhibitions';
 const CLIENT_ID = 'c' + Math.random().toString(36).slice(2, 10);
 const KEY = 'exhib_platform_v1';
 
-window.Cloud = { status: '連線中…', uid: null, enabled: false, err: null, join, watch, pushNow };
+window.Cloud = { status: '連線中…', uid: null, user: null, enabled: false, err: null, join, watch, pushNow, signInGoogle, signOutGoogle };
 
 let db, auth;
 try {
   const app = initializeApp(firebaseConfig);
   auth = getAuth(app); db = getFirestore(app);
-  signInAnonymously(auth).catch(e => setStatus('雲端未啟用（匿名登入被拒：' + (e.code || e) + '）', e));
-  onAuthStateChanged(auth, u => { if (!u) return; Cloud.uid = u.uid; Cloud.enabled = true; setStatus('已連線'); startSync(); });
+  onAuthStateChanged(auth, u => {
+    if (!u) {   // 尚未登入（或剛登出 Google）→ 退回匿名身分
+      signInAnonymously(auth).catch(e => setStatus('雲端未啟用（匿名登入被拒：' + (e.code || e) + '）', e));
+      return;
+    }
+    Cloud.uid = u.uid;
+    Cloud.user = u.isAnonymous ? null : { uid: u.uid, name: u.displayName, email: u.email, photo: u.photoURL };
+    Cloud.enabled = true; setStatus('已連線'); startSync();
+    for (const k in lastPushed) delete lastPushed[k];   // 換身分後重推，讓 members 掛上新 uid
+    pushNow();
+    window.dispatchEvent(new CustomEvent('cloud-auth'));
+  });
 } catch (e) { setStatus('雲端初始化失敗', e); }
+
+async function signInGoogle() {
+  const cred = await signInWithPopup(auth, new GoogleAuthProvider());
+  return cred.user;
+}
+async function signOutGoogle() { await fbSignOut(auth); }   // onAuthStateChanged 會自動退回匿名
 
 function setStatus(s, e) { Cloud.status = s; if (e) { Cloud.err = e.code || String(e); console.warn('[cloud]', s, e); } window.dispatchEvent(new CustomEvent('cloud-status')); }
 function localDB() { try { return JSON.parse(localStorage.getItem(KEY)) || { users: {}, exhibitions: {} }; } catch (e) { return { users: {}, exhibitions: {} }; } }
@@ -82,8 +98,8 @@ async function pushNow() {
     const json = JSON.stringify(ex);
     if (json.length > 900000) { console.warn('[cloud] 展覽過大無法同步（圖片請改用網址或 assets/img/）', ex.id); continue; }
     try {
-      const payload = { data: JSON.parse(json), published: !!ex.published, updatedAt: ex.updatedAt || Date.now(), client: CLIENT_ID };
-      if (!knownDocs.has(ex.id)) { payload.owner = Cloud.uid; payload.members = [Cloud.uid]; }
+      const payload = { data: JSON.parse(json), published: !!ex.published, updatedAt: ex.updatedAt || Date.now(), client: CLIENT_ID, members: arrayUnion(Cloud.uid) };
+      if (!knownDocs.has(ex.id)) payload.owner = Cloud.uid;
       await setDoc(doc(db, COL, ex.id), payload, { merge: true });
       knownDocs.add(ex.id); lastPushed[ex.id] = ex.updatedAt; setStatus('已連線・已同步');
     } catch (e) { setStatus('上傳被拒（需設定 Firestore 規則）', e); return; }
@@ -113,5 +129,6 @@ function watch(exId, cb) {
   }, e => console.warn('[cloud] watch', e));
 }
 
-function startSync() { hookStore(); pull(); setInterval(pull, 45000); }
+let syncStarted = false;
+function startSync() { hookStore(); pull(); if (!syncStarted) { syncStarted = true; setInterval(pull, 45000); } }
 hookStore(); setInterval(hookStore, 1000);
