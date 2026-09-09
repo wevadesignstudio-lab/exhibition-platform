@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>展境 EXHIBIA｜線上策展平台</title>
-<meta name="description" content="在瀏覽器中佈展、佈光、設計動線——邀請觀眾以第一人稱走進你的展覽。" />
+<title>Sight｜線上策展平台</title>
+<meta name="description" content="翻轉視覺的無邊界想像——在瀏覽器中佈展、佈光、設計動線，邀請觀眾以第一人稱走進你的展覽。" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;600;700&display=swap" rel="stylesheet" />
@@ -20,8 +20,7 @@
   .wrap { max-width: 1060px; margin: 0 auto; padding: 0 28px 100px; }
 
   .wordmark { display: inline-flex; align-items: baseline; gap: 12px; text-decoration: none; }
-  .wordmark .zh { font-family: "Noto Serif TC", serif; font-size: 21px; font-weight: 700; letter-spacing: 10px; margin-right: -10px; white-space: nowrap; }
-  .wordmark .we { font-family: "Cormorant Garamond", serif; font-size: 12px; letter-spacing: .42em; color: var(--accent); }
+  .wordmark .sg { font-family: "Cormorant Garamond", serif; font-size: 27px; font-weight: 600; letter-spacing: .16em; white-space: nowrap; }
 
   .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 26px; font-size: 13px; letter-spacing: .22em; text-indent: .22em; font-weight: 500; color: var(--ink); background: transparent; border: 1px solid var(--ink); border-radius: 0; cursor: pointer; text-decoration: none; font-family: inherit; transition: background .25s, color .25s, border-color .25s; }
   .btn:hover { background: var(--ink); color: var(--paper); }
@@ -55,14 +54,6 @@
   .gate input:focus { outline: none; border-color: var(--ink); }
   .gate input::placeholder { color: var(--faint); }
   .gate .btn { width: 100%; margin-top: 24px; padding: 13px; }
-  .profiles-label { margin-top: 30px; font-size: 12px; letter-spacing: 3px; color: var(--faint); }
-  .profiles { margin-top: 12px; display: flex; flex-direction: column; }
-  .profiles .p { display: flex; align-items: center; gap: 13px; padding: 13px 4px; border-top: 1px solid var(--hair); cursor: pointer; transition: padding-left .2s; }
-  .profiles .p:last-child { border-bottom: 1px solid var(--hair); }
-  .profiles .p:hover { padding-left: 10px; }
-  .profiles .p .av { width: 32px; height: 32px; border-radius: 50%; background: var(--ink); color: var(--paper); display: grid; place-items: center; font-size: 14px; flex: none; overflow: hidden; }
-  .profiles .p .av img { width: 100%; height: 100%; object-fit: cover; }
-  .profiles .p .nm { font-size: 14px; letter-spacing: 1px; }
   .gate .fine { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--hair); font-size: 12px; color: var(--faint); line-height: 2; letter-spacing: .5px; }
 
   .triad { max-width: 1060px; margin: 90px auto 0; padding: 0 28px; }
@@ -126,13 +117,13 @@
 <div id="authView" class="hidden">
   <div class="landing">
     <div class="topbar">
-      <a class="wordmark" href="./"><span class="zh">展境</span><span class="we">Exhibia</span></a>
+      <a class="wordmark" href="./"><span class="sg">Sight</span></a>
       <span class="en">Online Curation Platform</span>
     </div>
     <div class="hero">
-      <span class="en">A Museum in the Browser</span>
-      <h1>策一檔展覽，<br>邀請世界走進來。</h1>
-      <p class="lead">在瀏覽器中佈展、佈光、設計動線，<br>讓觀眾以第一人稱，緩步走進你的展。</p>
+      <span class="en">Redefining the Boundaries of Vision</span>
+      <h1>翻轉視覺的無邊界想像</h1>
+      <p class="lead">拉近被時空凝結的細節，<br>目光所至，即是故事重生的起點。</p>
     </div>
     <div class="gate">
       <span class="en">Register / Sign in</span>
@@ -142,14 +133,10 @@
         以 Google 帳戶繼續
       </button>
       <div class="divider">或</div>
-      <label for="nameInput">以訪客身分進入</label>
+      <label for="nameInput">以訪客身分瀏覽</label>
       <input id="nameInput" placeholder="你的名字" maxlength="20" autocomplete="off" />
-      <button class="btn" id="createUserBtn">進入</button>
-      <div id="profilesWrap" class="hidden">
-        <div class="profiles-label">此裝置上的策展人</div>
-        <div class="profiles" id="profiles"></div>
-      </div>
-      <div class="fine">以 Google 登入，展覽會跟著你的帳戶，任何裝置都能繼續策展；訪客身分僅保存於此瀏覽器。</div>
+      <button class="btn" id="createUserBtn">進入觀展</button>
+      <div class="fine">以 Google 登入即可建立與編輯展覽，展覽會跟著你的帳戶，任何裝置都能繼續策展；訪客可瀏覽公開展覽並留言。</div>
     </div>
     <div class="triad">
       <div class="row">
@@ -164,14 +151,14 @@
 <!-- ───────── 主控台 ───────── -->
 <div id="dashView" class="wrap hidden">
   <nav class="top">
-    <a class="wordmark" href="./"><span class="zh">展境</span><span class="we">Exhibia</span></a>
+    <a class="wordmark" href="./"><span class="sg">Sight</span></a>
     <span class="spacer"></span>
     <span class="pill" id="cloudStatus"><i></i><span>連線中</span></span>
     <span class="who"><img class="avatar" id="whoAvatar" alt="" /><b id="whoName"></b></span>
     <button class="textlink" id="signOutBtn">登出</button>
   </nav>
 
-  <div class="studio">
+  <div class="studio" id="studioBox">
     <div>
       <span class="en">Curatorial Studio</span>
       <h1>策展工作室</h1>
@@ -184,23 +171,31 @@
     </div>
   </div>
 
-  <h2 class="section"><span class="zh">我的展覽</span><span class="en">My Exhibitions</span></h2>
+  <div class="studio" id="guestBox" style="display:none">
+    <div>
+      <span class="en">Welcome, Visitor</span>
+      <h1>觀展大廳</h1>
+      <p>你正以訪客身分瀏覽。走進任何一檔公開展覽，以第一人稱觀展、按讚與留言；想建立自己的展覽，請以 Google 登入。</p>
+    </div>
+  </div>
+
+  <h2 class="section" id="mineHead"><span class="zh">我的展覽</span><span class="en">My Exhibitions</span></h2>
   <div id="mine" class="grid"></div>
 
   <h2 class="section"><span class="zh">公開展覽</span><span class="en">On View</span></h2>
   <div id="published" class="grid"></div>
 
   <footer>
-    <span>展境 EXHIBIA</span>
+    <span>SIGHT</span>
     <span class="spacer"></span>
-    <span>線上策展平台</span>
+    <span>Redefining the Boundaries of Vision</span>
   </footer>
 </div>
 
-<script src="js/store.js?v=20260909"></script>
-<script src="js/auth.js?v=20260909"></script>
-<script src="js/templates.js?v=20260909"></script>
-<script src="js/starter.js?v=20260909"></script>
+<script src="js/store.js?v=20260910"></script>
+<script src="js/auth.js?v=20260910"></script>
+<script src="js/templates.js?v=20260910"></script>
+<script src="js/starter.js?v=20260910"></script>
 <script>
 const authView = document.getElementById('authView');
 const dashView = document.getElementById('dashView');
@@ -212,16 +207,6 @@ function esc(s) { return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;
 function renderAuth() {
   authView.classList.remove('hidden');
   dashView.classList.add('hidden');
-  const profiles = Auth.list();
-  const wrap = document.getElementById('profilesWrap');
-  const list = document.getElementById('profiles');
-  if (profiles.length) {
-    wrap.classList.remove('hidden');
-    list.innerHTML = profiles.map(u =>
-      `<div class="p" data-id="${u.id}"><span class="av">${u.photo ? `<img src="${esc(u.photo)}" alt="" />` : esc(u.name[0]||'?')}</span><span class="nm">${esc(u.name)}</span></div>`
-    ).join('');
-    list.querySelectorAll('.p').forEach(el => el.onclick = () => { Auth.signIn(el.dataset.id); route(); });
-  } else wrap.classList.add('hidden');
 }
 
 function exCard(ex, owned) {
@@ -254,7 +239,14 @@ function renderDash() {
   const av = document.getElementById('whoAvatar');
   if (me.photo) { av.src = me.photo; av.style.display = 'block'; } else av.style.display = 'none';
 
-  const mine = Store.listByOwner(me.id);
+  /* 訪客僅能觀展：隱藏策展功能與「我的展覽」 */
+  const canCurate = !!me.cloud;
+  document.getElementById('studioBox').style.display = canCurate ? '' : 'none';
+  document.getElementById('guestBox').style.display = canCurate ? 'none' : '';
+  document.getElementById('mineHead').style.display = canCurate ? '' : 'none';
+  document.getElementById('mine').style.display = canCurate ? '' : 'none';
+
+  const mine = canCurate ? Store.listByOwner(me.id) : [];
   document.getElementById('mine').innerHTML = mine.length
     ? mine.map(ex => exCard(ex, true)).join('')
     : `<div class="empty">尚無展覽。<br>從「建立展覽」開始——動線與章節已備好，換上作品即可開展。</div>`;
@@ -332,6 +324,6 @@ document.getElementById('joinBtn').onclick = async () => {
   catch (e) { alert('加入失敗：' + (e.message || e)); }
 };
 </script>
-<script type="module" src="js/cloud.js?v=20260909"></script>
+<script type="module" src="js/cloud.js?v=20260910"></script>
 </body>
 </html>

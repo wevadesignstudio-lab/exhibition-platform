@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<title>觀展中…｜展境 EXHIBIA</title>
+<title>觀展中…｜Sight</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet" />
 <style>
-  :root { color-scheme: dark; --gold: #ffd34d; }
+  :root { color-scheme: dark; --gold: #c8ab6e; --paper: #f7f5f0; --pink: #1a1916; --pmuted: #7a7468; --pline: rgba(26,25,22,.16); --phair: rgba(26,25,22,.09); }
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0a0c; font-family: -apple-system, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif; }
   #app { position: fixed; inset: 0; }
@@ -24,8 +24,10 @@
   #intro h1 { font-family: "Noto Serif TC", serif; font-size: clamp(22px, 5vw, 34px); font-weight: 600; letter-spacing: 4px; }
   #intro .sub { margin-top: 10px; color: #9a9aa4; font-size: 14px; max-width: 470px; line-height: 1.7; }
   #enterRow { margin-top: 30px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-  #tourEnterBtn { padding: 14px 36px; font-size: 16px; font-weight: 700; color: #0a0a0c; background: var(--gold); border: none; border-radius: 999px; cursor: pointer; box-shadow: 0 8px 30px rgba(255,211,77,.25); }
-  #enterBtn { padding: 14px 32px; font-size: 16px; font-weight: 600; color: #f2f2f4; background: transparent; border: 1px solid rgba(255,255,255,.28); border-radius: 999px; cursor: pointer; }
+  #tourEnterBtn { padding: 14px 38px; font-size: 14px; font-weight: 600; letter-spacing: 3px; color: #0a0a0c; background: var(--paper); border: 1px solid var(--paper); border-radius: 2px; cursor: pointer; font-family: inherit; transition: background .2s; }
+  #tourEnterBtn:hover { background: #fff; }
+  #enterBtn { padding: 14px 34px; font-size: 14px; font-weight: 500; letter-spacing: 3px; color: #f2f2f4; background: transparent; border: 1px solid rgba(255,255,255,.32); border-radius: 2px; cursor: pointer; font-family: inherit; transition: border-color .2s; }
+  #enterBtn:hover { border-color: #fff; }
   #routeHint { margin-top: 14px; color: #8a8a92; font-size: 12px; }
   /* 章節標題卡 */
   #chapterCard { position: fixed; left: 50%; top: 38%; transform: translate(-50%, -50%); z-index: 45; text-align: center; color: #fff; pointer-events: none; opacity: 0; transition: opacity .6s; text-shadow: 0 2px 18px rgba(0,0,0,.45); }
@@ -50,45 +52,49 @@
   #roomBar button { font-size: 12px; padding: 6px 11px; border-radius: 999px; border: 1px solid rgba(255,255,255,.16); background: rgba(0,0,0,.3); color: #ececf0; cursor: pointer; }
   #roomBar button.on { background: #fff; color: #0a0a0c; border-color: #fff; font-weight: 700; }
 
-  #editbar { position: fixed; top: 52px; left: 0; right: 0; z-index: 16; padding: 9px 14px; display: none; align-items: center; gap: 7px; flex-wrap: wrap; background: rgba(16,16,22,.93); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(255,255,255,.08); }
+  #editbar { position: fixed; top: 52px; left: 0; right: 0; z-index: 16; padding: 9px 14px; display: none; align-items: center; gap: 7px; flex-wrap: wrap; background: rgba(247,245,240,.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--pline); color: var(--pink); }
   #editbar.show { display: flex; }
-  #editbar .lbl { font-size: 12px; font-weight: 700; color: var(--gold); margin-right: 2px; }
-  #editbar button { font-size: 13px; padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.05); color: #ececf0; cursor: pointer; }
-  #editbar button:hover { background: rgba(255,255,255,.12); }
-  #editbar .hint { font-size: 12px; color: #8a8a92; margin-left: auto; }
+  #editbar .lbl { font-size: 11px; letter-spacing: 3px; color: var(--pmuted); margin-right: 4px; }
+  #editbar button { font-size: 13px; padding: 6px 12px; border-radius: 2px; border: 1px solid var(--pline); background: transparent; color: var(--pink); cursor: pointer; font-family: inherit; letter-spacing: 1px; transition: background .2s, color .2s; }
+  #editbar button:hover { background: var(--pink); color: var(--paper); }
+  #editbar .hint { font-size: 12px; color: var(--pmuted); margin-left: auto; letter-spacing: .5px; }
 
-  .panel { position: fixed; z-index: 40; right: 0; top: 0; bottom: 0; width: min(420px, 90vw); background: rgba(18,18,22,.96); backdrop-filter: blur(14px); border-left: 1px solid rgba(255,255,255,.08); color: #ececf0; transform: translateX(100%); transition: transform .3s cubic-bezier(.22,.61,.36,1); display: flex; flex-direction: column; padding: 22px; overflow-y: auto; }
+  .panel { position: fixed; z-index: 40; right: 0; top: 0; bottom: 0; width: min(420px, 90vw); background: rgba(250,248,244,.97); backdrop-filter: blur(14px); border-left: 1px solid var(--pline); color: var(--pink); transform: translateX(100%); transition: transform .3s cubic-bezier(.22,.61,.36,1); display: flex; flex-direction: column; padding: 26px 24px; overflow-y: auto; }
   .panel.open { transform: translateX(0); }
-  .panel .close { position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.04); color: #ececf0; font-size: 18px; cursor: pointer; }
-  .panel .kind { font-size: 12px; color: var(--gold); letter-spacing: 1.5px; }
-  .panel h2 { margin-top: 8px; font-size: 22px; font-weight: 700; line-height: 1.3; }
-  .panel .body { margin-top: 14px; font-size: 15px; line-height: 1.8; color: #c4c4cc; white-space: pre-wrap; }
-  .panel .media { margin-top: 16px; border-radius: 12px; overflow: hidden; background: #000; }
+  .panel .close { position: absolute; top: 16px; right: 16px; width: 34px; height: 34px; border-radius: 0; border: 1px solid var(--pline); background: transparent; color: var(--pink); font-size: 16px; cursor: pointer; transition: background .2s, color .2s; }
+  .panel .close:hover { background: var(--pink); color: var(--paper); }
+  .panel .kind { font-family: "Cormorant Garamond", serif; font-size: 11px; color: var(--gold); letter-spacing: .32em; text-transform: uppercase; }
+  .panel h2 { font-family: "Noto Serif TC", serif; margin-top: 10px; font-size: 21px; font-weight: 600; line-height: 1.45; letter-spacing: 2px; }
+  .panel .body { margin-top: 14px; font-size: 14px; line-height: 2; color: #4c473e; white-space: pre-wrap; }
+  .panel .media { margin-top: 18px; overflow: hidden; background: #edeae3; border: 1px solid var(--phair); }
   .panel .media video, .panel .media img { width: 100%; display: block; }
-  .panel label { display: block; font-size: 12px; color: #9a9aa4; margin: 14px 0 6px; }
-  .panel input[type=text], .panel input[type=url], .panel textarea, .panel select { width: 100%; padding: 9px 11px; font-size: 14px; background: #0e0e12; border: 1px solid rgba(255,255,255,.12); border-radius: 9px; color: #fff; font-family: inherit; }
+  .panel label { display: block; font-size: 12px; color: var(--pmuted); letter-spacing: 2px; margin: 16px 0 6px; }
+  .panel input[type=text], .panel input[type=url], .panel textarea, .panel select { width: 100%; padding: 9px 11px; font-size: 14px; background: #fff; border: 1px solid var(--pline); border-radius: 2px; color: var(--pink); font-family: inherit; }
+  .panel input:focus, .panel textarea:focus, .panel select:focus { outline: none; border-color: var(--pink); }
   .panel textarea { resize: vertical; min-height: 56px; line-height: 1.5; }
-  .panel input[type=range] { width: 100%; accent-color: var(--gold); }
-  .panel input[type=color] { width: 44px; height: 32px; padding: 0; border: 1px solid rgba(255,255,255,.12); border-radius: 8px; background: #0e0e12; }
+  .panel input[type=range] { width: 100%; accent-color: var(--pink); }
+  .panel input[type=color] { width: 44px; height: 32px; padding: 0; border: 1px solid var(--pline); border-radius: 2px; background: #fff; }
   .panel .row { display: flex; gap: 10px; } .panel .row > div { flex: 1; }
-  .panel .rr { display: flex; align-items: center; gap: 10px; } .panel .rr output { font-size: 12px; color: #9a9aa4; min-width: 40px; text-align: right; }
-  .panel .ph { font-size: 11px; color: #6f6f78; margin-top: 5px; line-height: 1.6; }
+  .panel .rr { display: flex; align-items: center; gap: 10px; } .panel .rr output { font-size: 12px; color: var(--pmuted); min-width: 40px; text-align: right; }
+  .panel .ph { font-size: 11px; color: #a8a294; margin-top: 5px; line-height: 1.6; }
   .seg { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
-  .seg button { flex: 1; min-width: 60px; padding: 7px 8px; font-size: 13px; border-radius: 8px; border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.04); color: #ddd; cursor: pointer; }
-  .seg button.sel { background: var(--gold); color: #0a0a0c; border-color: var(--gold); font-weight: 700; }
-  .delBtn { margin-top: 20px; padding: 9px 16px; font-size: 13px; border-radius: 999px; border: 1px solid rgba(255,255,255,.12); background: transparent; color: #f09595; cursor: pointer; }
-  .delBtn:hover { background: rgba(226,75,74,.15); border-color: #e24b4a; }
+  .seg button { flex: 1; min-width: 60px; padding: 7px 8px; font-size: 13px; border-radius: 2px; border: 1px solid var(--pline); background: transparent; color: var(--pink); cursor: pointer; font-family: inherit; transition: background .2s, color .2s; }
+  .seg button:hover { border-color: var(--pink); }
+  .seg button.sel { background: var(--pink); color: var(--paper); border-color: var(--pink); }
+  .delBtn { margin-top: 22px; padding: 9px 18px; font-size: 12px; letter-spacing: 2px; border-radius: 2px; border: 1px solid var(--pline); background: transparent; color: #8c3b34; cursor: pointer; font-family: inherit; transition: background .2s, color .2s; }
+  .delBtn:hover { background: #8c3b34; border-color: #8c3b34; color: #fff; }
 
-  #reactBox { margin-top: 20px; border-top: 1px solid rgba(255,255,255,.1); padding-top: 16px; }
-  #likeBtn { display: inline-flex; align-items: center; gap: 7px; font-size: 15px; padding: 8px 16px; border-radius: 999px; border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.04); color: #ececf0; cursor: pointer; }
-  #likeBtn.liked { background: rgba(212,83,126,.18); border-color: #d4537e; color: #f4c0d1; }
-  #commentList { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
-  #commentList .c { background: rgba(255,255,255,.04); border-radius: 10px; padding: 10px 12px; }
-  #commentList .c .n { font-size: 12px; color: var(--gold); font-weight: 600; }
-  #commentList .c .t { font-size: 14px; color: #d6d6dc; margin-top: 3px; line-height: 1.5; white-space: pre-wrap; }
-  #commentList .none { color: #6f6f78; font-size: 13px; }
-  .cForm { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
-  .cForm button { align-self: flex-end; padding: 8px 18px; font-size: 14px; font-weight: 600; border: none; border-radius: 999px; background: var(--gold); color: #0a0a0c; cursor: pointer; }
+  #reactBox { margin-top: 24px; border-top: 1px solid var(--phair); padding-top: 18px; }
+  #likeBtn { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; letter-spacing: 1px; padding: 8px 18px; border-radius: 2px; border: 1px solid var(--pline); background: transparent; color: var(--pink); cursor: pointer; font-family: inherit; transition: background .2s, border-color .2s; }
+  #likeBtn.liked { background: rgba(140,59,52,.08); border-color: #8c3b34; color: #8c3b34; }
+  #commentList { margin-top: 18px; display: flex; flex-direction: column; gap: 0; }
+  #commentList .c { border-top: 1px solid var(--phair); padding: 12px 2px; }
+  #commentList .c .n { font-size: 11px; color: var(--gold); letter-spacing: 2px; }
+  #commentList .c .t { font-size: 14px; color: #4c473e; margin-top: 4px; line-height: 1.8; white-space: pre-wrap; }
+  #commentList .none { color: #a8a294; font-size: 13px; letter-spacing: 1px; }
+  .cForm { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+  .cForm button { align-self: flex-end; padding: 9px 22px; font-size: 12px; letter-spacing: 2px; border: 1px solid var(--pink); border-radius: 2px; background: var(--pink); color: var(--paper); cursor: pointer; font-family: inherit; transition: background .2s; }
+  .cForm button:hover { background: #3a372f; }
 
   /* 小地圖 */
   #minimap { position: fixed; left: 18px; bottom: 18px; z-index: 18; width: 150px; height: 150px; border-radius: 12px; background: rgba(10,10,12,.6); border: 1px solid rgba(255,255,255,.12); backdrop-filter: blur(6px); opacity: 0; transition: opacity .3s; }
@@ -121,7 +127,7 @@
   #fadeOv { position: fixed; inset: 0; z-index: 55; background: #0a0a0c; opacity: 0; pointer-events: none; transition: opacity .24s; }
   #fadeOv.show { opacity: 1; }
   /* 提示訊息 */
-  #toast { position: fixed; left: 50%; top: 72px; transform: translateX(-50%); z-index: 70; max-width: min(560px, 90vw); padding: 12px 18px; border-radius: 12px; background: rgba(226,75,74,.94); color: #fff; font-size: 13px; line-height: 1.6; box-shadow: 0 8px 28px rgba(0,0,0,.35); opacity: 0; pointer-events: none; transition: opacity .3s; }
+  #toast { position: fixed; left: 50%; top: 72px; transform: translateX(-50%); z-index: 70; max-width: min(560px, 90vw); padding: 12px 20px; border-radius: 2px; background: rgba(26,25,22,.92); color: #f7f5f0; font-size: 13px; letter-spacing: .5px; line-height: 1.7; box-shadow: 0 8px 28px rgba(0,0,0,.3); opacity: 0; pointer-events: none; transition: opacity .3s; }
   #toast.show { opacity: 1; }
   /* 窄視窗：縮小小地圖、聊天框上移、導覽列置中，避免重疊 */
   @media (max-width: 860px) {
@@ -208,7 +214,7 @@
 <div id="chatBar"><input id="chatInput" maxlength="60" placeholder="輸入訊息，按 Enter 顯示在頭上…" /></div>
 
 <div id="intro">
-  <div class="brand">展境 EXHIBIA</div>
+  <div class="brand">S I G H T</div>
   <h1 id="introTitle">載入中…</h1>
   <p class="sub" id="introSub"></p>
   <div id="enterRow" class="hidden">
@@ -220,11 +226,11 @@
   <div id="loadBar"><i></i></div>
 </div>
 
-<script src="js/store.js?v=20260909"></script>
-<script src="js/auth.js?v=20260909"></script>
-<script src="js/templates.js?v=20260909"></script>
-<script src="js/props.js?v=20260909"></script>
-<script src="js/starter.js?v=20260909"></script>
+<script src="js/store.js?v=20260910"></script>
+<script src="js/auth.js?v=20260910"></script>
+<script src="js/templates.js?v=20260910"></script>
+<script src="js/props.js?v=20260910"></script>
+<script src="js/starter.js?v=20260910"></script>
 
 <script type="importmap">
 { "imports": {
@@ -1598,6 +1604,6 @@ if (EX.id) {
   }, 800);
 }
 </script>
-<script type="module" src="js/cloud.js?v=20260909"></script>
+<script type="module" src="js/cloud.js?v=20260910"></script>
 </body>
 </html>

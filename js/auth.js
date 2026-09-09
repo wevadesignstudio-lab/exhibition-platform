@@ -16,7 +16,7 @@
     list() { return Object.values(Store.db.users); },
     signUp(name) {
       const id = Store.newId('u');
-      const u = { id, name: (name || '').trim() || '策展人', createdAt: Date.now() };
+      const u = { id, name: (name || '').trim() || '訪客', guest: true, createdAt: Date.now() };
       Store.db.users[id] = u;
       Store._commit();
       localStorage.setItem(CUR, id);
