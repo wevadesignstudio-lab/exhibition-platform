@@ -42,7 +42,12 @@
   .hero h1 { font-family: "Noto Serif TC", serif; font-size: clamp(34px, 5.4vw, 56px); font-weight: 600; line-height: 1.5; letter-spacing: 6px; }
   .hero .lead { margin: 30px auto 0; font-size: 15px; line-height: 2.1; color: var(--muted); letter-spacing: 1.5px; max-width: 34em; }
 
-  .gate { max-width: 430px; margin: 0 auto; background: var(--card); border: 1px solid var(--line); padding: 42px 44px 36px; box-shadow: 0 24px 60px rgba(26,25,22,.06); }
+  .topbar .topr { display: inline-flex; align-items: center; gap: 22px; }
+  .authOv { position: fixed; inset: 0; z-index: 50; display: none; align-items: center; justify-content: center; padding: 24px; background: rgba(26,25,22,.45); backdrop-filter: blur(3px); }
+  .authOv.show { display: flex; }
+  .gate { position: relative; max-width: 430px; width: 100%; max-height: calc(100vh - 56px); overflow-y: auto; background: var(--card); border: 1px solid var(--line); padding: 42px 44px 36px; box-shadow: 0 40px 100px rgba(26,25,22,.3); }
+  .gclose { position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; border: 1px solid var(--line); background: transparent; color: var(--ink); font-size: 15px; cursor: pointer; font-family: inherit; transition: background .2s, color .2s; }
+  .gclose:hover { background: var(--ink); color: var(--paper); }
   .gate .en { display: block; text-align: center; }
   .gate h2 { font-family: "Noto Serif TC", serif; text-align: center; font-size: 19px; font-weight: 600; letter-spacing: 8px; text-indent: 8px; margin-top: 10px; }
   .gbtn { width: 100%; margin-top: 30px; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 13px; font-size: 14px; letter-spacing: 2px; background: #fff; border: 1px solid var(--line); cursor: pointer; font-family: inherit; color: var(--ink); transition: border-color .2s, box-shadow .2s; }
@@ -128,7 +133,7 @@
   <div class="landing">
     <div class="topbar">
       <a class="wordmark" href="./"><span class="sg">Sight</span></a>
-      <span class="en">Online Curation Platform</span>
+      <span class="topr"><span class="en">Online Curation Platform</span><button class="btn sm" id="openAuthBtn">登入／註冊</button></span>
     </div>
     <div class="hero">
       <span class="en" id="heroTagline">Redefining the Boundaries of Vision</span>
@@ -143,7 +148,9 @@
       <div class="fhead"><span class="en">Now Showing</span><span class="fzh">正在展出</span></div>
       <div class="frow" id="featuredRow"></div>
     </div>
+    <div class="authOv" id="authOv">
     <div class="gate">
+      <button class="gclose" id="authClose">✕</button>
       <span class="en">Register / Sign in</span>
       <h2>註冊・登入</h2>
       <button class="gbtn" id="googleBtn">
@@ -155,6 +162,7 @@
       <input id="nameInput" placeholder="你的名字" maxlength="20" autocomplete="off" />
       <button class="btn" id="createUserBtn">進入觀展</button>
       <div class="fine">以 Google 登入即可建立與編輯展覽，展覽會跟著你的帳戶，任何裝置都能繼續策展；訪客可瀏覽公開展覽並留言。</div>
+    </div>
     </div>
     <div class="triad">
       <div class="row">
@@ -226,6 +234,7 @@ function esc(s) { return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;
 function renderAuth() {
   authView.classList.remove('hidden');
   dashView.classList.add('hidden');
+  document.getElementById('authOv').classList.remove('show');
   /* 首頁文案與主視覺：js/site.js 設定 */
   const S = window.SITE || {};
   if (S.tagline) document.getElementById('heroTagline').textContent = S.tagline;
@@ -333,6 +342,13 @@ document.getElementById('newStarterBtn').onclick = () => {
   const ex = Store.create(Auth.current().id, { title: st.title, description: st.description, style: st.style, rooms: st.rooms });
   location.href = 'view.html?id=' + ex.id + '&edit=1';
 };
+
+/* 登入彈窗 */
+const authOv = document.getElementById('authOv');
+document.getElementById('openAuthBtn').onclick = () => authOv.classList.add('show');
+document.getElementById('authClose').onclick = () => authOv.classList.remove('show');
+authOv.addEventListener('click', e => { if (e.target === authOv) authOv.classList.remove('show'); });
+addEventListener('keydown', e => { if (e.key === 'Escape') authOv.classList.remove('show'); });
 
 route();
 
