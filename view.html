@@ -238,12 +238,12 @@
   </div>
 </div>
 
-<script src="js/site.js?v=20260920"></script>
-<script src="js/store.js?v=20260920"></script>
-<script src="js/auth.js?v=20260920"></script>
-<script src="js/templates.js?v=20260920"></script>
-<script src="js/props.js?v=20260920"></script>
-<script src="js/starter.js?v=20260920"></script>
+<script src="js/site.js?v=20260921"></script>
+<script src="js/store.js?v=20260921"></script>
+<script src="js/auth.js?v=20260921"></script>
+<script src="js/templates.js?v=20260921"></script>
+<script src="js/props.js?v=20260921"></script>
+<script src="js/starter.js?v=20260921"></script>
 
 <script type="importmap">
 { "imports": {
@@ -415,7 +415,7 @@ let hdrLoaded = null, envSunScale = 1;
 function loadHDRI(key) {
   if (!HDRIS[key]) key = 'park';   // 舊資料的「日夜自動／原野」一律回到白天
   const h = HDRIS[key];
-  new RGBELoader().load(h.file, tex => {
+  new RGBELoader().load(AS(h.file), tex => {
     tex.mapping = THREE.EquirectangularReflectionMapping;
     scene.environment = pmrem.fromEquirectangular(tex).texture;
     scene.background = tex; scene.backgroundIntensity = 1.0; sky.visible = false; hdrLoaded = key;
@@ -512,7 +512,12 @@ function woodTexture(base) {
 const roomGroup = new THREE.Group(); scene.add(roomGroup);
 let wallMats = {}; const wallMeshes = [];
 const _roomTexLoader = new THREE.TextureLoader(), _roomTexCache = {};
-function roomTex(url, srgb) { if (_roomTexCache[url]) return _roomTexCache[url]; const t = _roomTexLoader.load(url); if (srgb) t.colorSpace = THREE.SRGBColorSpace; _roomTexCache[url] = t; return t; }
+/* 重資產（HDR／貼圖／3D 模型）改走 jsDelivr 全球 CDN：
+   GitHub Pages 對大檔案傳輸太慢，導致線上看不到窗外景色與木地板。
+   jsDelivr 直接鏡像這個 GitHub repo，快取命中後毫秒級。本機開發仍用本地檔案。 */
+const ASSET_BASE = location.hostname.endsWith('github.io') ? 'https://cdn.jsdelivr.net/gh/wevadesignstudio-lab/exhibition-platform@main/' : '';
+const AS = (p) => (ASSET_BASE && typeof p === 'string' && p.startsWith('assets/')) ? ASSET_BASE + p : p;
+function roomTex(url, srgb) { url = AS(url); if (_roomTexCache[url]) return _roomTexCache[url]; const t = _roomTexLoader.load(url); if (srgb) t.colorSpace = THREE.SRGBColorSpace; _roomTexCache[url] = t; return t; }
 /* ===== 整體氛圍（獨立於個別燈具）：色溫、明亮度、氛圍色 =====
    作用在曝光、環境天光（hemi）與太陽色上；燈具各自的顏色強度不受影響。 */
 function applyMood() {
@@ -710,7 +715,7 @@ const stlLoader = new STLLoader();
 const CEILING_PROP = { hanging_panel: 1, banner: 1, track_light: 1, hang_screen: 1 };       // 天花板物件：不套用整體縮放
 /* 真實 GLB 模型：目標高度（公尺）、是否放在展台上；載入後快取並 clone 重用 */
 // h=目標高度(m)；plinth=放在展台上；y=離地高度（掛牆物件）；ceiling=貼天花板吊掛；r=碰撞半徑
-const PH = (n) => `assets/models/${n}/${n}.gltf`;   // Poly Haven 資料夾版 glTF
+const PH = (n) => AS(`assets/models/${n}/${n}.gltf`);   // Poly Haven 資料夾版 glTF（線上走 jsDelivr）
 const GLB_INFO = {
   SheenWoodLeatherSofa: { h: 0.86, r: 1.05 }, SheenChair: { h: 0.95, r: 0.5 }, ChairDamaskPurplegold: { h: 1.02, r: 0.45 }, IridescentDishWithOlives: { h: 0.2, plinth: true, r: 0.4 },
   anthurium_botany_01_1k: { file: PH('anthurium_botany_01_1k'), h: 0.8, r: 0.3 },
@@ -747,7 +752,7 @@ function loadGlbProp(group, name, yOverride) {
     if (info.light && lightCount < LIGHT_CAP) { lightCount++; const pl = new THREE.PointLight('#ffe9c4', 3, 6, 2); pl.position.set(0, info.ceiling ? R.height - 0.5 : baseY + 0.15, 0.12); group.add(pl); }   // 燈具類模型真的會發光
   };
   if (_glbCache[name]) { place(_glbCache[name]); return; }
-  gltfLoader.load(info.file || ('assets/models/' + name + '.glb'), gltf => { _glbCache[name] = gltf.scene; place(gltf.scene); }, undefined, () => console.warn('GLB 載入失敗', name));
+  gltfLoader.load(AS(info.file || ('assets/models/' + name + '.glb')), gltf => { _glbCache[name] = gltf.scene; place(gltf.scene); }, undefined, () => console.warn('GLB 載入失敗', name));
 }
 const MOUNTABLE_PROP = { partition: 1, locker_grid: 1, shelf_unit: 1, acrylic_stand: 1, glass_partition: 1, slat_wall: 1, wall_seg: 1, wall_arch: 1, wall_door: 1 };     // 可掛展品的結構
 /* 牆體道具的碰撞：沿牆佈點、開口處留通道（可走過洞） */
@@ -915,7 +920,7 @@ function buildItem(d, i) {
   let group;
   if (d.type === 'image' || d.type === 'text' || d.type === 'video') {
     let tex;
-    if (d.type === 'image') tex = d.src ? texLoader.load(d.src, t => { t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = MAX_ANISO; }, undefined, () => showToast('「' + (d.title || '圖片') + '」的圖片載入失敗：此網址不允許跨網域使用（Notion／Google Drive 等都不行）。請改用「上傳檔案」，或把圖放進 assets/img/ 後填 assets/img/檔名。', 9000)) : placeholderTexture(d.title, d.color);
+    if (d.type === 'image') tex = d.src ? texLoader.load(AS(d.src), t => { t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = MAX_ANISO; }, undefined, () => showToast('「' + (d.title || '圖片') + '」的圖片載入失敗：此網址不允許跨網域使用（Notion／Google Drive 等都不行）。請改用「上傳檔案」，或把圖放進 assets/img/ 後填 assets/img/檔名。', 9000)) : placeholderTexture(d.title, d.color);
     else if (d.type === 'text') tex = textMaterial(d.title, d.description || '', d.textStyle || 'board', d.textColor);
     else { if (d.src) { const v = document.createElement('video'); v.src = d.src; v.crossOrigin = 'anonymous'; v.loop = true; v.muted = true; v.playsInline = true; v.play().catch(() => {}); d._video = v; tex = new THREE.VideoTexture(v); tex.colorSpace = THREE.SRGBColorSpace; } else tex = placeholderTexture('▶  影片展品', '#444'); }
     group = makeWallArt(d, tex);
@@ -927,8 +932,8 @@ function buildItem(d, i) {
     addBlob(group, 0.5);
     const holder = new THREE.Group(); holder.position.y = 1.4; group.add(holder);
     const isStl = d.format === 'stl' || (d.src && /\.stl(\?|$)/i.test(d.src));
-    if (d.src && isStl) stlLoader.load(d.src, geo => { geo.computeVertexNormals(); fitObject(new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: d.color || '#c9c6be', roughness: 0.55, metalness: 0.1 })), holder, d.scale); }, undefined, () => {});
-    else if (d.src) gltfLoader.load(d.src, gltf => fitObject(gltf.scene, holder, d.scale), undefined, () => {});
+    if (d.src && isStl) stlLoader.load(AS(d.src), geo => { geo.computeVertexNormals(); fitObject(new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: d.color || '#c9c6be', roughness: 0.55, metalness: 0.1 })), holder, d.scale); }, undefined, () => {});
+    else if (d.src) gltfLoader.load(AS(d.src), gltf => fitObject(gltf.scene, holder, d.scale), undefined, () => {});
     else { const ico = new THREE.Mesh(new THREE.IcosahedronGeometry(0.5 * (d.scale || 1), 0), new THREE.MeshStandardMaterial({ color: d.color || '#7a6ff0', roughness: 0.25, metalness: 0.5, flatShading: true })); ico.castShadow = true; holder.add(ico); }
     animated.push({ obj: holder, spin: 0.4, _i: i });
   } else if (d.type === 'prop') {
@@ -936,7 +941,7 @@ function buildItem(d, i) {
     group = window.PROPS ? PROPS.build(THREE, d.shape, { color: d.color, roomHeight: R.height, prim: propMaterial(d.mat, d.color) }) : new THREE.Group();
     if (d.shape && d.shape.startsWith('glb:')) loadGlbProp(group, d.shape.slice(4), d.y);   // 真實模型（d.y＝自訂離地高度）
     if (d.shape === 'acrylic_stand' && d.src) {   // 圖直接印在壓克力板上
-      texLoader.load(d.src, tex => {
+      texLoader.load(AS(d.src), tex => {
         tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = MAX_ANISO;
         const iw = tex.image.width || 1, ih = tex.image.height || 1;
         let h = 1.55, w = h * iw / ih; if (w > 1.34) { w = 1.34; h = w * ih / iw; }
@@ -945,7 +950,7 @@ function buildItem(d, i) {
       }, undefined, () => showToast('壓克力展示架的圖片載入失敗：請改用「上傳檔案」或 assets/img/ 路徑。', 7000));
     }
     if (d.shape === 'hang_screen' && d.src) {   // 圖顯示在懸吊螢幕上
-      texLoader.load(d.src, tex => {
+      texLoader.load(AS(d.src), tex => {
         tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = MAX_ANISO;
         const img = new THREE.Mesh(new THREE.PlaneGeometry(0.66, 0.4), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.5, emissive: '#ffffff', emissiveMap: tex, emissiveIntensity: 0.35 }));
         img.position.set(0, 1.5, 0.026); group.add(img);
@@ -1796,6 +1801,6 @@ if (EX.id) {
   }, 800);
 }
 </script>
-<script type="module" src="js/cloud.js?v=20260920"></script>
+<script type="module" src="js/cloud.js?v=20260921"></script>
 </body>
 </html>
