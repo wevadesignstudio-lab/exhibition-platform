@@ -238,11 +238,12 @@
   </div>
 </div>
 
-<script src="js/store.js?v=20260918"></script>
-<script src="js/auth.js?v=20260918"></script>
-<script src="js/templates.js?v=20260918"></script>
-<script src="js/props.js?v=20260918"></script>
-<script src="js/starter.js?v=20260918"></script>
+<script src="js/site.js?v=20260919"></script>
+<script src="js/store.js?v=20260919"></script>
+<script src="js/auth.js?v=20260919"></script>
+<script src="js/templates.js?v=20260919"></script>
+<script src="js/props.js?v=20260919"></script>
+<script src="js/starter.js?v=20260919"></script>
 
 <script type="importmap">
 { "imports": {
@@ -271,6 +272,28 @@ const fromStore = exId && window.Store ? Store.get(exId) : null;
 const EX = fromStore || DEMO;
 const me = window.Auth ? Auth.current() : null;
 const isOwner = !!(fromStore && me && EX.ownerId === me.id);
+/* 共同策展權限：owner=創辦人、full=全權編輯、own=僅限自己上架的作品（雲端 roles 決定） */
+let myRole = 'owner';
+function canTouch(d) { return myRole !== 'own' || !d.by || (window.Cloud && d.by === Cloud.uid); }
+function applyRoleUI() {
+  if (myRole !== 'own') return;
+  const sb = document.getElementById('sceneBtn'); if (sb) sb.style.display = 'none';
+  const hint = document.querySelector('#editbar .hint'); if (hint) hint.textContent = '你的權限：僅能新增與編輯自己上架的作品';
+}
+(function fetchRole() {
+  if (!EX.id) return;
+  const iv = setInterval(async () => {
+    if (!window.Cloud || !Cloud.enabled || !Cloud.exMeta) return;
+    clearInterval(iv);
+    try {
+      const meta = await Cloud.exMeta(EX.id);
+      if (!meta) return;                                     // 雲端沒有 → 本機擁有者，維持 owner
+      if (meta.owner === Cloud.uid) myRole = 'owner';
+      else myRole = (meta.roles || {})[Cloud.uid] || 'full'; // 舊協作者（無角色記錄）視為全權
+      applyRoleUI();
+    } catch (e) {}
+  }, 800);
+})();
 
 // ---- 多房間：把舊的單一 items 遷移成 rooms[]，確保每件展品有 id ----
 function ensureItemIds(items) { for (const it of (items || [])) if (!it.id) it.id = (window.Store ? Store.newId('it') : 'it' + Math.round(performance.now()) + Math.random().toString(36).slice(2, 6)); }
@@ -1049,11 +1072,13 @@ function doUndo() {
 }
 function deleteSelected() {
   const i = selected; if (i < 0) return;
+  if (!canTouch(EX.items[i])) return;
   EX.items.splice(i, 1); setSelected(-1); rebuildAll(); saveEx(); refreshCount();
   showToast('已刪除（Ctrl+Z 可復原）', 2200);
 }
 function duplicateSelected() {
   const i = selected; if (i < 0) return;
+  if (!canTouch(EX.items[i])) return;
   const c = JSON.parse(JSON.stringify(EX.items[i])); c.id = Store.newId('it'); delete c._video;
   if (c.wall !== undefined && !c.mount) c.offset = (c.offset || 0) + (c.size ? c.size.w + 0.3 : 1);
   else if (c.mount) c.mount.p[0] += 0.5;
@@ -1234,6 +1259,7 @@ function addItemEdit(type) {
   else if (type === 'light') d = { id, type, title: '投射燈', x: fx, z: fz, height: Math.min(R.height - 0.5, 3.6), color: '#fff4e0', intensity: 7, angle: 30 };
   else if (type === 'hotspot') d = { id, type, title: '新熱點', description: '點我看隱藏內容。', src: '', x: fx, z: fz, height: 1.5 };
   else d = { id, type: 'model', title: '新立體展品', description: '', src: '', x: fx, z: fz, scale: 1, color: '#7a6ff0' };
+  if (window.Cloud && Cloud.uid) { d.by = Cloud.uid; d.byName = (window.Auth && Auth.current()?.name) || ''; }   // 記錄上架者（權限判斷用）
   EX.items.push(d); const i = EX.items.length - 1; buildItem(d, i); setSelected(i); saveEx(); refreshCount();
 }
 function refreshCount() { const c = document.querySelector('#topbar .count'); if (c) c.textContent = `${(EX.items || []).length} 件展品`; }
@@ -1355,6 +1381,7 @@ canvas.addEventListener('mousedown', e => {
   if (isEdit) {
     const i = pickIndex(ndc(e));
     if (i >= 0) {
+      if (!canTouch(EX.items[i])) { showToast('這是其他策展人上架的作品，僅上架者與全權成員可編輯', 2400); return; }
       setSelected(i);
       if (EX.items[i].locked) return;                       // 鎖定的物件：可選取但不可拖曳
       dragY = lastHitPoint ? lastHitPoint.y : (built[i] ? built[i].position.y : 0);
@@ -1700,6 +1727,6 @@ if (EX.id) {
   }, 800);
 }
 </script>
-<script type="module" src="js/cloud.js?v=20260918"></script>
+<script type="module" src="js/cloud.js?v=20260919"></script>
 </body>
 </html>

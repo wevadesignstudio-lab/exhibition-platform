@@ -14,4 +14,8 @@ window.SITE = {
 
   banner: '',                    // 主視覺圖片（見上方說明；留空＝顯示精選展覽）
   bannerCaption: '',             // 主視覺下方的小字說明（選填）
+
+  /* 平台管理者的 Google 信箱：用這些信箱登入會自動開通策展工作室，
+     並能在工作室裡審核其他帳號的開通申請。 */
+  adminEmails: ['hunt.hu1992@gmail.com'],
 };

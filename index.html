@@ -123,6 +123,40 @@
 
   footer { margin-top: 90px; padding-top: 24px; border-top: 1px solid var(--line); display: flex; gap: 18px; flex-wrap: wrap; align-items: baseline; font-size: 11px; letter-spacing: 2px; color: var(--faint); }
   footer .spacer { flex: 1; }
+
+  /* 帳號下拉選單 */
+  details.acct { position: relative; }
+  details.acct summary { list-style: none; display: inline-flex; align-items: center; gap: 10px; cursor: pointer; padding: 5px 4px; }
+  details.acct summary::-webkit-details-marker { display: none; }
+  details.acct .pav { width: 30px; height: 30px; border-radius: 50%; background: var(--ink); color: var(--paper); display: inline-grid; place-items: center; font-size: 13px; overflow: hidden; flex: none; }
+  details.acct .pav img { width: 100%; height: 100%; object-fit: cover; }
+  details.acct summary b { font-size: 13px; font-weight: 500; letter-spacing: 1px; max-width: 9em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  details.acct .car { font-size: 9px; color: var(--muted); }
+  details.acct .menu { position: absolute; right: 0; top: calc(100% + 10px); min-width: 172px; background: var(--card); border: 1px solid var(--line); box-shadow: 0 18px 50px rgba(26,25,22,.16); z-index: 60; display: flex; flex-direction: column; padding: 6px 0; }
+  details.acct .menu button { text-align: left; background: none; border: none; font-family: inherit; font-size: 13px; letter-spacing: 2px; color: var(--ink); padding: 11px 18px; cursor: pointer; }
+  details.acct .menu button:hover { background: rgba(26,25,22,.05); }
+  details.acct .menu .sep { height: 1px; background: var(--hair); margin: 6px 0; }
+
+  /* 個人設定／成員管理彈窗 */
+  .pavRow { display: flex; align-items: center; gap: 16px; margin-top: 26px; }
+  .pavRow .pav { width: 52px; height: 52px; border-radius: 50%; background: var(--ink); color: var(--paper); display: grid; place-items: center; font-size: 20px; overflow: hidden; flex: none; }
+  .pavRow .pav img { width: 100%; height: 100%; object-fit: cover; }
+  .codeBox { margin-top: 26px; padding: 20px; text-align: center; border: 1px solid var(--hair); background: rgba(26,25,22,.02); }
+  .codeBox .code { font-family: "Cormorant Garamond", serif; font-size: 34px; font-weight: 600; letter-spacing: .34em; text-indent: .34em; margin-top: 8px; }
+  .codeBox .ph2 { margin-top: 10px; font-size: 12px; color: var(--faint); line-height: 1.9; }
+  #memList { margin-top: 22px; }
+  #memList .mrow { display: flex; align-items: center; gap: 10px; padding: 12px 2px; border-top: 1px solid var(--hair); font-size: 13px; }
+  #memList .mrow:last-child { border-bottom: 1px solid var(--hair); }
+  #memList .mrow .nm { flex: 1; letter-spacing: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #memList select { padding: 6px 8px; font-size: 12px; border: 1px solid var(--line); background: #fff; color: var(--ink); font-family: inherit; border-radius: 2px; }
+  #memList .rm { background: none; border: none; font-family: inherit; font-size: 12px; letter-spacing: 1px; color: #8c3b34; cursor: pointer; padding: 6px; }
+  #adminList .mrow { display: flex; align-items: center; gap: 14px; padding: 13px 4px; border-top: 1px solid var(--hair); font-size: 13px; }
+  #adminList .mrow:last-child { border-bottom: 1px solid var(--hair); }
+  #adminList .mrow .nm { min-width: 8em; letter-spacing: 1px; }
+  #adminList .mrow .em { flex: 1; color: var(--faint); font-size: 12px; overflow: hidden; text-overflow: ellipsis; }
+  #adminList .st { font-size: 11px; letter-spacing: 2px; }
+  #adminList .st.ok { color: #3d7258; }
+  #adminList .st.no { color: #c08a3e; }
   .hidden { display: none !important; }
 </style>
 </head>
@@ -133,7 +167,7 @@
   <div class="landing">
     <div class="topbar">
       <a class="wordmark" href="./"><span class="sg">Sight</span></a>
-      <span class="topr"><span class="en">Online Curation Platform</span><button class="btn sm" id="openAuthBtn">登入／註冊</button></span>
+      <span class="topr"><span class="en">Online Curation Platform</span><button class="btn sm" id="openAuthBtn">登入／註冊</button><span id="acctHome"></span></span>
     </div>
     <div class="hero">
       <span class="en" id="heroTagline">Redefining the Boundaries of Vision</span>
@@ -179,15 +213,14 @@
   <nav class="top">
     <a class="wordmark" href="./"><span class="sg">Sight</span></a>
     <span class="spacer"></span>
-    <span class="who"><img class="avatar" id="whoAvatar" alt="" /><b id="whoName"></b></span>
-    <button class="textlink" id="signOutBtn">登出</button>
+    <span id="acctStudio"></span>
   </nav>
 
   <div class="studio" id="studioBox">
     <div>
       <span class="en">Curatorial Studio</span>
       <h1>策展工作室</h1>
-      <p>從「基礎展覽空間」開始——動線、章節與光線都已就位，換上作品即可開展；或從空白展間自由發揮。</p>
+      <p>從「基礎展覽空間」開始——動線、章節與光線都已就位，換上作品即可開展；或從空白展間自由發揮。共同策展：把展覽的加入代號給夥伴即可。</p>
     </div>
     <div class="acts">
       <button class="btn fill" id="newStarterBtn">建立展覽</button>
@@ -196,12 +229,9 @@
     </div>
   </div>
 
-  <div class="studio" id="guestBox" style="display:none">
-    <div>
-      <span class="en">Welcome, Visitor</span>
-      <h1>觀展大廳</h1>
-      <p>你正以訪客身分瀏覽。走進任何一檔公開展覽，以第一人稱觀展、按讚與留言；想建立自己的展覽，請以 Google 登入。</p>
-    </div>
+  <div id="adminBox" class="hidden">
+    <h2 class="section"><span class="zh">帳號審核</span><span class="en">Curator Approvals</span></h2>
+    <div id="adminList"></div>
   </div>
 
   <h2 class="section" id="mineHead"><span class="zh">我的展覽</span><span class="en">My Exhibitions</span></h2>
@@ -217,24 +247,59 @@
   </footer>
 </div>
 
-<script src="js/site.js?v=20260918"></script>
-<script src="js/store.js?v=20260918"></script>
-<script src="js/auth.js?v=20260918"></script>
-<script src="js/templates.js?v=20260918"></script>
-<script src="js/starter.js?v=20260918"></script>
+<!-- 個人設定 -->
+<div class="authOv" id="profOv">
+  <div class="gate">
+    <button class="gclose" data-close="profOv">✕</button>
+    <span class="en">Profile</span>
+    <h2>個人設定</h2>
+    <div class="pavRow">
+      <span class="pav" id="profAv"></span>
+      <button class="btn sm" id="profAvBtn">更換頭像</button>
+      <input type="file" id="profAvFile" accept="image/*" class="hidden" />
+    </div>
+    <label for="profName">顯示名稱</label>
+    <input id="profName" maxlength="20" autocomplete="off" />
+    <button class="btn fill" id="profSave" style="width:100%;margin-top:26px;padding:13px;">儲存</button>
+  </div>
+</div>
+
+<!-- 共同策展成員管理 -->
+<div class="authOv" id="memOv">
+  <div class="gate">
+    <button class="gclose" data-close="memOv">✕</button>
+    <span class="en">Co-curators</span>
+    <h2>共同策展</h2>
+    <div class="codeBox">
+      <span class="en">Join Code</span>
+      <div class="code" id="memCode">——</div>
+      <div class="ph2">把代號給共同策展的夥伴，在首頁選單「加入協作」輸入即可進入這檔展覽。<br>新成員預設「僅限自己的作品」，可在下方調整。</div>
+    </div>
+    <div id="memList"></div>
+  </div>
+</div>
+
+<script src="js/site.js?v=20260919"></script>
+<script src="js/store.js?v=20260919"></script>
+<script src="js/auth.js?v=20260919"></script>
+<script src="js/templates.js?v=20260919"></script>
+<script src="js/starter.js?v=20260919"></script>
 <script>
 const authView = document.getElementById('authView');
 const dashView = document.getElementById('dashView');
-const VER = '20260918';   // 連結帶版本，避免 CDN 提供舊頁面
+const VER = '20260919';   // 連結帶版本，避免 CDN 提供舊頁面
 
 function fmtDate(ts) { if (!ts) return '—'; const d = new Date(ts); return `${d.getFullYear()}.${(d.getMonth()+1)}.${d.getDate()}`; }
 function thumbColor(tpl) { return (TEMPLATES[tpl]?.room.wallColor) || '#dedbd2'; }
 function esc(s) { return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
-function renderAuth() {
+let page = 'home';   // 'home' | 'studio'
+
+function renderHome() {
   authView.classList.remove('hidden');
   dashView.classList.add('hidden');
   document.getElementById('authOv').classList.remove('show');
+  renderAcct();
   /* 首頁文案與主視覺：js/site.js 設定 */
   const S = window.SITE || {};
   if (S.tagline) document.getElementById('heroTagline').textContent = S.tagline;
@@ -250,6 +315,50 @@ function renderAuth() {
     renderFeatured();
   }
 }
+
+/* ===== 右上角帳號區：未登入=登入鈕；已登入=頭像＋名字下拉選單 ===== */
+function acctHTML(me) {
+  const av = me.photo ? `<img src="${esc(me.photo)}" alt="" />` : esc((me.name || '?')[0]);
+  return `<details class="acct"><summary><span class="pav">${av}</span><b>${esc(me.name)}</b><span class="car">▾</span></summary>
+    <div class="menu">
+      <button data-m="prof">個人設定</button>
+      ${me.cloud ? '<button data-m="studio">策展工作室</button>' : ''}
+      <div class="sep"></div>
+      <button data-m="out">登出</button>
+    </div></details>`;
+}
+function renderAcct() {
+  const me = Auth.current();
+  const home = document.getElementById('acctHome'), stu = document.getElementById('acctStudio');
+  document.getElementById('openAuthBtn').style.display = me ? 'none' : '';
+  const html = me ? acctHTML(me) : '';
+  home.innerHTML = html; stu.innerHTML = html;
+  document.querySelectorAll('details.acct .menu button').forEach(b => b.onclick = (e) => {
+    e.preventDefault();
+    b.closest('details').removeAttribute('open');
+    if (b.dataset.m === 'prof') openProfile();
+    else if (b.dataset.m === 'studio') openStudio();
+    else if (b.dataset.m === 'out') doSignOut();
+  });
+}
+function doSignOut() {
+  Auth.signOut();
+  if (window.Cloud && Cloud.user && Cloud.signOutGoogle) Cloud.signOutGoogle().catch(() => {});
+  page = 'home'; route();
+}
+
+/* ===== 策展工作室：需 Google 登入＋帳號審核 ===== */
+async function openStudio() {
+  const me = Auth.current();
+  if (!me) { document.getElementById('authOv').classList.add('show'); return; }
+  if (!me.cloud) { alert('策展工作室需以 Google 帳戶登入。'); return; }
+  if (window.Cloud && Cloud.enabled && Cloud.curatorStatus) {
+    let st = null;
+    try { st = await Cloud.curatorStatus(); } catch (e) {}
+    if (st && !st.approved && !st.admin) { alert('你的策展工作室正在審核中，開通後即可使用。'); return; }
+  }
+  page = 'studio'; route(); window.scrollTo(0, 0);
+}
 function renderFeatured() {
   const fw = document.getElementById('featuredWrap');
   const pub = Store.listPublished().slice(0, 3);
@@ -262,7 +371,6 @@ function renderFeatured() {
   fw.classList.remove('hidden');
 }
 /* 雲端同步完成後，精選區跟著更新 */
-addEventListener('cloud-sync', () => { if (!Auth.current()) renderAuth(); });
 
 function exCard(ex, owned) {
   const rooms = (ex.rooms || []).length || 1;
@@ -271,6 +379,7 @@ function exCard(ex, owned) {
   const actions = owned
     ? `<a class="btn sm fill" href="view.html?id=${ex.id}&edit=1&v=${VER}">佈展</a>
        <a class="btn sm" href="view.html?id=${ex.id}&mode=tour&v=${VER}">預覽</a>
+       <button class="btn sm quiet" data-act="mem" data-id="${ex.id}">成員</button>
        <button class="btn sm quiet" data-act="pub" data-id="${ex.id}">${ex.published ? '取消公開' : '公開展出'}</button>
        <button class="btn sm quiet danger" data-act="del" data-id="${ex.id}">刪除</button>`
     : `<a class="btn sm fill" href="view.html?id=${ex.id}&v=${VER}">進入觀展</a>`;
@@ -290,18 +399,9 @@ function renderDash() {
   const me = Auth.current();
   authView.classList.add('hidden');
   dashView.classList.remove('hidden');
-  document.getElementById('whoName').textContent = me.name;
-  const av = document.getElementById('whoAvatar');
-  if (me.photo) { av.src = me.photo; av.style.display = 'block'; } else av.style.display = 'none';
+  renderAcct();
 
-  /* 訪客僅能觀展：隱藏策展功能與「我的展覽」 */
-  const canCurate = !!me.cloud;
-  document.getElementById('studioBox').style.display = canCurate ? '' : 'none';
-  document.getElementById('guestBox').style.display = canCurate ? 'none' : '';
-  document.getElementById('mineHead').style.display = canCurate ? '' : 'none';
-  document.getElementById('mine').style.display = canCurate ? '' : 'none';
-
-  const mine = canCurate ? Store.listByOwner(me.id) : [];
+  const mine = Store.listByOwner(me.id);
   document.getElementById('mine').innerHTML = mine.length
     ? mine.map(ex => exCard(ex, true)).join('')
     : `<div class="empty">尚無展覽。<br>從「建立展覽」開始——動線與章節已備好，換上作品即可開展。</div>`;
@@ -315,23 +415,116 @@ function renderDash() {
     btn.onclick = () => {
       const id = btn.dataset.id;
       if (btn.dataset.act === 'pub') { const ex = Store.get(id); Store.update(id, { published: !ex.published }); renderDash(); }
+      else if (btn.dataset.act === 'mem') openMembers(id);
       else if (btn.dataset.act === 'del') { if (confirm('確定刪除這檔展覽？此動作無法復原。')) { Store.remove(id); renderDash(); } }
     };
   });
+  renderAdmin();
 }
 
-function route() { if (Auth.current()) renderDash(); else renderAuth(); }
+/* 管理者：帳號審核清單 */
+async function renderAdmin() {
+  const box = document.getElementById('adminBox');
+  if (!window.Cloud || !Cloud.enabled || !Cloud.user) { box.classList.add('hidden'); return; }
+  let st = null; try { st = await Cloud.curatorStatus(); } catch (e) {}
+  if (!st || !st.admin) { box.classList.add('hidden'); return; }
+  let list = []; try { list = await Cloud.listCurators(); } catch (e) { box.classList.add('hidden'); return; }
+  const rows = list.filter(c => c.uid !== Cloud.uid);
+  document.getElementById('adminList').innerHTML = rows.length
+    ? rows.map(c => `<div class="mrow">
+        <span class="nm">${esc(c.name || '（未命名）')}</span>
+        <span class="em">${esc(c.email || '')}</span>
+        <span class="st ${c.approved ? 'ok' : 'no'}">${c.approved ? '已開通' : '待審核'}</span>
+        <button class="btn sm ${c.approved ? 'quiet' : 'fill'}" data-cu="${esc(c.uid)}" data-ap="${c.approved ? 0 : 1}">${c.approved ? '停用' : '核准'}</button>
+      </div>`).join('')
+    : `<div class="empty" style="padding:26px;">目前沒有其他帳號申請。</div>`;
+  document.querySelectorAll('#adminList [data-cu]').forEach(b => b.onclick = async () => {
+    try { await Cloud.setCurator(b.dataset.cu, b.dataset.ap === '1'); renderAdmin(); }
+    catch (e) { alert('操作失敗：' + (e.message || e)); }
+  });
+  box.classList.remove('hidden');
+}
+
+/* 擁有者：成員與權限管理 */
+async function openMembers(exId) {
+  if (!window.Cloud || !Cloud.enabled) { alert('連線中，請稍候再試。'); return; }
+  document.getElementById('memOv').classList.add('show');
+  document.getElementById('memCode').textContent = '……';
+  document.getElementById('memList').innerHTML = '';
+  try {
+    let meta = await Cloud.exMeta(exId);
+    if (!meta) { document.getElementById('memCode').textContent = '——'; document.getElementById('memList').innerHTML = '<div class="empty" style="padding:24px;">這檔展覽還在同步中，稍後再試。</div>'; return; }
+    const code = meta.joinCode || await Cloud.ensureJoinCode(exId);
+    document.getElementById('memCode').textContent = code;
+    const others = (meta.members || []).filter(uid => uid !== meta.owner);
+    document.getElementById('memList').innerHTML = others.length
+      ? others.map(uid => `<div class="mrow">
+          <span class="nm">${esc((meta.memberInfo[uid] || {}).name || '協作者')}</span>
+          <select data-role="${esc(uid)}">
+            <option value="own" ${(meta.roles[uid] || 'own') === 'own' ? 'selected' : ''}>僅限自己的作品</option>
+            <option value="full" ${meta.roles[uid] === 'full' ? 'selected' : ''}>全權編輯</option>
+          </select>
+          <button class="rm" data-rm="${esc(uid)}">移除</button>
+        </div>`).join('')
+      : `<div class="empty" style="padding:24px;">尚無成員——把上方代號給夥伴即可加入。</div>`;
+    document.querySelectorAll('#memList [data-role]').forEach(s => s.onchange = async () => {
+      try { await Cloud.setRole(exId, s.dataset.role, s.value); } catch (e) { alert('更新失敗：' + (e.message || e)); }
+    });
+    document.querySelectorAll('#memList [data-rm]').forEach(b => b.onclick = async () => {
+      if (!confirm('移除這位成員？')) return;
+      try { await Cloud.removeMember(exId, b.dataset.rm); openMembers(exId); } catch (e) { alert('移除失敗：' + (e.message || e)); }
+    });
+  } catch (e) { alert('讀取成員失敗：' + (e.message || e)); }
+}
+
+/* 個人設定 */
+let _profPhoto = null;
+function openProfile() {
+  const me = Auth.current(); if (!me) return;
+  _profPhoto = null;
+  document.getElementById('profName').value = me.name || '';
+  document.getElementById('profAv').innerHTML = me.photo ? `<img src="${esc(me.photo)}" alt="" />` : esc((me.name || '?')[0]);
+  document.getElementById('profOv').classList.add('show');
+}
+document.getElementById('profAvBtn').onclick = () => document.getElementById('profAvFile').click();
+document.getElementById('profAvFile').onchange = () => {
+  const f = document.getElementById('profAvFile').files[0]; if (!f) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const cv = document.createElement('canvas'); cv.width = cv.height = 128;
+      const s = Math.min(img.width, img.height);
+      cv.getContext('2d').drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, 128, 128);
+      _profPhoto = cv.toDataURL('image/jpeg', 0.85);
+      document.getElementById('profAv').innerHTML = `<img src="${_profPhoto}" alt="" />`;
+    };
+    img.src = rd.result;
+  };
+  rd.readAsDataURL(f);
+};
+document.getElementById('profSave').onclick = () => {
+  const me = Auth.current(); if (!me) return;
+  const n = document.getElementById('profName').value.trim();
+  if (n) me.name = n;
+  if (_profPhoto) me.photo = _profPhoto;
+  Store.db.users[me.id] = me; Store._commit();
+  document.getElementById('profOv').classList.remove('show');
+  renderAcct();
+};
+
+function route() { if (page === 'studio' && Auth.current()) renderDash(); else renderHome(); }
 
 document.getElementById('createUserBtn').onclick = () => {
   const name = document.getElementById('nameInput').value;
   Auth.signUp(name); route();
 };
 document.getElementById('nameInput').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('createUserBtn').click(); });
-document.getElementById('signOutBtn').onclick = () => {
-  Auth.signOut();
-  if (window.Cloud && Cloud.user && Cloud.signOutGoogle) Cloud.signOutGoogle().catch(() => {});
-  route();
-};
+/* Logo：無論登入與否都回首頁 */
+document.querySelectorAll('.wordmark').forEach(a => a.onclick = (e) => { e.preventDefault(); page = 'home'; route(); window.scrollTo(0, 0); });
+/* 彈窗通用關閉 */
+document.querySelectorAll('.gclose[data-close]').forEach(b => b.onclick = () => document.getElementById(b.dataset.close).classList.remove('show'));
+document.querySelectorAll('.authOv').forEach(ov => ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('show'); }));
 document.getElementById('newExBtn').onclick = () => {
   const ex = Store.create(Auth.current().id, { title: '未命名展覽' });
   location.href = 'editor.html?id=' + ex.id;
@@ -347,36 +540,39 @@ document.getElementById('newStarterBtn').onclick = () => {
 const authOv = document.getElementById('authOv');
 document.getElementById('openAuthBtn').onclick = () => authOv.classList.add('show');
 document.getElementById('authClose').onclick = () => authOv.classList.remove('show');
-authOv.addEventListener('click', e => { if (e.target === authOv) authOv.classList.remove('show'); });
-addEventListener('keydown', e => { if (e.key === 'Escape') authOv.classList.remove('show'); });
+addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.authOv.show').forEach(ov => ov.classList.remove('show')); });
 
 route();
 
 /* ===== 雲端 ===== */
-addEventListener('cloud-sync', () => { if (Auth.current()) renderDash(); });
+addEventListener('cloud-sync', () => { route(); });
 
-/* Google 登入 */
+/* Google 登入 → 通過審核者直接進工作室 */
 document.getElementById('googleBtn').onclick = async () => {
   if (!window.Cloud || !Cloud.signInGoogle) { alert('連線中，請稍候再試。'); return; }
-  try { const u = await Cloud.signInGoogle(); Auth.signInCloud(u); route(); }
+  try { const u = await Cloud.signInGoogle(); Auth.signInCloud(u); authOv.classList.remove('show'); route(); openStudio(); }
   catch (e) {
     const code = e.code || '';
     if (code !== 'auth/popup-closed-by-user' && code !== 'auth/cancelled-popup-request')
       alert('登入未完成，請再試一次。');
   }
 };
-/* 已登入過 Google（此瀏覽器記得你）→ 自動進入工作室 */
+/* 已登入過 Google（此瀏覽器記得你）→ 顯示帳號選單 */
 addEventListener('cloud-auth', () => {
   if (window.Cloud && Cloud.user && !Auth.current()) { Auth.signInCloud(Cloud.user); route(); }
 });
 
 document.getElementById('joinBtn').onclick = async () => {
   if (!window.Cloud || !Cloud.enabled) { alert('連線中，請稍候再試。'); return; }
-  const v = prompt('貼上展覽連結或展覽編號：'); if (!v) return;
-  try { const ex = await Cloud.join(v); alert('已加入協作：' + (ex.title || '')); renderDash(); }
-  catch (e) { alert('加入失敗：' + (e.message || e)); }
+  const v = prompt('輸入加入代號（6 碼），或貼上展覽連結：'); if (!v) return;
+  try {
+    const looksCode = !v.includes('=') && v.trim().length <= 8;
+    const ex = looksCode ? await Cloud.joinByCode(v) : await Cloud.join(v);
+    alert('已加入共同策展：' + (ex.title || ''));
+    renderDash();
+  } catch (e) { alert('加入失敗：' + (e.message || e)); }
 };
 </script>
-<script type="module" src="js/cloud.js?v=20260918"></script>
+<script type="module" src="js/cloud.js?v=20260919"></script>
 </body>
 </html>

@@ -9,7 +9,7 @@
    ========================================================================= */
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import { getAuth, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-import { getFirestore, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, collection, query, where, onSnapshot, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import { getFirestore, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, collection, query, where, onSnapshot, arrayUnion, arrayRemove, deleteField } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyACR6Pf0icDgsopS2n60su5Uc7KD3f-uNw",
@@ -23,7 +23,8 @@ const COL = 'vex_exhibitions';
 const CLIENT_ID = 'c' + Math.random().toString(36).slice(2, 10);
 const KEY = 'exhib_platform_v1';
 
-window.Cloud = { status: '連線中…', uid: null, user: null, enabled: false, err: null, join, watch, pushNow, signInGoogle, signOutGoogle, presence };
+window.Cloud = { status: '連線中…', uid: null, user: null, enabled: false, err: null, join, watch, pushNow, signInGoogle, signOutGoogle, presence,
+  curatorStatus, listCurators, setCurator, joinByCode, exMeta, ensureJoinCode, setRole, removeMember };
 
 let db, auth;
 try {
@@ -37,6 +38,7 @@ try {
     Cloud.uid = u.uid;
     Cloud.user = u.isAnonymous ? null : { uid: u.uid, name: u.displayName, email: u.email, photo: u.photoURL };
     Cloud.enabled = true; setStatus('已連線'); startSync();
+    if (Cloud.user) ensureCurator();   // Google 使用者：確保有審核名單記錄（管理者自動開通）
     for (const k in lastPushed) delete lastPushed[k];   // 換身分後重推，讓 members 掛上新 uid
     pushNow();
     window.dispatchEvent(new CustomEvent('cloud-auth'));
@@ -99,7 +101,7 @@ async function pushNow() {
     if (json.length > 900000) { console.warn('[cloud] 展覽過大無法同步（圖片請改用網址或 assets/img/）', ex.id); continue; }
     try {
       const payload = { data: JSON.parse(json), published: !!ex.published, updatedAt: ex.updatedAt || Date.now(), client: CLIENT_ID, members: arrayUnion(Cloud.uid) };
-      if (!knownDocs.has(ex.id)) payload.owner = Cloud.uid;
+      if (!knownDocs.has(ex.id)) { payload.owner = Cloud.uid; payload.joinCode = makeCode(); }
       await setDoc(doc(db, COL, ex.id), payload, { merge: true });
       knownDocs.add(ex.id); lastPushed[ex.id] = ex.updatedAt; setStatus('已連線・已同步');
     } catch (e) { setStatus('上傳被拒（需設定 Firestore 規則）', e); return; }
@@ -112,7 +114,7 @@ async function join(idOrUrl) {
   if (!id) throw new Error('無效的連結或 ID');
   const snap = await getDoc(doc(db, COL, id));
   if (!snap.exists()) throw new Error('雲端找不到這檔展覽（對方可能尚未同步）');
-  await updateDoc(doc(db, COL, id), { members: arrayUnion(Cloud.uid) });
+  await updateDoc(doc(db, COL, id), { members: arrayUnion(Cloud.uid), ['roles.' + Cloud.uid]: 'full' });
   const cd = snap.data(); cd.members = (cd.members || []).concat([Cloud.uid]);
   mergeIn([cd]);
   return cd.data;
@@ -128,6 +130,67 @@ function watch(exId, cb) {
     if (mergeIn([cd]) && cb) cb();
   }, e => console.warn('[cloud] watch', e));
 }
+
+/* ===== 策展工作室審核名單（vex_curators/{uid}） =====
+   Google 登入後自動建立申請記錄；SITE.adminEmails 內的信箱自動核准並成為管理者。 */
+const CUR_COL = 'vex_curators';
+async function ensureCurator() {
+  try {
+    const ref = doc(db, CUR_COL, Cloud.uid);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) {
+      const admin = ((window.SITE && SITE.adminEmails) || []).includes(Cloud.user.email);
+      await setDoc(ref, { uid: Cloud.uid, name: Cloud.user.name || '', email: Cloud.user.email || '', approved: admin, admin, requestedAt: Date.now() });
+    }
+  } catch (e) { console.warn('[cloud] curator', e); }
+}
+async function curatorStatus() {
+  if (!Cloud.enabled || !Cloud.user) return null;
+  try {
+    const snap = await getDoc(doc(db, CUR_COL, Cloud.uid));
+    if (!snap.exists()) { await ensureCurator(); return curatorStatus(); }
+    const d = snap.data(); return { approved: !!d.approved, admin: !!d.admin };
+  } catch (e) { return null; }   // 讀不到（規則未設）→ 呼叫端決定放行與否
+}
+async function listCurators() {
+  const out = []; (await getDocs(collection(db, CUR_COL))).forEach(d => out.push(d.data()));
+  return out.sort((a, b) => (a.approved ? 1 : 0) - (b.approved ? 1 : 0) || (b.requestedAt || 0) - (a.requestedAt || 0));
+}
+async function setCurator(uid, approved) { await updateDoc(doc(db, CUR_COL, uid), { approved: !!approved }); }
+
+/* ===== 共同策展：加入代號與成員權限 =====
+   雲端展覽 doc 增加 joinCode（6 碼）、roles:{uid:'full'|'own'}、memberInfo:{uid:{name}}。
+   'full'=全權編輯，'own'=僅能新增／編輯自己上架的作品。 */
+function makeCode() { const A = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; let s = ''; for (let i = 0; i < 6; i++) s += A[Math.floor(Math.random() * A.length)]; return s; }
+async function exMeta(exId) {
+  const snap = await getDoc(doc(db, COL, exId));
+  if (!snap.exists()) return null;
+  const d = snap.data();
+  return { owner: d.owner, roles: d.roles || {}, joinCode: d.joinCode || '', memberInfo: d.memberInfo || {}, members: d.members || [], title: (d.data || {}).title || '' };
+}
+async function ensureJoinCode(exId) {
+  const m = await exMeta(exId); if (!m) throw new Error('這檔展覽尚未同步到雲端');
+  if (m.joinCode) return m.joinCode;
+  const code = makeCode();
+  await updateDoc(doc(db, COL, exId), { joinCode: code });
+  return code;
+}
+async function joinByCode(code) {
+  code = String(code).trim().toUpperCase();
+  if (!code) throw new Error('請輸入代號');
+  const qs = await getDocs(query(collection(db, COL), where('joinCode', '==', code)));
+  if (qs.empty) throw new Error('找不到這個代號，請向創辦人確認');
+  const d0 = qs.docs[0]; const cd = d0.data();
+  const patch = { members: arrayUnion(Cloud.uid) };
+  patch['roles.' + Cloud.uid] = (cd.roles || {})[Cloud.uid] || 'own';   // 新成員預設：僅限自己的作品
+  patch['memberInfo.' + Cloud.uid] = { name: (window.Auth && Auth.current()?.name) || (Cloud.user && Cloud.user.name) || '協作者' };
+  await updateDoc(doc(db, COL, d0.id), patch);
+  cd.members = (cd.members || []).concat([Cloud.uid]);
+  mergeIn([cd]);
+  return cd.data;
+}
+async function setRole(exId, uid, role) { await updateDoc(doc(db, COL, exId), { ['roles.' + uid]: role }); }
+async function removeMember(exId, uid) { await updateDoc(doc(db, COL, exId), { members: arrayRemove(uid), ['roles.' + uid]: deleteField(), ['memberInfo.' + uid]: deleteField() }); }
 
 /* 同行觀眾：在 vex_presence/{exId}/users/{uid} 回報自己的位置，並訂閱其他人。
    規則未開通時安靜停用，不影響觀展。回傳 { stop, kick }。 */

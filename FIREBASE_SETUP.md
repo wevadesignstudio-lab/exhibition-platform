@@ -21,7 +21,17 @@ Console → **Firestore Database → 規則**，在既有規則的 `match /datab
       allow read: if true;
       allow write: if request.auth != null;
     }
+    // 策展工作室審核名單（Google 登入後自動申請；管理者核准）
+    match /vex_curators/{uid} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
 ```
+
+## 帳號與權限
+- **管理者**：`js/site.js` 的 `adminEmails` 裡的 Google 信箱登入即自動開通，並在工作室看到「帳號審核」區。
+- **策展人**：其他人以 Google 登入後自動送出申請，管理者核准後才能進入策展工作室。
+- **共同策展**：每檔展覽有 6 碼「加入代號」（成員面板可見）；夥伴在「加入協作」輸入即可加入。新成員預設「僅限自己的作品」，創辦人可改為「全權編輯」或移除。
 
 > 這是課堂友善版：任何登入者可編輯（方便學生互相協作）。若之後要收緊成「僅擁有者與協作成員可改」，告訴 Claude 換嚴格版規則。
 
