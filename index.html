@@ -56,6 +56,20 @@
   .gate .btn { width: 100%; margin-top: 24px; padding: 13px; }
   .gate .fine { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--hair); font-size: 12px; color: var(--faint); line-height: 2; letter-spacing: .5px; }
 
+  /* 主視覺 banner／精選展覽 */
+  .bannerWrap { margin: 0 0 90px; }
+  .bannerWrap img { display: block; width: 100%; height: clamp(260px, 44vw, 480px); object-fit: cover; border: 1px solid var(--line); }
+  .bannerWrap figcaption { margin-top: 12px; text-align: center; font-size: 10px; }
+  .bannerWrap figcaption:empty { display: none; }
+  .featured { margin: 0 0 90px; }
+  .featured .fhead { display: flex; align-items: baseline; gap: 16px; margin-bottom: 18px; }
+  .featured .fzh { font-family: "Noto Serif TC", serif; font-size: 17px; font-weight: 600; letter-spacing: 5px; }
+  .frow { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+  .fcard { position: relative; display: block; height: 300px; border: 1px solid var(--line); background: #e7e4dc center/cover; text-decoration: none; overflow: hidden; }
+  .fcard::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(15,14,12,.66) 100%); transition: background .3s; }
+  .fcard:hover::after { background: linear-gradient(180deg, rgba(0,0,0,.06) 0%, rgba(15,14,12,.72) 100%); }
+  .fcard .ft { position: absolute; left: 20px; right: 20px; bottom: 18px; z-index: 1; color: #f7f5f0; font-family: "Noto Serif TC", serif; font-size: 18px; font-weight: 600; letter-spacing: 3px; }
+  .fcard .fm { position: absolute; left: 20px; bottom: 46px; z-index: 1; color: rgba(247,245,240,.75); font-size: 11px; letter-spacing: 2px; }
   .triad { max-width: 1060px; margin: 90px auto 0; padding: 0 28px; }
   .triad .row { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
   .triad .cell { padding: 34px 26px; border-left: 1px solid var(--hair); }
@@ -117,9 +131,17 @@
       <span class="en">Online Curation Platform</span>
     </div>
     <div class="hero">
-      <span class="en">Redefining the Boundaries of Vision</span>
-      <h1>翻轉視覺的無邊界想像</h1>
-      <p class="lead">拉近被時空凝結的細節，<br>目光所至，即是故事重生的起點。</p>
+      <span class="en" id="heroTagline">Redefining the Boundaries of Vision</span>
+      <h1 id="heroTitle">翻轉視覺的無邊界想像</h1>
+      <p class="lead" id="heroLead">拉近被時空凝結的細節，<br>目光所至，即是故事重生的起點。</p>
+    </div>
+    <figure class="bannerWrap hidden" id="bannerWrap">
+      <img id="bannerImg" alt="" />
+      <figcaption class="en" id="bannerCap"></figcaption>
+    </figure>
+    <div class="featured hidden" id="featuredWrap">
+      <div class="fhead"><span class="en">Now Showing</span><span class="fzh">正在展出</span></div>
+      <div class="frow" id="featuredRow"></div>
     </div>
     <div class="gate">
       <span class="en">Register / Sign in</span>
@@ -187,14 +209,15 @@
   </footer>
 </div>
 
-<script src="js/store.js?v=20260916"></script>
-<script src="js/auth.js?v=20260916"></script>
-<script src="js/templates.js?v=20260916"></script>
-<script src="js/starter.js?v=20260916"></script>
+<script src="js/site.js?v=20260917"></script>
+<script src="js/store.js?v=20260917"></script>
+<script src="js/auth.js?v=20260917"></script>
+<script src="js/templates.js?v=20260917"></script>
+<script src="js/starter.js?v=20260917"></script>
 <script>
 const authView = document.getElementById('authView');
 const dashView = document.getElementById('dashView');
-const VER = '20260916';   // 連結帶版本，避免 CDN 提供舊頁面
+const VER = '20260917';   // 連結帶版本，避免 CDN 提供舊頁面
 
 function fmtDate(ts) { if (!ts) return '—'; const d = new Date(ts); return `${d.getFullYear()}.${(d.getMonth()+1)}.${d.getDate()}`; }
 function thumbColor(tpl) { return (TEMPLATES[tpl]?.room.wallColor) || '#dedbd2'; }
@@ -203,7 +226,34 @@ function esc(s) { return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;
 function renderAuth() {
   authView.classList.remove('hidden');
   dashView.classList.add('hidden');
+  /* 首頁文案與主視覺：js/site.js 設定 */
+  const S = window.SITE || {};
+  if (S.tagline) document.getElementById('heroTagline').textContent = S.tagline;
+  if (S.headline) document.getElementById('heroTitle').textContent = S.headline;
+  if (S.subline) document.getElementById('heroLead').innerHTML = esc(S.subline).replace(/\n/g, '<br>');
+  const bw = document.getElementById('bannerWrap'), fw = document.getElementById('featuredWrap');
+  if (S.banner) {
+    document.getElementById('bannerImg').src = S.banner;
+    document.getElementById('bannerCap').textContent = S.bannerCaption || '';
+    bw.classList.remove('hidden'); fw.classList.add('hidden');
+  } else {
+    bw.classList.add('hidden');
+    renderFeatured();
+  }
 }
+function renderFeatured() {
+  const fw = document.getElementById('featuredWrap');
+  const pub = Store.listPublished().slice(0, 3);
+  if (!pub.length) { fw.classList.add('hidden'); return; }
+  document.getElementById('featuredRow').innerHTML = pub.map(ex => {
+    const bg = ex.thumb ? `background-image:url('${ex.thumb}')` : `background:linear-gradient(150deg, ${thumbColor(ex.template)} 0%, #d8d4c9 100%)`;
+    const items = (ex.rooms || []).reduce((n, r) => n + (r.items || []).length, 0);
+    return `<a class="fcard" style="${bg}" href="view.html?id=${ex.id}&v=${VER}"><span class="fm">${(ex.rooms || []).length || 1} 個展間 · ${items} 件作品</span><span class="ft">${esc(ex.title)}</span></a>`;
+  }).join('');
+  fw.classList.remove('hidden');
+}
+/* 雲端同步完成後，精選區跟著更新 */
+addEventListener('cloud-sync', () => { if (!Auth.current()) renderAuth(); });
 
 function exCard(ex, owned) {
   const rooms = (ex.rooms || []).length || 1;
@@ -311,6 +361,6 @@ document.getElementById('joinBtn').onclick = async () => {
   catch (e) { alert('加入失敗：' + (e.message || e)); }
 };
 </script>
-<script type="module" src="js/cloud.js?v=20260916"></script>
+<script type="module" src="js/cloud.js?v=20260917"></script>
 </body>
 </html>
