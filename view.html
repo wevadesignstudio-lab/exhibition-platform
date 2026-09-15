@@ -19,16 +19,28 @@
   #crosshair { position: fixed; left: 50%; top: 50%; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%; background: rgba(255,255,255,.85); box-shadow: 0 0 0 2px rgba(0,0,0,.35); pointer-events: none; opacity: 0; transition: opacity .2s, transform .12s; z-index: 20; }
   #crosshair.show { opacity: 1; } #crosshair.hot { transform: scale(1.9); background: var(--gold); }
 
-  #intro { position: fixed; inset: 0; z-index: 60; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px; background: radial-gradient(120% 90% at 50% 30%, #16161c 0%, #0a0a0c 70%); color: #f2f2f4; }
-  #intro .brand { font-size: 11px; letter-spacing: 6px; color: #c8ab6e; margin-bottom: 18px; }
-  #intro h1 { font-family: "Noto Serif TC", serif; font-size: clamp(22px, 5vw, 34px); font-weight: 600; letter-spacing: 4px; }
-  #intro .sub { margin-top: 10px; color: #9a9aa4; font-size: 14px; max-width: 470px; line-height: 1.7; }
-  #enterRow { margin-top: 30px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-  #tourEnterBtn { padding: 14px 38px; font-size: 14px; font-weight: 600; letter-spacing: 3px; color: #0a0a0c; background: var(--paper); border: 1px solid var(--paper); border-radius: 2px; cursor: pointer; font-family: inherit; transition: background .2s; }
-  #tourEnterBtn:hover { background: #fff; }
-  #enterBtn { padding: 14px 34px; font-size: 14px; font-weight: 500; letter-spacing: 3px; color: #f2f2f4; background: transparent; border: 1px solid rgba(255,255,255,.32); border-radius: 2px; cursor: pointer; font-family: inherit; transition: border-color .2s; }
-  #enterBtn:hover { border-color: #fff; }
-  #routeHint { margin-top: 14px; color: #8a8a92; font-size: 12px; }
+  #intro { position: fixed; inset: 0; z-index: 60; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px; background: var(--paper); color: var(--pink); }
+  #intro .brand { font-family: "Cormorant Garamond", serif; font-size: 12px; letter-spacing: .42em; color: #8a6f45; margin-bottom: 22px; }
+  #intro h1 { font-family: "Noto Serif TC", serif; font-size: clamp(24px, 5vw, 38px); font-weight: 600; letter-spacing: 6px; }
+  #intro .sub { margin-top: 16px; color: var(--pmuted); font-size: 14px; max-width: 470px; line-height: 2; letter-spacing: .5px; }
+  #enterRow { margin-top: 38px; display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+  #tourEnterBtn { padding: 14px 42px; font-size: 13px; font-weight: 500; letter-spacing: 4px; text-indent: 4px; color: var(--paper); background: var(--pink); border: 1px solid var(--pink); border-radius: 2px; cursor: pointer; font-family: inherit; transition: background .2s; }
+  #tourEnterBtn:hover { background: #3a372f; border-color: #3a372f; }
+  #enterBtn { padding: 14px 38px; font-size: 13px; font-weight: 500; letter-spacing: 4px; text-indent: 4px; color: var(--pink); background: transparent; border: 1px solid var(--pink); border-radius: 2px; cursor: pointer; font-family: inherit; transition: background .2s, color .2s; }
+  #enterBtn:hover { background: var(--pink); color: var(--paper); }
+  /* 操作說明彈窗 */
+  #helpOv { position: fixed; inset: 0; z-index: 66; display: none; align-items: center; justify-content: center; padding: 24px; background: rgba(26,25,22,.48); }
+  #helpOv.show { display: flex; }
+  #helpCard { background: var(--paper); color: var(--pink); border: 1px solid rgba(26,25,22,.2); padding: 36px 40px 32px; max-width: 430px; width: 100%; text-align: center; box-shadow: 0 30px 80px rgba(0,0,0,.35); }
+  #helpCard .hk { font-family: "Cormorant Garamond", serif; font-size: 11px; letter-spacing: .38em; text-transform: uppercase; color: #8a6f45; }
+  #helpCard h3 { font-family: "Noto Serif TC", serif; font-size: 19px; font-weight: 600; letter-spacing: 6px; text-indent: 6px; margin-top: 10px; }
+  #helpRows { margin-top: 24px; text-align: left; display: flex; flex-direction: column; }
+  #helpRows .hr { display: flex; align-items: center; gap: 14px; padding: 13px 2px; border-top: 1px solid var(--phair); font-size: 13px; color: #4c473e; line-height: 1.7; }
+  #helpRows .hr:last-child { border-bottom: 1px solid var(--phair); }
+  #helpRows .hr b { font-weight: 500; color: var(--pink); min-width: 7.5em; letter-spacing: 1px; }
+  #helpRows kbd { display: inline-block; min-width: 20px; text-align: center; padding: 2px 7px; margin: 0 1px; font-size: 12px; color: var(--pink); background: #fff; border: 1px solid var(--pline); border-radius: 2px; }
+  #helpClose { margin-top: 26px; padding: 12px 44px; font-size: 13px; letter-spacing: 4px; text-indent: 4px; color: var(--paper); background: var(--pink); border: 1px solid var(--pink); border-radius: 2px; cursor: pointer; font-family: inherit; transition: background .2s; }
+  #helpClose:hover { background: #3a372f; }
   /* 章節標題卡 */
   #chapterCard { position: fixed; left: 50%; top: 38%; transform: translate(-50%, -50%); z-index: 45; text-align: center; color: #fff; pointer-events: none; opacity: 0; transition: opacity .6s; text-shadow: 0 2px 18px rgba(0,0,0,.45); }
   #chapterCard.show { opacity: 1; }
@@ -37,10 +49,8 @@
   /* 聚焦暈影：到站看作品時畫面邊緣柔化 */
   #focusVig { position: fixed; inset: 0; z-index: 12; pointer-events: none; opacity: 0; transition: opacity .8s; background: radial-gradient(ellipse 60% 55% at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,.42) 100%); }
   #focusVig.show { opacity: 1; }
-  #controlsHint { margin-top: 26px; color: #6f6f78; font-size: 13px; line-height: 1.9; }
-  #controlsHint kbd { display: inline-block; min-width: 22px; padding: 2px 7px; margin: 0 1px; font-size: 12px; color: #d2d2d8; background: #232329; border: 1px solid #34343c; border-radius: 6px; }
-  #loadBar { margin-top: 22px; width: 220px; height: 3px; background: #232329; border-radius: 3px; overflow: hidden; }
-  #loadBar > i { display: block; height: 100%; width: 0%; background: var(--gold); transition: width .3s; }
+  #loadBar { margin-top: 30px; width: 220px; height: 2px; background: rgba(26,25,22,.12); overflow: hidden; }
+  #loadBar > i { display: block; height: 100%; width: 0%; background: var(--pink); transition: width .3s; }
 
   #topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 15; padding: 12px 16px; display: flex; align-items: center; gap: 8px; background: linear-gradient(180deg, rgba(0,0,0,.5), rgba(0,0,0,0)); color: #f2f2f4; opacity: 0; transition: opacity .3s; flex-wrap: wrap; }
   #topbar.show { opacity: 1; }
@@ -214,23 +224,30 @@
 <div id="chatBar"><input id="chatInput" maxlength="60" placeholder="輸入訊息，按 Enter 顯示在頭上…" /></div>
 
 <div id="intro">
-  <div class="brand">S I G H T</div>
+  <div class="brand">SIGHT</div>
   <h1 id="introTitle">載入中…</h1>
   <p class="sub" id="introSub"></p>
   <div id="enterRow" class="hidden">
-    <button id="tourEnterBtn">策展導覽（推薦）</button>
+    <button id="tourEnterBtn">導覽模式</button>
     <button id="enterBtn">自由參觀</button>
   </div>
-  <div id="routeHint">策展導覽會依策展人設計的動線，依章節帶你走到每件作品前。</div>
-  <div id="controlsHint"></div>
   <div id="loadBar"><i></i></div>
 </div>
 
-<script src="js/store.js?v=20260910"></script>
-<script src="js/auth.js?v=20260910"></script>
-<script src="js/templates.js?v=20260910"></script>
-<script src="js/props.js?v=20260910"></script>
-<script src="js/starter.js?v=20260910"></script>
+<div id="helpOv">
+  <div id="helpCard">
+    <div class="hk">How to Navigate</div>
+    <h3>操作方式</h3>
+    <div id="helpRows"></div>
+    <button id="helpClose">開始參觀</button>
+  </div>
+</div>
+
+<script src="js/store.js?v=20260915"></script>
+<script src="js/auth.js?v=20260915"></script>
+<script src="js/templates.js?v=20260915"></script>
+<script src="js/props.js?v=20260915"></script>
+<script src="js/starter.js?v=20260915"></script>
 
 <script type="importmap">
 { "imports": {
@@ -1563,24 +1580,45 @@ function tick() {
 const intro = document.getElementById('intro'), enterBtn = document.getElementById('enterBtn');
 document.title = EX.title || '觀展';
 document.getElementById('introTitle').textContent = EX.title || '展覽';
-document.getElementById('introSub').textContent = isTouch ? '左下搖桿移動，滑右側畫面轉視角。可開小地圖、按「導覽」自動帶你逛。走近展品點一下互動。' : '按住滑鼠左鍵拖曳轉視角，W/A/S/D 移動。可開小地圖、按「導覽」自動帶你逛。準心對準展品點一下互動、按讚、留言。';
-document.getElementById('controlsHint').innerHTML = isTouch ? '' : '<kbd>W</kbd> 前進 <kbd>S</kbd> 後退 <kbd>A</kbd> <kbd>D</kbd> 左右 &nbsp;·&nbsp; 按住左鍵 轉視角 &nbsp;·&nbsp; 點擊展品 互動';
+document.getElementById('introSub').textContent = EX.description || '';
 const topbar = document.getElementById('topbar');
 topbar.querySelector('.title').textContent = EX.title || '展覽';
 refreshCount(); renderRoomBar();
 tourBtn.classList.remove('hidden'); mapBtn.classList.remove('hidden');
 if (isOwner) { editToggle.classList.remove('hidden'); if (isTouch) editToggle.textContent = '編輯（建議用電腦）'; }
+
+/* 操作說明彈窗：進場後跳出，看完關閉（此瀏覽器記住，不重複打擾） */
+document.getElementById('helpRows').innerHTML = isTouch
+  ? '<div class="hr"><b>移動</b><span>左下搖桿</span></div><div class="hr"><b>轉視角</b><span>滑動畫面</span></div><div class="hr"><b>互動</b><span>走近展品，點一下查看、按讚、留言</span></div><div class="hr"><b>導覽</b><span>按上方「導覽」自動帶你逛</span></div>'
+  : '<div class="hr"><b>移動</b><span><kbd>W</kbd> 前進 <kbd>S</kbd> 後退 <kbd>A</kbd><kbd>D</kbd> 左右，<kbd>Shift</kbd> 快走</span></div><div class="hr"><b>轉視角</b><span>按住滑鼠左鍵拖曳</span></div><div class="hr"><b>互動</b><span>準心對準展品點一下：查看、按讚、留言</span></div><div class="hr"><b>導覽</b><span>按上方「導覽」沿動線自動帶你逛</span></div>';
+const helpOv = document.getElementById('helpOv');
+function showHelp() { helpOv.classList.add('show'); }
+document.getElementById('helpClose').onclick = () => { helpOv.classList.remove('show'); try { localStorage.setItem('sight_help_seen', '1'); } catch (e) {} };
+
 THREE.DefaultLoadingManager.onProgress = (u, l, t) => { document.querySelector('#loadBar > i').style.width = Math.round(l / t * 100) + '%'; };
-function ready() { document.querySelector('#loadBar > i').style.width = '100%'; document.getElementById('enterRow').classList.remove('hidden'); document.getElementById('loadBar').classList.add('hidden'); }
+const wantTour = params.get('mode') === 'tour';
+let entered = false;
+function ready() {
+  document.querySelector('#loadBar > i').style.width = '100%';
+  if (entered) return;
+  /* 佈展（edit=1）直接進編輯；預覽（mode=tour）直接進導覽——都跳過入場選擇 */
+  if ((isOwner && wantEdit && !isTouch) || wantTour) { enterExhibition(wantTour); return; }
+  document.getElementById('enterRow').classList.remove('hidden');
+  document.getElementById('loadBar').classList.add('hidden');
+}
 THREE.DefaultLoadingManager.onLoad = ready; setTimeout(ready, 900);
 function enterExhibition(withTour) {
+  if (entered) return; entered = true;
   intro.classList.add('hidden'); topbar.classList.add('show'); crosshair.classList.add('show');
   minimap.classList.add('show'); chatBar.classList.add('show');
   capturePortals(); applyPortals();   // 渲染各房間快照，貼到門戶窗上
   for (const it of (EX.items || [])) if (it._video) it._video.play().catch(() => {});
   setupBgm(); if (bgmAudio && !muted) bgmAudio.play().catch(() => {});
-  if (isOwner && wantEdit && !isTouch) enterEdit();
+  const goEdit = isOwner && wantEdit && !isTouch;
+  if (goEdit) enterEdit();
   else if (withTour) startTour();
+  let seen = false; try { seen = !!localStorage.getItem('sight_help_seen'); } catch (e) {}
+  if (!goEdit && !seen) showHelp();
 }
 enterBtn.addEventListener('click', () => enterExhibition(false));
 document.getElementById('tourEnterBtn').addEventListener('click', () => enterExhibition(true));
@@ -1604,6 +1642,6 @@ if (EX.id) {
   }, 800);
 }
 </script>
-<script type="module" src="js/cloud.js?v=20260910"></script>
+<script type="module" src="js/cloud.js?v=20260915"></script>
 </body>
 </html>
