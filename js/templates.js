@@ -48,6 +48,24 @@ window.TEMPLATES = {
       skirtingColor: '#c2a684', lightColor: '#ffedcf', floorType: 'wood', ambient: 0.6
     }
   },
+  blackbox: {
+    name: '設計黑盒',
+    desc: '深色地毯與軌道燈，配白牆板與發光燈箱',
+    room: {
+      width: 18, height: 4.2, depth: 13,
+      wallColor: '#4b4b52', floorColor: '#3b3b41', ceilingColor: '#26262a',
+      skirtingColor: '#333338', lightColor: '#fff1dc', floorType: 'carpet', ambient: 0.5, dark: true
+    }
+  },
+  whitelab: {
+    name: '純白實驗場',
+    desc: '無縫白地坪、肋條天花，適合流線展島與懸吊螢幕',
+    room: {
+      width: 20, height: 3.8, depth: 14,
+      wallColor: '#f2f1ed', floorColor: '#eceae6', ceilingColor: '#f5f4f0',
+      skirtingColor: '#e7e5e0', lightColor: '#ffffff', floorType: 'gloss', ambient: 0.85, ribbed: true
+    }
+  },
   loft: {
     name: '工業風 Loft',
     desc: '挑高灰調空間，適合裝置與大型物件',

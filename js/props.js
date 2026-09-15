@@ -33,6 +33,9 @@ window.PROPS = {
       ['glass_partition', '壓克力隔屏架'], ['acrylic_stand', '鋁管壓克力展示架（可掛畫）'], ['hex_shelf', '六角蜂巢壁架'],
       ['curved_bench', '曲線造型長椅'], ['slat_wall', '木格柵牆'], ['slat_screen', '木格柵屏風（通透）']
     ]},
+    { cat: '當代展場', items: [
+      ['lightbox', '發光燈箱板'], ['curve_plinth', '流線展島（白）'], ['hang_screen', '懸吊螢幕（可放圖）']
+    ]},
     { cat: '動線', items: [['doorway', '門戶（通往其他房間）']] },
     { cat: '牆體／隔間', items: [['wall_seg', '直牆段'], ['wall_arch', '拱門牆（可穿越）'], ['wall_door', '門洞牆（可穿越）']] },
     { cat: '傢俱', items: [
@@ -259,6 +262,30 @@ window.PROPS = {
         }
         for (const yy of [0.25, 2.2]) { const rail = cyl(0.015, 0.015, 1.7, chrome, 0, yy, 0, 10); rail.rotation.z = Math.PI / 2; }
         const sheet = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.85, 0.012), acrylic); sheet.position.y = 1.22; sheet.castShadow = false; g.add(sheet);
+        break;
+      }
+      case 'lightbox': {
+        // 發光燈箱板：像設計展的自立光牆，兩面發光、黑色細框
+        const lit = new THREE.MeshStandardMaterial({ color: '#f8f6f0', emissive: '#fff6e2', emissiveIntensity: 1.7, roughness: 0.5 });
+        box(0.74, 2.04, 0.1, black, 0, 1.06, 0);                         // 黑框芯
+        for (const zz of [0.052, -0.052]) { const p = box(0.68, 1.96, 0.006, lit, 0, 1.06, zz); p.castShadow = false; }
+        box(0.5, 0.05, 0.34, black, 0, 0.025, 0);                        // 底座
+        const pl = new THREE.PointLight('#fff4de', 3.2, 4.5, 2); pl.position.set(0, 1.1, 0); g.add(pl);
+        break;
+      }
+      case 'curve_plinth': {
+        // 流線展島：大圓角的無縫白色量體（可縮放組出起伏地景）
+        const soft = new THREE.MeshPhysicalMaterial({ color: '#f2f1ed', roughness: 0.32, metalness: 0, clearcoat: 0.25, clearcoatRoughness: 0.4 });
+        const geo = RBG ? new RBG(2.4, 0.85, 1.6, 4, 0.4) : new THREE.BoxGeometry(2.4, 0.85, 1.6);
+        const m = new THREE.Mesh(geo, soft); m.position.y = 0.425; m.castShadow = true; m.receiveShadow = true; g.add(m);
+        break;
+      }
+      case 'hang_screen': {
+        // 懸吊螢幕：細鋼索從天花板垂下的展示螢幕（可用「圖片網址／上傳」放內容）
+        const top = RH, scrY = 1.5;
+        cyl(0.006, 0.006, top - scrY - 0.24, chrome, 0, scrY + 0.24 + (top - scrY - 0.24) / 2, 0, 6);
+        box(0.7, 0.44, 0.035, black, 0, scrY, 0);
+        const face = box(0.66, 0.4, 0.006, E('#1d2734', 0.5), 0, scrY, 0.021); face.castShadow = false;
         break;
       }
       case 'glass_partition': {
