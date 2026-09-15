@@ -13,7 +13,7 @@
     return {
       title: title || '我的展覽',
       description: '基礎展覽空間：順時針動線、四個章節、主視覺牆與自然光立體區。',
-      style: { floorTex: 'auto', frameDefault: 'wood', hdri: 'auto', font: 'serif' },
+      style: { floorTex: 'auto', frameDefault: 'wood', hdri: 'park', font: 'serif' },
       rooms: [{
         id: 'rm0', name: '主展廳', template: 'gallery',
         items: [

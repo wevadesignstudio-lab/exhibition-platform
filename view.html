@@ -238,11 +238,11 @@
   </div>
 </div>
 
-<script src="js/store.js?v=20260917"></script>
-<script src="js/auth.js?v=20260917"></script>
-<script src="js/templates.js?v=20260917"></script>
-<script src="js/props.js?v=20260917"></script>
-<script src="js/starter.js?v=20260917"></script>
+<script src="js/store.js?v=20260918"></script>
+<script src="js/auth.js?v=20260918"></script>
+<script src="js/templates.js?v=20260918"></script>
+<script src="js/props.js?v=20260918"></script>
+<script src="js/starter.js?v=20260918"></script>
 
 <script type="importmap">
 { "imports": {
@@ -289,7 +289,7 @@ let R = roomDims();
 
 const STYLE = Object.assign({
   frameDefault: 'black', font: 'serif',
-  sun: 2.4, sunAzimuth: 35, sky: '#bcd6f2', hdri: 'field',
+  sun: 2.4, sunAzimuth: 35, sky: '#bcd6f2', hdri: 'park',
   bgm: '', bgmVolume: 0.4, wallColors: {}
 }, EX.style || {});
 EX.style = STYLE;
@@ -387,33 +387,17 @@ function skyTexture(top) {
 const sky = new Sky(); sky.scale.setScalar(600); scene.add(sky);
 { const u = sky.material.uniforms; u.turbidity.value = 4; u.rayleigh.value = 1.1; u.mieCoefficient.value = 0.003; u.mieDirectionalG.value = 0.82; }
 // HDRI：真實全景照片當戶外背景＋環境光照（IBL），所有材質得到真實反射
-const HDRIS = { auto: { name: '跟隨台北時間（日夜自動）', auto: true }, field: { file: 'assets/hdr/spruit_sunrise_1k.hdr', name: '原野樹影（日出）' }, park: { file: 'assets/hdr/san_giuseppe_bridge_2k.hdr', name: '歐洲街景（白天）' }, night: { file: 'assets/hdr/moonless_golf_1k.hdr', name: '夜晚（星空）', night: true } };
+const HDRIS = { park: { file: 'assets/hdr/san_giuseppe_bridge_2k.hdr', name: '歐洲街景（白天）' }, night: { file: 'assets/hdr/moonless_golf_1k.hdr', name: '夜晚（星空）', night: true } };
 let hdrLoaded = null, envSunScale = 1;
-/* 跟隨台北時間：白天用原野、夜晚用星空；太陽仰角與方位隨時刻移動（清晨低、正午高、傍晚低） */
-let _autoKey = null, _autoElev = null, _autoAz = null;
-function taipeiHour() {
-  const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Taipei', hour: 'numeric', minute: 'numeric', hour12: false }).formatToParts(new Date());
-  const g = (t) => +(parts.find(p => p.type === t) || {}).value || 0;
-  return (g('hour') % 24) + g('minute') / 60;
-}
-function applyAutoSky() {
-  const h = taipeiHour();
-  const day = h >= 5.5 && h < 18.5;
-  if (day) { const t = (h - 5.5) / 13; _autoElev = Math.max(10, Math.sin(Math.PI * t) * 72); _autoAz = 90 + t * 180; }
-  else { _autoElev = 45; _autoAz = 35; }
-  const key = day ? 'field' : 'night';
-  if (key !== _autoKey) { _autoKey = key; loadHDRI(key); } else placeSun();
-}
-setInterval(() => { if ((STYLE.hdri || '') === 'auto') applyAutoSky(); }, 60000);
 function loadHDRI(key) {
-  const h = HDRIS[key] || HDRIS.field;
-  if (h.auto) { applyAutoSky(); return; }
+  if (!HDRIS[key]) key = 'park';   // 舊資料的「日夜自動／原野」一律回到白天
+  const h = HDRIS[key];
   new RGBELoader().load(h.file, tex => {
     tex.mapping = THREE.EquirectangularReflectionMapping;
     scene.environment = pmrem.fromEquirectangular(tex).texture;
     scene.background = tex; scene.backgroundIntensity = 1.0; sky.visible = false; hdrLoaded = key;
-    envSunScale = h.night ? 0.1 : 1;                        // 夜晚：太陽變月光，室內靠燈具
-    hemi.intensity = (R.ambient ?? 0.55) * (h.night ? 0.25 : 1);
+    envSunScale = h.night ? 0.3 : 1;                         // 夜晚：太陽轉月光，但保留可視度
+    hemi.intensity = (R.ambient ?? 0.55) * (h.night ? 0.55 : 1);
     placeSun();
     setOutdoorFallback(false);
   }, undefined, () => { console.warn('HDRI 載入失敗，使用程序天空'); setOutdoorFallback(true); });
@@ -481,8 +465,7 @@ sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02;
 sun.shadow.camera.near = 0.5; sun.shadow.camera.far = 40;
 scene.add(sun); scene.add(sun.target);
 function placeSun() {
-  const isAuto = (STYLE.hdri || '') === 'auto';
-  const az = (isAuto && _autoAz != null ? _autoAz : STYLE.sunAzimuth) * Math.PI / 180, el = (isAuto && _autoElev != null ? _autoElev : (STYLE.sunElev ?? 58)) * Math.PI / 180, d = 16;
+  const az = STYLE.sunAzimuth * Math.PI / 180, el = (STYLE.sunElev ?? 58) * Math.PI / 180, d = 16;
   sun.position.set(Math.sin(az) * Math.cos(el) * d, Math.sin(el) * d, Math.cos(az) * Math.cos(el) * d);
   sun.target.position.set(0, 0, 0); sun.intensity = STYLE.sun * envSunScale;
   sun.color.set(envSunScale < 0.5 ? '#bcd0f0' : '#fff3df');   // 夜晚轉冷月光色
@@ -636,7 +619,7 @@ function buildRoomGeometry() {
   addCornice(R.depth, -hw + 0.035, 0, Math.PI / 2); addCornice(R.depth, hw - 0.035, 0, Math.PI / 2);
 }
 buildRoomGeometry();
-loadHDRI(STYLE.hdri || 'field');
+loadHDRI(STYLE.hdri || 'park');
 
 /* ===== 展品 ===== */
 const built = [], interactables = [], animated = [], pulses = [];
@@ -1717,6 +1700,6 @@ if (EX.id) {
   }, 800);
 }
 </script>
-<script type="module" src="js/cloud.js?v=20260917"></script>
+<script type="module" src="js/cloud.js?v=20260918"></script>
 </body>
 </html>
