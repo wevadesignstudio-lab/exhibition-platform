@@ -9,7 +9,7 @@
    ========================================================================= */
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import { getAuth, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-import { getFirestore, doc, getDoc, getDocs, setDoc, updateDoc, collection, query, where, onSnapshot, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import { getFirestore, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, collection, query, where, onSnapshot, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyACR6Pf0icDgsopS2n60su5Uc7KD3f-uNw",
@@ -23,7 +23,7 @@ const COL = 'vex_exhibitions';
 const CLIENT_ID = 'c' + Math.random().toString(36).slice(2, 10);
 const KEY = 'exhib_platform_v1';
 
-window.Cloud = { status: '連線中…', uid: null, user: null, enabled: false, err: null, join, watch, pushNow, signInGoogle, signOutGoogle };
+window.Cloud = { status: '連線中…', uid: null, user: null, enabled: false, err: null, join, watch, pushNow, signInGoogle, signOutGoogle, presence };
 
 let db, auth;
 try {
@@ -127,6 +127,40 @@ function watch(exId, cb) {
     if (cd.client === CLIENT_ID) return;   // 自己的變更不用理
     if (mergeIn([cd]) && cb) cb();
   }, e => console.warn('[cloud] watch', e));
+}
+
+/* 同行觀眾：在 vex_presence/{exId}/users/{uid} 回報自己的位置，並訂閱其他人。
+   規則未開通時安靜停用，不影響觀展。回傳 { stop, kick }。 */
+const PCOL = 'vex_presence';
+function presence(exId, getState, onPeers) {
+  if (!Cloud.enabled || !db) return { stop() {}, kick() {} };
+  const myRef = doc(db, PCOL, exId, 'users', Cloud.uid);
+  let lastKey = null, lastT = 0, stopped = false, denied = false;
+  async function push(force) {
+    if (stopped || denied) return;
+    const s = getState(); if (!s) return;
+    const key = JSON.stringify([Math.round(s.x * 3), Math.round(s.z * 3), s.room, s.msg, s.name]);
+    const now = Date.now();
+    if (!force && key === lastKey && now - lastT < 20000) return;   // 沒移動 → 20 秒心跳
+    lastKey = key; lastT = now;
+    try { await setDoc(myRef, { ...s, uid: Cloud.uid, ts: now }); }
+    catch (e) { denied = true; }
+  }
+  const iv = setInterval(() => push(false), 3000); push(true);
+  let unsub = () => {};
+  try {
+    unsub = onSnapshot(collection(db, PCOL, exId, 'users'), snap => {
+      const now = Date.now(), peers = [];
+      snap.forEach(d => { const p = d.data(); if (p.uid !== Cloud.uid && now - (p.ts || 0) < 30000) peers.push(p); });
+      onPeers(peers);
+    }, () => {});
+  } catch (e) {}
+  const bye = () => { try { deleteDoc(myRef); } catch (e) {} };
+  addEventListener('pagehide', bye);
+  return {
+    kick() { push(true); },
+    stop() { stopped = true; clearInterval(iv); unsub(); removeEventListener('pagehide', bye); bye(); }
+  };
 }
 
 let syncStarted = false;

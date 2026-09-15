@@ -16,6 +16,11 @@ Console → **Firestore Database → 規則**，在既有規則的 `match /datab
       allow create: if request.auth != null;
       allow update, delete: if request.auth != null;
     }
+    // 同行觀眾（互相看見彼此的位置光球）
+    match /vex_presence/{exId}/users/{uid} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
 ```
 
 > 這是課堂友善版：任何登入者可編輯（方便學生互相協作）。若之後要收緊成「僅擁有者與協作成員可改」，告訴 Claude 換嚴格版規則。

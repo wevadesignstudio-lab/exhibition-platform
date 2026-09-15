@@ -126,9 +126,6 @@
   #chatBar input { width: 100%; padding: 11px 16px; font-size: 14px; color: #fff; background: rgba(16,16,22,.82); border: 1px solid rgba(255,255,255,.18); border-radius: 999px; backdrop-filter: blur(8px); }
   #chatBar input::placeholder { color: #8a8a92; }
   .touch #chatBar { left: 50%; transform: translateX(-50%); bottom: 160px; width: min(340px, 70vw); }
-  #chatBubble { position: fixed; z-index: 31; transform: translate(-50%, -100%); padding: 7px 14px; font-size: 14px; font-weight: 600; color: #1a1a1f; background: #fff; border-radius: 14px; box-shadow: 0 4px 16px rgba(0,0,0,.3); pointer-events: none; opacity: 0; transition: opacity .25s; white-space: nowrap; max-width: 240px; overflow: hidden; text-overflow: ellipsis; }
-  #chatBubble.show { opacity: 1; }
-  #chatBubble::after { content: ''; position: absolute; left: 50%; bottom: -7px; transform: translateX(-50%); border: 7px solid transparent; border-top-color: #fff; border-bottom: 0; }
   /* 準心作品名稱提示 */
   #aimTip { position: fixed; left: 50%; top: calc(50% + 26px); transform: translateX(-50%); z-index: 20; padding: 6px 14px; border-radius: 999px; background: rgba(16,16,20,.78); color: #fff; font-size: 13px; pointer-events: none; opacity: 0; transition: opacity .18s; white-space: nowrap; backdrop-filter: blur(4px); }
   #aimTip.show { opacity: 1; }
@@ -159,7 +156,6 @@
   <span class="tbtn hidden" id="tourBtn">導覽</span>
   <span class="tbtn hidden" id="mapBtn">地圖</span>
   <span class="tbtn hidden" id="muteBtn">音樂</span>
-  <span class="tbtn" id="viewBtn">第三人稱</span>
   <span class="tbtn hidden" id="editToggle">編輯展場</span>
   <span class="title"></span>
   <span class="roomBar" id="roomBar"></span>
@@ -215,13 +211,12 @@
 
 <div id="joystick"><i></i></div>
 <button id="tapHint">查看展品</button>
-<div id="chatBubble"></div>
 <div id="toast"></div>
 <div id="aimTip"></div>
 <div id="fadeOv"></div>
 <div id="chapterCard"><div class="k"></div><div class="t"></div></div>
 <div id="focusVig"></div>
-<div id="chatBar"><input id="chatInput" maxlength="60" placeholder="輸入訊息，按 Enter 顯示在頭上…" /></div>
+<div id="chatBar"><input id="chatInput" maxlength="60" placeholder="輸入訊息，同行的觀眾看得到…" /></div>
 
 <div id="intro">
   <div class="brand">SIGHT</div>
@@ -243,11 +238,11 @@
   </div>
 </div>
 
-<script src="js/store.js?v=20260915"></script>
-<script src="js/auth.js?v=20260915"></script>
-<script src="js/templates.js?v=20260915"></script>
-<script src="js/props.js?v=20260915"></script>
-<script src="js/starter.js?v=20260915"></script>
+<script src="js/store.js?v=20260916"></script>
+<script src="js/auth.js?v=20260916"></script>
+<script src="js/templates.js?v=20260916"></script>
+<script src="js/props.js?v=20260916"></script>
+<script src="js/starter.js?v=20260916"></script>
 
 <script type="importmap">
 { "imports": {
@@ -435,7 +430,7 @@ let yaw = Math.atan2((start.lookAt?.x ?? 0) - start.x, (start.lookAt?.z ?? -1) -
 let hw = R.width / 2, hd = R.depth / 2;
 
 /* ===== 化身（第三人稱可見）===== */
-let thirdPerson = false;
+
 const avatar = (function () {
   const a = new THREE.Group();
   const skin = new THREE.MeshStandardMaterial({ color: '#eab892', roughness: 0.6 });
@@ -1049,6 +1044,7 @@ let _thumbTimer = null;
 function scheduleThumb() { if (!EX.id || !isOwner) return; clearTimeout(_thumbTimer); _thumbTimer = setTimeout(captureThumb, 2000); }
 function captureThumb() {
   try {
+    if ((Store.get(EX.id) || {}).thumbCustom) return;   // 策展人自訂封面 → 不自動覆蓋
     const W = 400, H = 250, rt = new THREE.WebGLRenderTarget(W, H);
     const cam = new THREE.PerspectiveCamera(66, W / H, 0.1, 100);
     cam.position.copy(yawObj.position); cam.rotation.order = 'YXZ'; cam.rotation.y = yaw; cam.rotation.x = THREE.MathUtils.clamp(pitch, -0.4, 0.4);
@@ -1265,6 +1261,11 @@ editPanel.querySelector('.close').addEventListener('click', () => setSelected(-1
 function renderScenePanel() {
   const wc = STYLE.wallColors;
   let f = '';
+  // 展覽資訊（跨房間，顯示於入場頁與展覽卡片）
+  f += `<label>展覽標題</label><input type="text" id="spExTitle" maxlength="40" value="${(EX.title || '').replace(/"/g, '&quot;')}">`;
+  f += `<label>展覽介紹（顯示於入場頁與展覽卡片）</label><textarea id="spExDesc" maxlength="500" placeholder="策展理念、展覽主題…" style="min-height:88px;">${(EX.description || '').replace(/</g, '&lt;')}</textarea>`;
+  f += `<label>封面圖片（展覽卡片）</label><div class="seg"><button id="spCoverUp">上傳圖片</button><button id="spCoverAuto" ${(Store.get(EX.id) || {}).thumbCustom ? '' : 'disabled style="opacity:.4"'}>改回自動截圖</button></div><input type="file" id="spCoverFile" accept="image/*" style="display:none"><div class="ph">未上傳時，會自動以你目前的視角截圖當封面。</div>`;
+  f += `<div style="border-top:1px solid var(--phair);margin:22px 0 6px;"></div>`;
   // 房間管理
   f += `<label>房間（${EX.rooms.length} / 5）</label><div class="seg" id="roomList">${EX.rooms.map((rm, k) => `<button data-roomsel="${k}" class="${k === roomIdx ? 'sel' : ''}">${(rm.name || ('展廳' + (k + 1))).replace(/</g, '&lt;')}</button>`).join('')}</div>`;
   f += `<div class="row" style="margin-top:8px;"><div><input type="text" id="roomName" value="${(room.name || '').replace(/"/g, '&quot;')}" placeholder="房間名稱"></div></div>`;
@@ -1283,6 +1284,31 @@ function renderScenePanel() {
   spFields.innerHTML = f; bindScenePanel();
 }
 function bindScenePanel() {
+  // 展覽資訊
+  const et = document.getElementById('spExTitle');
+  et.oninput = () => { EX.title = et.value; Store.update(EX.id, { title: EX.title }); document.title = EX.title || '觀展'; topbar.querySelector('.title').textContent = EX.title || '展覽'; };
+  const edc = document.getElementById('spExDesc');
+  edc.oninput = () => { EX.description = edc.value; Store.update(EX.id, { description: EX.description }); };
+  const cfile = document.getElementById('spCoverFile');
+  document.getElementById('spCoverUp').onclick = () => cfile.click();
+  cfile.onchange = () => {
+    const file = cfile.files && cfile.files[0]; if (!file) return;
+    const rd = new FileReader();
+    rd.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const W = 800, H = Math.round(800 * img.height / img.width);
+        const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+        cv.getContext('2d').drawImage(img, 0, 0, W, H);
+        Store.update(EX.id, { thumb: cv.toDataURL('image/jpeg', 0.78), thumbCustom: true });
+        showToast('封面已更新', 2000); renderScenePanel();
+      };
+      img.src = rd.result;
+    };
+    rd.readAsDataURL(file);
+  };
+  const cauto = document.getElementById('spCoverAuto');
+  cauto.onclick = () => { Store.update(EX.id, { thumbCustom: false }); captureThumb(); showToast('已改回自動截圖封面', 2000); renderScenePanel(); };
   document.getElementById('spTpl').onchange = e => { room.template = e.target.value; buildRoomGeometry(); rebuildAll(); saveEx(); renderScenePanel(); };
   document.querySelectorAll('#roomList [data-roomsel]').forEach(b => b.onclick = () => { switchRoom(+b.dataset.roomsel); renderScenePanel(); });
   const rn = document.getElementById('roomName'); if (rn) rn.oninput = () => { room.name = rn.value; saveEx(); renderRoomBar(); document.querySelectorAll('#roomList [data-roomsel]')[roomIdx] && (document.querySelectorAll('#roomList [data-roomsel]')[roomIdx].textContent = rn.value || ('展廳' + (roomIdx + 1))); };
@@ -1506,37 +1532,85 @@ const muteBtn = document.getElementById('muteBtn');
 function setupBgm() { if (!STYLE.bgm) { if (bgmAudio) bgmAudio.pause(); bgmAudio = null; muteBtn.classList.add('hidden'); return; } if (!bgmAudio) bgmAudio = new Audio(); if (bgmAudio.src !== STYLE.bgm) bgmAudio.src = STYLE.bgm; bgmAudio.loop = true; bgmAudio.volume = STYLE.bgmVolume; muteBtn.classList.remove('hidden'); }
 muteBtn.onclick = () => { muted = !muted; muteBtn.textContent = muted ? '已靜音' : '音樂'; if (bgmAudio) { if (muted) bgmAudio.pause(); else bgmAudio.play().catch(() => {}); } };
 
-/* ===== 視角切換 + 聊天泡泡 ===== */
-const viewBtn = document.getElementById('viewBtn');
-function setView(tp) {
-  thirdPerson = tp; avatar.visible = tp;
-  camera.position.set(0, tp ? 0.9 : 0, tp ? 4.4 : 0);
-  viewBtn.classList.toggle('on', tp); viewBtn.textContent = tp ? '第一人稱' : '第三人稱';
+/* ===== 同行觀眾（雲端即時同步）：半透明光球＋名字 ===== */
+const peerGroup = new THREE.Group(); scene.add(peerGroup);
+const peerObjs = new Map();
+const _glowTex = (() => { const cv = document.createElement('canvas'); cv.width = cv.height = 128; const g = cv.getContext('2d'); const r = g.createRadialGradient(64, 64, 4, 64, 64, 62); r.addColorStop(0, 'rgba(255,246,220,.9)'); r.addColorStop(1, 'rgba(255,246,220,0)'); g.fillStyle = r; g.fillRect(0, 0, 128, 128); return new THREE.CanvasTexture(cv); })();
+function makeNameSprite(name, msg) {
+  const cv = document.createElement('canvas'); cv.width = 512; cv.height = msg ? 180 : 96;
+  const g = cv.getContext('2d'); g.textAlign = 'center';
+  if (msg) {
+    g.font = '600 38px "Noto Sans TC", sans-serif';
+    const w = Math.min(492, g.measureText(msg).width + 52);
+    g.fillStyle = 'rgba(255,255,255,.95)';
+    g.beginPath(); (g.roundRect ? g.roundRect(256 - w / 2, 6, w, 66, 16) : g.rect(256 - w / 2, 6, w, 66)); g.fill();
+    g.fillStyle = '#1a1916'; g.fillText(msg, 256, 52, 460);
+  }
+  g.font = '600 34px "Noto Sans TC", sans-serif';
+  g.shadowColor = 'rgba(0,0,0,.55)'; g.shadowBlur = 8;
+  g.fillStyle = 'rgba(255,255,255,.94)'; g.fillText(name, 256, cv.height - 24, 460);
+  const tex = new THREE.CanvasTexture(cv); tex.anisotropy = 4;
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }));
+  sp.scale.set(1.7, 1.7 * cv.height / 512, 1);
+  return sp;
 }
-viewBtn.onclick = () => setView(!thirdPerson);
+function makePeer() {
+  const grp = new THREE.Group();
+  const ball = new THREE.Mesh(new THREE.SphereGeometry(0.16, 28, 22),
+    new THREE.MeshPhysicalMaterial({ color: '#ffffff', metalness: 0, roughness: 0.06, transmission: 0.72, thickness: 0.3, transparent: true, opacity: 0.92, envMapIntensity: 1.5 }));
+  ball.position.y = 1.32; grp.add(ball);
+  const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: _glowTex, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false }));
+  halo.scale.set(0.85, 0.85, 1); halo.position.y = 1.32; grp.add(halo);
+  addBlob(grp, 0.22);
+  grp.userData.ball = ball;
+  return grp;
+}
+function setPeers(list) {
+  const seen = new Set();
+  for (const p of list) {
+    seen.add(p.uid);
+    let o = peerObjs.get(p.uid);
+    if (!o) {
+      const g = makePeer(); g.position.set(p.x || 0, 0, p.z || 0);
+      o = { g, label: null, name: null, msg: null }; peerGroup.add(g); peerObjs.set(p.uid, o);
+    }
+    o.tx = p.x || 0; o.tz = p.z || 0; o.room = p.room | 0;
+    const m = (p.msg && Date.now() - (p.msgTs || 0) < 8000) ? p.msg : '';
+    if (m !== o.msg || (p.name || '觀眾') !== o.name) {
+      o.msg = m; o.name = p.name || '觀眾';
+      if (o.label) { o.g.remove(o.label); o.label.material.map.dispose(); }
+      o.label = makeNameSprite(o.name, m); o.label.position.y = 1.78; o.g.add(o.label);
+    }
+    o.g.visible = (o.room === roomIdx);
+  }
+  for (const [uid, o] of peerObjs) if (!seen.has(uid)) { peerGroup.remove(o.g); peerObjs.delete(uid); }
+}
+if (window.__dbg) window.__dbg.setPeers = setPeers;   // 除錯用
+let presCtl = null, myMsg = '', myMsgTs = 0;
+function startPresence() {
+  if (presCtl !== null || !EX.id) return; presCtl = false;   // 佔位避免重複啟動
+  const wait = setInterval(() => {
+    if (!window.Cloud || !Cloud.enabled || !Cloud.presence) return;
+    clearInterval(wait);
+    presCtl = Cloud.presence(EX.id,
+      () => ({ x: +yawObj.position.x.toFixed(2), z: +yawObj.position.z.toFixed(2), room: roomIdx, name: (window.Auth && Auth.current()?.name) || '觀眾', msg: myMsg, msgTs: myMsgTs }),
+      setPeers);
+  }, 800);
+}
 
-const chatBar = document.getElementById('chatBar'), chatInput = document.getElementById('chatInput'), chatBubble = document.getElementById('chatBubble');
-let bubbleText = '', bubbleUntil = 0;
+const chatBar = document.getElementById('chatBar'), chatInput = document.getElementById('chatInput');
 chatInput.addEventListener('keydown', e => {
   e.stopPropagation();
-  if (e.key === 'Enter') { const t = chatInput.value.trim(); if (t) { bubbleText = t; bubbleUntil = tms + 6; if (!thirdPerson) setView(true); } chatInput.value = ''; chatInput.blur(); }
+  if (e.key === 'Enter') { const t = chatInput.value.trim(); if (t) { myMsg = t; myMsgTs = Date.now(); if (presCtl && presCtl.kick) presCtl.kick(); } chatInput.value = ''; chatInput.blur(); }
   if (e.key === 'Escape') chatInput.blur();
 });
-const _proj = new THREE.Vector3();
 function updateAvatarAndChat() {
-  // 化身永遠跟著玩家位置與朝向（第一人稱時隱藏）
-  avatar.position.set(yawObj.position.x, 0, yawObj.position.z);
-  avatar.rotation.y = yaw + Math.PI;
-  // 聊天泡泡：投影頭頂世界座標到螢幕
-  if (bubbleText && tms < bubbleUntil) {
-    _proj.set(yawObj.position.x, 2.05, yawObj.position.z).project(camera);
-    if (_proj.z < 1) {
-      chatBubble.textContent = bubbleText;
-      chatBubble.style.left = ((_proj.x * 0.5 + 0.5) * innerWidth) + 'px';
-      chatBubble.style.top = ((-_proj.y * 0.5 + 0.5) * innerHeight) + 'px';
-      chatBubble.classList.add('show');
-    } else chatBubble.classList.remove('show');
-  } else chatBubble.classList.remove('show');
+  const k = 1 - Math.exp(-0.1 * 6);   // 平滑趨近其他觀眾的最新位置
+  for (const o of peerObjs.values()) {
+    if (o.tx === undefined) continue;
+    o.g.position.x += (o.tx - o.g.position.x) * k;
+    o.g.position.z += (o.tz - o.g.position.z) * k;
+  }
 }
 
 /* ===== 主迴圈 ===== */
@@ -1614,6 +1688,7 @@ function enterExhibition(withTour) {
   capturePortals(); applyPortals();   // 渲染各房間快照，貼到門戶窗上
   for (const it of (EX.items || [])) if (it._video) it._video.play().catch(() => {});
   setupBgm(); if (bgmAudio && !muted) bgmAudio.play().catch(() => {});
+  startPresence();   // 讓同一檔展覽裡的其他觀眾看得到彼此
   const goEdit = isOwner && wantEdit && !isTouch;
   if (goEdit) enterEdit();
   else if (withTour) startTour();
@@ -1642,6 +1717,6 @@ if (EX.id) {
   }, 800);
 }
 </script>
-<script type="module" src="js/cloud.js?v=20260915"></script>
+<script type="module" src="js/cloud.js?v=20260916"></script>
 </body>
 </html>

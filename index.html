@@ -187,13 +187,14 @@
   </footer>
 </div>
 
-<script src="js/store.js?v=20260915"></script>
-<script src="js/auth.js?v=20260915"></script>
-<script src="js/templates.js?v=20260915"></script>
-<script src="js/starter.js?v=20260915"></script>
+<script src="js/store.js?v=20260916"></script>
+<script src="js/auth.js?v=20260916"></script>
+<script src="js/templates.js?v=20260916"></script>
+<script src="js/starter.js?v=20260916"></script>
 <script>
 const authView = document.getElementById('authView');
 const dashView = document.getElementById('dashView');
+const VER = '20260916';   // 連結帶版本，避免 CDN 提供舊頁面
 
 function fmtDate(ts) { if (!ts) return '—'; const d = new Date(ts); return `${d.getFullYear()}.${(d.getMonth()+1)}.${d.getDate()}`; }
 function thumbColor(tpl) { return (TEMPLATES[tpl]?.room.wallColor) || '#dedbd2'; }
@@ -209,11 +210,11 @@ function exCard(ex, owned) {
   const items = (ex.rooms || []).reduce((n, r) => n + (r.items || []).length, (ex.items || []).length);
   const badge = ex.published ? '<span class="badge pub">展出中</span>' : '<span class="badge">籌備中</span>';
   const actions = owned
-    ? `<a class="btn sm fill" href="view.html?id=${ex.id}&edit=1">佈展</a>
-       <a class="btn sm" href="view.html?id=${ex.id}&mode=tour">預覽</a>
+    ? `<a class="btn sm fill" href="view.html?id=${ex.id}&edit=1&v=${VER}">佈展</a>
+       <a class="btn sm" href="view.html?id=${ex.id}&mode=tour&v=${VER}">預覽</a>
        <button class="btn sm quiet" data-act="pub" data-id="${ex.id}">${ex.published ? '取消公開' : '公開展出'}</button>
        <button class="btn sm quiet danger" data-act="del" data-id="${ex.id}">刪除</button>`
-    : `<a class="btn sm fill" href="view.html?id=${ex.id}">進入觀展</a>`;
+    : `<a class="btn sm fill" href="view.html?id=${ex.id}&v=${VER}">進入觀展</a>`;
   const thumbStyle = ex.thumb ? `background:url('${ex.thumb}') center/cover` : `background:linear-gradient(150deg, ${thumbColor(ex.template)} 0%, #efece4 100%)`;
   return `<div class="card">
     <div class="thumb" style="${thumbStyle}">${owned ? badge : ''}</div>
@@ -310,6 +311,6 @@ document.getElementById('joinBtn').onclick = async () => {
   catch (e) { alert('加入失敗：' + (e.message || e)); }
 };
 </script>
-<script type="module" src="js/cloud.js?v=20260915"></script>
+<script type="module" src="js/cloud.js?v=20260916"></script>
 </body>
 </html>
