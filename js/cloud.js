@@ -24,7 +24,8 @@ const CLIENT_ID = 'c' + Math.random().toString(36).slice(2, 10);
 const KEY = 'exhib_platform_v1';
 
 window.Cloud = { status: '連線中…', uid: null, user: null, enabled: false, err: null, join, watch, pushNow, signInGoogle, signOutGoogle, presence,
-  curatorStatus, listCurators, setCurator, setCuratorAdmin, joinByCode, exMeta, ensureJoinCode, setRole, removeMember };
+  curatorStatus, listCurators, setCurator, setCuratorAdmin, joinByCode, exMeta, ensureJoinCode, setRole, removeMember,
+  getSiteConfig, saveSiteConfig, listPubRequests, approvePublish, rejectPublish };
 
 let db, auth;
 try {
@@ -100,7 +101,7 @@ async function pushNow() {
     const json = JSON.stringify(ex);
     if (json.length > 900000) { console.warn('[cloud] 展覽過大無法同步（圖片請改用網址或 assets/img/）', ex.id); continue; }
     try {
-      const payload = { data: JSON.parse(json), published: !!ex.published, updatedAt: ex.updatedAt || Date.now(), client: CLIENT_ID, members: arrayUnion(Cloud.uid) };
+      const payload = { data: JSON.parse(json), published: !!ex.published, pubPending: !!ex.pubPending, updatedAt: ex.updatedAt || Date.now(), client: CLIENT_ID, members: arrayUnion(Cloud.uid) };
       if (!knownDocs.has(ex.id)) { payload.owner = Cloud.uid; payload.joinCode = makeCode(); }
       await setDoc(doc(db, COL, ex.id), payload, { merge: true });
       knownDocs.add(ex.id); lastPushed[ex.id] = ex.updatedAt; setStatus('已連線・已同步');
@@ -158,6 +159,28 @@ async function listCurators() {
 }
 async function setCurator(uid, approved) { await updateDoc(doc(db, CUR_COL, uid), { approved: !!approved }); }
 async function setCuratorAdmin(uid, admin) { await updateDoc(doc(db, CUR_COL, uid), admin ? { admin: true, approved: true } : { admin: false }); }
+
+/* ===== 網站設定（vex_site/config）：首頁 banner 與策展活動，由管理後台編輯 ===== */
+async function getSiteConfig() {
+  try { const snap = await getDoc(doc(db, 'vex_site', 'config')); return snap.exists() ? snap.data() : null; }
+  catch (e) { return null; }
+}
+async function saveSiteConfig(patch) { await setDoc(doc(db, 'vex_site', 'config'), patch, { merge: true }); }
+
+/* ===== 策展上線審核：策展人申請（pubPending）→ 管理者核准後 published ===== */
+async function listPubRequests() {
+  const out = [];
+  (await getDocs(query(collection(db, COL), where('pubPending', '==', true)))).forEach(d => {
+    const cd = d.data(); out.push({ id: d.id, title: (cd.data || {}).title || d.id, thumb: (cd.data || {}).thumb || '' });
+  });
+  return out;
+}
+async function approvePublish(exId) {
+  await updateDoc(doc(db, COL, exId), { published: true, pubPending: false, 'data.published': true, 'data.pubPending': false, 'data.updatedAt': Date.now(), updatedAt: Date.now() });
+}
+async function rejectPublish(exId) {
+  await updateDoc(doc(db, COL, exId), { pubPending: false, 'data.pubPending': false, 'data.updatedAt': Date.now(), updatedAt: Date.now() });
+}
 
 /* ===== 共同策展：加入代號與成員權限 =====
    雲端展覽 doc 增加 joinCode（6 碼）、roles:{uid:'full'|'own'}、memberInfo:{uid:{name}}。

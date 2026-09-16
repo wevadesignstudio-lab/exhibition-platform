@@ -70,6 +70,25 @@
   .featured .fhead { display: flex; align-items: baseline; gap: 16px; margin-bottom: 18px; }
   .featured .fzh { font-family: "Noto Serif TC", serif; font-size: 17px; font-weight: 600; letter-spacing: 5px; }
   .frow { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+  /* 策展活動三欄 */
+  .erow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  @media (max-width: 760px) { .erow { grid-template-columns: 1fr; } }
+  .ecard { background: var(--card); border: 1px solid var(--line); display: flex; flex-direction: column; }
+  .ecard .eimg { height: 190px; background: #e7e4dc center/cover no-repeat; border-bottom: 1px solid var(--hair); }
+  .ecard .ebody { padding: 18px 20px 22px; }
+  .ecard h3 { font-family: "Noto Serif TC", serif; font-size: 16px; font-weight: 600; letter-spacing: 3px; }
+  .ecard p { margin-top: 10px; font-size: 13px; color: var(--muted); line-height: 1.9; letter-spacing: .5px; white-space: pre-wrap; }
+  /* 管理後台編輯區 */
+  .panelA { background: var(--card); border: 1px solid var(--line); padding: 22px; }
+  .bprev { height: 200px; border: 1px dashed var(--line); display: grid; place-items: center; color: var(--faint); font-size: 13px; letter-spacing: 1px; background: center/cover no-repeat; }
+  .slotEd { background: var(--card); border: 1px solid var(--line); padding: 18px; }
+  .slotEd .bprev { height: 130px; margin-bottom: 12px; }
+  .slotEd input, .slotEd textarea { width: 100%; padding: 9px 11px; font-size: 13px; background: #fff; border: 1px solid var(--line); border-radius: 2px; color: var(--ink); font-family: inherit; margin-top: 8px; }
+  .slotEd textarea { min-height: 60px; resize: vertical; line-height: 1.6; }
+  #pubList .mrow, .padminrow { display: flex; align-items: center; gap: 14px; padding: 13px 4px; border-top: 1px solid var(--hair); font-size: 13px; }
+  #pubList .mrow:last-child { border-bottom: 1px solid var(--hair); }
+  #pubList .pthumb { width: 72px; height: 46px; background: #e7e4dc center/cover; border: 1px solid var(--hair); flex: none; }
+  #pubList .nm { flex: 1; letter-spacing: 1px; font-weight: 500; }
   .fcard { position: relative; display: block; height: 300px; border: 1px solid var(--line); background: #e7e4dc center/cover; text-decoration: none; overflow: hidden; }
   .fcard::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(15,14,12,.66) 100%); transition: background .3s; }
   .fcard:hover::after { background: linear-gradient(180deg, rgba(0,0,0,.06) 0%, rgba(15,14,12,.72) 100%); }
@@ -182,6 +201,10 @@
       <div class="fhead"><span class="en">Now Showing</span><span class="fzh">正在展出</span></div>
       <div class="frow" id="featuredRow"></div>
     </div>
+    <div class="featured hidden" id="eventsWrap">
+      <div class="fhead"><span class="en">Programs</span><span class="fzh">策展活動</span></div>
+      <div class="erow" id="eventsRow"></div>
+    </div>
     <div class="authOv" id="authOv">
     <div class="gate">
       <button class="gclose" id="authClose">✕</button>
@@ -229,11 +252,6 @@
     </div>
   </div>
 
-  <div id="adminBox" class="hidden">
-    <h2 class="section"><span class="zh">帳號審核</span><span class="en">Curator Approvals</span></h2>
-    <div id="adminList"></div>
-  </div>
-
   <h2 class="section" id="mineHead"><span class="zh">我的展覽</span><span class="en">My Exhibitions</span></h2>
   <div id="mine" class="grid"></div>
 
@@ -245,6 +263,47 @@
     <span class="spacer"></span>
     <span>Redefining the Boundaries of Vision</span>
   </footer>
+</div>
+
+<!-- ───────── 管理後台（僅管理員） ───────── -->
+<div id="adminView" class="wrap hidden">
+  <nav class="top">
+    <a class="wordmark" href="./"><span class="sg">Sight</span></a>
+    <span class="spacer"></span>
+    <span id="acctAdmin"></span>
+  </nav>
+
+  <div class="studio">
+    <div>
+      <span class="en">Admin Console</span>
+      <h1>管理後台</h1>
+      <p>帳號開通與權限、展覽上線審核，以及首頁主視覺與策展活動的內容管理。</p>
+    </div>
+  </div>
+
+  <h2 class="section"><span class="zh">策展上線審核</span><span class="en">Publish Review</span></h2>
+  <div id="pubList"></div>
+
+  <h2 class="section"><span class="zh">帳號審核與權限</span><span class="en">Curator Approvals</span></h2>
+  <div id="adminList"></div>
+
+  <h2 class="section"><span class="zh">首頁主視覺</span><span class="en">Homepage Banner</span></h2>
+  <div class="panelA">
+    <div class="bprev" id="bnPrev">尚未設定 banner——首頁會顯示「正在展出」精選</div>
+    <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;">
+      <button class="btn sm" id="bnUp">上傳圖片</button>
+      <button class="btn sm quiet" id="bnClear">移除（改回精選展覽）</button>
+      <input type="file" id="bnFile" accept="image/*" class="hidden" />
+    </div>
+    <label style="display:block;margin-top:16px;font-size:12px;letter-spacing:2px;color:var(--muted);">圖說（選填）</label>
+    <input id="bnCap" maxlength="60" style="width:100%;margin-top:8px;padding:9px 11px;font-size:13px;background:#fff;border:1px solid var(--line);border-radius:2px;color:var(--ink);font-family:inherit;" />
+  </div>
+
+  <h2 class="section"><span class="zh">策展活動（首頁三欄）</span><span class="en">Programs</span></h2>
+  <div class="erow" id="evEdit"></div>
+
+  <button class="btn fill" id="siteSave" style="margin-top:26px;">儲存首頁設定</button>
+  <span id="siteSaveMsg" style="margin-left:14px;font-size:12px;letter-spacing:2px;color:#4c8f6e;opacity:0;transition:opacity .3s;">已儲存</span>
 </div>
 
 <!-- 個人設定 -->
@@ -279,41 +338,65 @@
   </div>
 </div>
 
-<script src="js/site.js?v=20260922"></script>
-<script src="js/store.js?v=20260922"></script>
-<script src="js/auth.js?v=20260922"></script>
-<script src="js/templates.js?v=20260922"></script>
-<script src="js/starter.js?v=20260922"></script>
+<script src="js/site.js?v=20260923"></script>
+<script src="js/store.js?v=20260923"></script>
+<script src="js/auth.js?v=20260923"></script>
+<script src="js/templates.js?v=20260923"></script>
+<script src="js/starter.js?v=20260923"></script>
 <script>
 const authView = document.getElementById('authView');
 const dashView = document.getElementById('dashView');
-const VER = '20260922';   // 連結帶版本，避免 CDN 提供舊頁面
+const VER = '20260923';   // 連結帶版本，避免 CDN 提供舊頁面
 
 function fmtDate(ts) { if (!ts) return '—'; const d = new Date(ts); return `${d.getFullYear()}.${(d.getMonth()+1)}.${d.getDate()}`; }
 function thumbColor(tpl) { return (TEMPLATES[tpl]?.room.wallColor) || '#dedbd2'; }
 function esc(s) { return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
-let page = 'home';   // 'home' | 'studio'
+let page = 'home';   // 'home' | 'studio' | 'admin'
+const adminView = document.getElementById('adminView');
+
+/* 首頁內容（banner／策展活動）：從雲端 vex_site/config 載入，管理後台可編輯 */
+let __siteCfg = null, __cfgLoading = false;
+function loadSiteCfg() {
+  if (__cfgLoading || !window.Cloud || !Cloud.enabled || !Cloud.getSiteConfig) return;
+  __cfgLoading = true;
+  Cloud.getSiteConfig().then(c => { __siteCfg = c || {}; if (page === 'home') renderHome(); }).catch(() => { __cfgLoading = false; });
+}
+addEventListener('cloud-status', loadSiteCfg);
 
 function renderHome() {
   authView.classList.remove('hidden');
   dashView.classList.add('hidden');
+  adminView.classList.add('hidden');
   document.getElementById('authOv').classList.remove('show');
   renderAcct();
+  loadSiteCfg();
   /* 首頁文案與主視覺：js/site.js 設定 */
   const S = window.SITE || {};
   if (S.tagline) document.getElementById('heroTagline').textContent = S.tagline;
   if (S.headline) document.getElementById('heroTitle').textContent = S.headline;
   if (S.subline) document.getElementById('heroLead').innerHTML = esc(S.subline).replace(/\n/g, '<br>');
   const bw = document.getElementById('bannerWrap'), fw = document.getElementById('featuredWrap');
-  if (S.banner) {
-    document.getElementById('bannerImg').src = S.banner;
-    document.getElementById('bannerCap').textContent = S.bannerCaption || '';
+  const cfg = __siteCfg || {};
+  const banner = cfg.banner || S.banner;
+  if (banner) {
+    document.getElementById('bannerImg').src = banner;
+    document.getElementById('bannerCap').textContent = (cfg.banner ? cfg.bannerCaption : S.bannerCaption) || '';
     bw.classList.remove('hidden'); fw.classList.add('hidden');
   } else {
     bw.classList.add('hidden');
     renderFeatured();
   }
+  /* 策展活動三欄 */
+  const evs = (cfg.events || []).filter(e => e && (e.img || e.title));
+  const ew = document.getElementById('eventsWrap');
+  if (evs.length) {
+    document.getElementById('eventsRow').innerHTML = evs.slice(0, 3).map(e => `<div class="ecard">
+      <div class="eimg" style="${e.img ? `background-image:url('${e.img}')` : ''}"></div>
+      <div class="ebody"><h3>${esc(e.title || '')}</h3>${e.text ? `<p>${esc(e.text)}</p>` : ''}</div>
+    </div>`).join('');
+    ew.classList.remove('hidden');
+  } else ew.classList.add('hidden');
 }
 
 /* ===== 右上角帳號區：未登入=登入鈕；已登入=頭像＋名字下拉選單 ===== */
@@ -323,21 +406,22 @@ function acctHTML(me) {
     <div class="menu">
       <button data-m="prof">個人設定</button>
       ${me.cloud ? '<button data-m="studio">策展工作室</button>' : ''}
+      ${window.__adm ? '<button data-m="admin">管理後台</button>' : ''}
       <div class="sep"></div>
       <button data-m="out">登出</button>
     </div></details>`;
 }
 function renderAcct() {
   const me = Auth.current();
-  const home = document.getElementById('acctHome'), stu = document.getElementById('acctStudio');
   document.getElementById('openAuthBtn').style.display = me ? 'none' : '';
   const html = me ? acctHTML(me) : '';
-  home.innerHTML = html; stu.innerHTML = html;
+  for (const id of ['acctHome', 'acctStudio', 'acctAdmin']) document.getElementById(id).innerHTML = html;
   document.querySelectorAll('details.acct .menu button').forEach(b => b.onclick = (e) => {
     e.preventDefault();
     b.closest('details').removeAttribute('open');
     if (b.dataset.m === 'prof') openProfile();
     else if (b.dataset.m === 'studio') openStudio();
+    else if (b.dataset.m === 'admin') { page = 'admin'; route(); window.scrollTo(0, 0); }
     else if (b.dataset.m === 'out') doSignOut();
   });
 }
@@ -355,6 +439,7 @@ async function openStudio() {
   if (window.Cloud && Cloud.enabled && Cloud.curatorStatus) {
     let st = null;
     try { st = await Cloud.curatorStatus(); } catch (e) {}
+    if (st) { window.__adm = !!st.admin; renderAcct(); }
     if (st && !st.approved && !st.admin) { alert('你的策展工作室正在審核中，開通後即可使用。'); return; }
   }
   page = 'studio'; route(); window.scrollTo(0, 0);
@@ -375,12 +460,13 @@ function renderFeatured() {
 function exCard(ex, owned) {
   const rooms = (ex.rooms || []).length || 1;
   const items = (ex.rooms || []).reduce((n, r) => n + (r.items || []).length, (ex.items || []).length);
-  const badge = ex.published ? '<span class="badge pub">展出中</span>' : '<span class="badge">籌備中</span>';
+  const badge = ex.published ? '<span class="badge pub">展出中</span>' : (ex.pubPending ? '<span class="badge">審核中</span>' : '<span class="badge">籌備中</span>');
+  const pubLabel = ex.published ? '取消公開' : (ex.pubPending ? '取消申請' : (window.__adm ? '公開展出' : '申請上線'));
   const actions = owned
     ? `<a class="btn sm fill" href="view.html?id=${ex.id}&edit=1&v=${VER}">佈展</a>
        <a class="btn sm" href="view.html?id=${ex.id}&mode=tour&v=${VER}">預覽</a>
        <button class="btn sm quiet" data-act="mem" data-id="${ex.id}">成員</button>
-       <button class="btn sm quiet" data-act="pub" data-id="${ex.id}">${ex.published ? '取消公開' : '公開展出'}</button>
+       <button class="btn sm quiet" data-act="pub" data-id="${ex.id}">${pubLabel}</button>
        <button class="btn sm quiet danger" data-act="del" data-id="${ex.id}">刪除</button>`
     : `<a class="btn sm fill" href="view.html?id=${ex.id}&v=${VER}">進入觀展</a>`;
   const thumbStyle = ex.thumb ? `background:url('${ex.thumb}') center/cover` : `background:linear-gradient(150deg, ${thumbColor(ex.template)} 0%, #efece4 100%)`;
@@ -399,6 +485,7 @@ function renderDash() {
   const me = Auth.current();
   authView.classList.add('hidden');
   dashView.classList.remove('hidden');
+  adminView.classList.add('hidden');
   renderAcct();
 
   const mine = Store.listByOwner(me.id);
@@ -414,21 +501,118 @@ function renderDash() {
   dashView.querySelectorAll('[data-act]').forEach(btn => {
     btn.onclick = () => {
       const id = btn.dataset.id;
-      if (btn.dataset.act === 'pub') { const ex = Store.get(id); Store.update(id, { published: !ex.published }); renderDash(); }
+      if (btn.dataset.act === 'pub') {
+        const ex = Store.get(id);
+        if (ex.published) Store.update(id, { published: false, pubPending: false });
+        else if (ex.pubPending) Store.update(id, { pubPending: false });
+        else if (window.__adm) Store.update(id, { published: true, pubPending: false });   // 管理員直接上線
+        else { Store.update(id, { pubPending: true }); alert('已送出上線申請，通過管理者審核後就會公開展出。'); }
+        renderDash();
+      }
       else if (btn.dataset.act === 'mem') openMembers(id);
       else if (btn.dataset.act === 'del') { if (confirm('確定刪除這檔展覽？此動作無法復原。')) { Store.remove(id); renderDash(); } }
     };
   });
+}
+
+/* ===== 管理後台 ===== */
+function renderAdminConsole() {
+  if (!window.__adm) { page = 'home'; route(); return; }
+  authView.classList.add('hidden');
+  dashView.classList.add('hidden');
+  adminView.classList.remove('hidden');
+  renderAcct();
   renderAdmin();
+  renderPubList();
+  renderSiteEditor();
+}
+
+/* 上線審核清單 */
+async function renderPubList() {
+  const box = document.getElementById('pubList');
+  box.innerHTML = '<div class="empty" style="padding:22px;">載入中…</div>';
+  let list = [];
+  try { list = await Cloud.listPubRequests(); } catch (e) { box.innerHTML = '<div class="empty" style="padding:22px;">讀取失敗，稍後再試。</div>'; return; }
+  box.innerHTML = list.length
+    ? list.map(r => `<div class="mrow">
+        <span class="pthumb" style="${r.thumb ? `background-image:url('${r.thumb}')` : ''}"></span>
+        <span class="nm">${esc(r.title)}</span>
+        <a class="btn sm" href="view.html?id=${esc(r.id)}&mode=tour&v=${VER}" target="_blank">預覽</a>
+        <button class="btn sm fill" data-pap="${esc(r.id)}">核准上線</button>
+        <button class="textlink" data-prj="${esc(r.id)}">退回</button>
+      </div>`).join('')
+    : `<div class="empty" style="padding:26px;">目前沒有待審核的上線申請。</div>`;
+  box.querySelectorAll('[data-pap]').forEach(b => b.onclick = async () => {
+    try { await Cloud.approvePublish(b.dataset.pap); renderPubList(); } catch (e) { alert('核准失敗：' + (e.message || e)); }
+  });
+  box.querySelectorAll('[data-prj]').forEach(b => b.onclick = async () => {
+    if (!confirm('退回這件上線申請？')) return;
+    try { await Cloud.rejectPublish(b.dataset.prj); renderPubList(); } catch (e) { alert('退回失敗：' + (e.message || e)); }
+  });
+}
+
+/* 首頁設定編輯（banner＋策展活動） */
+const _cfgDraft = { banner: '', bannerCaption: '', events: [{}, {}, {}] };
+function _imgPick(cb, maxW) {
+  const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*';
+  inp.onchange = () => {
+    const f = inp.files[0]; if (!f) return;
+    const rd = new FileReader();
+    rd.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const W = Math.min(maxW || 1600, img.width), H = Math.round(W * img.height / img.width);
+        const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+        cv.getContext('2d').drawImage(img, 0, 0, W, H);
+        cb(cv.toDataURL('image/jpeg', 0.8));
+      };
+      img.src = rd.result;
+    };
+    rd.readAsDataURL(f);
+  };
+  inp.click();
+}
+function renderSiteEditor() {
+  const c = __siteCfg || {};
+  _cfgDraft.banner = c.banner || '';
+  _cfgDraft.bannerCaption = c.bannerCaption || '';
+  _cfgDraft.events = [0, 1, 2].map(i => ({ ...((c.events || [])[i] || {}) }));
+  const prev = document.getElementById('bnPrev');
+  const paint = () => {
+    prev.style.backgroundImage = _cfgDraft.banner ? `url('${_cfgDraft.banner}')` : '';
+    prev.textContent = _cfgDraft.banner ? '' : '尚未設定 banner——首頁會顯示「正在展出」精選';
+  };
+  paint();
+  document.getElementById('bnCap').value = _cfgDraft.bannerCaption;
+  document.getElementById('bnUp').onclick = () => _imgPick(url => { _cfgDraft.banner = url; paint(); }, 1600);
+  document.getElementById('bnClear').onclick = () => { _cfgDraft.banner = ''; paint(); };
+  const ev = document.getElementById('evEdit');
+  ev.innerHTML = [0, 1, 2].map(i => `<div class="slotEd" data-slot="${i}">
+      <div class="bprev" style="${_cfgDraft.events[i].img ? `background-image:url('${_cfgDraft.events[i].img}')` : ''}">${_cfgDraft.events[i].img ? '' : '活動照片'}</div>
+      <button class="btn sm" data-evup="${i}">上傳照片</button>
+      <button class="textlink" data-evclr="${i}">清除</button>
+      <input data-evt="${i}" maxlength="24" placeholder="活動標題" value="${esc(_cfgDraft.events[i].title || '')}" />
+      <textarea data-evx="${i}" maxlength="120" placeholder="活動簡介（選填）">${esc(_cfgDraft.events[i].text || '')}</textarea>
+    </div>`).join('');
+  const repaintSlot = (i) => { const s = ev.querySelector(`[data-slot="${i}"] .bprev`); s.style.backgroundImage = _cfgDraft.events[i].img ? `url('${_cfgDraft.events[i].img}')` : ''; s.textContent = _cfgDraft.events[i].img ? '' : '活動照片'; };
+  ev.querySelectorAll('[data-evup]').forEach(b => b.onclick = () => _imgPick(url => { _cfgDraft.events[+b.dataset.evup].img = url; repaintSlot(+b.dataset.evup); }, 900));
+  ev.querySelectorAll('[data-evclr]').forEach(b => b.onclick = () => { _cfgDraft.events[+b.dataset.evclr] = {}; renderSiteEditor(); });
+  ev.querySelectorAll('[data-evt]').forEach(inp => inp.oninput = () => { _cfgDraft.events[+inp.dataset.evt].title = inp.value; });
+  ev.querySelectorAll('[data-evx]').forEach(inp => inp.oninput = () => { _cfgDraft.events[+inp.dataset.evx].text = inp.value; });
+  document.getElementById('siteSave').onclick = async () => {
+    _cfgDraft.bannerCaption = document.getElementById('bnCap').value.trim();
+    try {
+      await Cloud.saveSiteConfig({ banner: _cfgDraft.banner, bannerCaption: _cfgDraft.bannerCaption, events: _cfgDraft.events });
+      __siteCfg = { ...( __siteCfg || {}), ..._cfgDraft };
+      const m = document.getElementById('siteSaveMsg'); m.style.opacity = 1; setTimeout(() => m.style.opacity = 0, 2200);
+    } catch (e) { alert('儲存失敗（可能是 Firestore 規則尚未加上 vex_site）：' + (e.message || e)); }
+  };
 }
 
 /* 管理者：帳號審核清單 */
 async function renderAdmin() {
-  const box = document.getElementById('adminBox');
-  if (!window.Cloud || !Cloud.enabled || !Cloud.user) { box.classList.add('hidden'); return; }
-  let st = null; try { st = await Cloud.curatorStatus(); } catch (e) {}
-  if (!st || !st.admin) { box.classList.add('hidden'); return; }
-  let list = []; try { list = await Cloud.listCurators(); } catch (e) { box.classList.add('hidden'); return; }
+  const box = document.getElementById('adminList');
+  let list = []; try { list = await Cloud.listCurators(); } catch (e) { box.innerHTML = '<div class="empty" style="padding:22px;">讀取失敗。</div>'; return; }
   const rows = list.filter(c => c.uid !== Cloud.uid);
   document.getElementById('adminList').innerHTML = rows.length
     ? rows.map(c => `<div class="mrow">
@@ -520,7 +704,11 @@ document.getElementById('profSave').onclick = () => {
   renderAcct();
 };
 
-function route() { if (page === 'studio' && Auth.current()) renderDash(); else renderHome(); }
+function route() {
+  if (page === 'admin' && Auth.current() && window.__adm) renderAdminConsole();
+  else if (page === 'studio' && Auth.current()) renderDash();
+  else renderHome();
+}
 
 document.getElementById('createUserBtn').onclick = () => {
   const name = document.getElementById('nameInput').value;
@@ -564,9 +752,12 @@ document.getElementById('googleBtn').onclick = async () => {
       alert('登入未完成，請再試一次。');
   }
 };
-/* 已登入過 Google（此瀏覽器記得你）→ 顯示帳號選單 */
-addEventListener('cloud-auth', () => {
+/* 已登入過 Google（此瀏覽器記得你）→ 顯示帳號選單＋確認管理者身分 */
+addEventListener('cloud-auth', async () => {
   if (window.Cloud && Cloud.user && !Auth.current()) { Auth.signInCloud(Cloud.user); route(); }
+  if (window.Cloud && Cloud.user && Cloud.curatorStatus) {
+    try { const st = await Cloud.curatorStatus(); window.__adm = !!(st && st.admin); renderAcct(); } catch (e) {}
+  }
 });
 
 document.getElementById('joinBtn').onclick = async () => {
@@ -580,6 +771,6 @@ document.getElementById('joinBtn').onclick = async () => {
   } catch (e) { alert('加入失敗：' + (e.message || e)); }
 };
 </script>
-<script type="module" src="js/cloud.js?v=20260922"></script>
+<script type="module" src="js/cloud.js?v=20260923"></script>
 </body>
 </html>

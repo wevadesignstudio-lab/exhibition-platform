@@ -26,6 +26,11 @@ Console → **Firestore Database → 規則**，在既有規則的 `match /datab
       allow read: if true;
       allow write: if request.auth != null;
     }
+    // 網站設定（首頁 banner 與策展活動，管理後台編輯）
+    match /vex_site/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
 ```
 
 ## 帳號與權限
