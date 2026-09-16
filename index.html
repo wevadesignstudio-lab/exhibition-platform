@@ -61,11 +61,25 @@
   .gate .btn { width: 100%; margin-top: 24px; padding: 13px; }
   .gate .fine { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--hair); font-size: 12px; color: var(--faint); line-height: 2; letter-spacing: .5px; }
 
-  /* 主視覺 banner／精選展覽 */
-  .bannerWrap { margin: 0 0 90px; }
-  .bannerWrap img { display: block; width: 100%; height: clamp(260px, 44vw, 480px); object-fit: cover; border: 1px solid var(--line); }
-  .bannerWrap figcaption { margin-top: 12px; text-align: center; font-size: 10px; }
-  .bannerWrap figcaption:empty { display: none; }
+  /* 首頁主視覺輪播（banner＋精選展覽，橫向一頁一頁） */
+  .car { position: relative; margin: 0 0 90px; }
+  .carTrack { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; border: 1px solid var(--line); }
+  .carTrack::-webkit-scrollbar { display: none; }
+  .carSlide { position: relative; flex: 0 0 100%; height: clamp(280px, 46vw, 500px); background: #e7e4dc center/cover no-repeat; scroll-snap-align: start; display: block; text-decoration: none; overflow: hidden; }
+  .carSlide.exs::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 50%, rgba(15,14,12,.62) 100%); }
+  .carSlide .ft { position: absolute; left: 34px; right: 34px; bottom: 30px; z-index: 1; color: #f7f5f0; font-family: "Noto Serif TC", serif; font-size: clamp(20px, 2.6vw, 28px); font-weight: 600; letter-spacing: 4px; }
+  .carSlide .fm { position: absolute; left: 34px; bottom: 72px; z-index: 1; color: rgba(247,245,240,.8); font-size: 11px; letter-spacing: 3px; }
+  .carNav { position: absolute; top: 50%; transform: translateY(-50%); left: 14px; width: 42px; height: 42px; border: 1px solid rgba(247,245,240,.6); background: rgba(26,25,22,.28); color: #f7f5f0; font-size: 20px; cursor: pointer; backdrop-filter: blur(4px); transition: background .2s; z-index: 2; }
+  .carNav:hover { background: rgba(26,25,22,.55); }
+  .carNav.nxt { left: auto; right: 14px; }
+  .car.single .carNav, .car.single .carDots { display: none; }
+  .carDots { position: absolute; left: 0; right: 0; bottom: 12px; display: flex; gap: 8px; justify-content: center; z-index: 2; }
+  .carDots i { width: 7px; height: 7px; border-radius: 50%; background: rgba(247,245,240,.45); transition: background .2s; }
+  .carDots i.on { background: #f7f5f0; }
+  .fpRow { display: flex; align-items: center; gap: 12px; padding: 11px 4px; border-top: 1px solid var(--hair); font-size: 14px; letter-spacing: 1px; cursor: pointer; }
+  .fpRow:last-child { border-bottom: 1px solid var(--hair); }
+  .fpRow input { width: 16px; height: 16px; accent-color: var(--ink); }
+  .dragHint { margin-top: 8px; font-size: 11px; color: var(--faint); letter-spacing: 1px; }
   .featured { margin: 0 0 90px; }
   .featured .fhead { display: flex; align-items: baseline; gap: 16px; margin-bottom: 18px; }
   .featured .fzh { font-family: "Noto Serif TC", serif; font-size: 17px; font-weight: 600; letter-spacing: 5px; }
@@ -202,10 +216,12 @@
       <h1 id="heroTitle">翻轉視覺的無邊界想像</h1>
       <p class="lead" id="heroLead">拉近被時空凝結的細節，<br>目光所至，即是故事重生的起點。</p>
     </div>
-    <figure class="bannerWrap hidden" id="bannerWrap">
-      <img id="bannerImg" alt="" />
-      <figcaption class="en" id="bannerCap"></figcaption>
-    </figure>
+    <div class="car hidden" id="heroCar">
+      <div class="carTrack" id="carTrack"></div>
+      <button class="carNav" id="carPrev" aria-label="上一張">‹</button>
+      <button class="carNav nxt" id="carNext" aria-label="下一張">›</button>
+      <div class="carDots" id="carDots"></div>
+    </div>
     <div class="featured hidden" id="featuredWrap">
       <div class="fhead"><span class="en">Now Showing</span><span class="fzh">正在展出</span></div>
       <div class="frow" id="featuredRow"></div>
@@ -305,6 +321,9 @@
   <h2 class="section"><span class="zh">展覽密碼</span><span class="en">Access Control</span></h2>
   <div id="passList"></div>
 
+  <h2 class="section"><span class="zh">首頁精選展覽（最上方輪播）</span><span class="en">Featured</span></h2>
+  <div class="panelA" id="featPick"><div class="empty" style="padding:18px;">載入中…</div></div>
+
   <h2 class="section"><span class="zh">首頁主視覺</span><span class="en">Homepage Banner</span></h2>
   <div class="panelA">
     <div class="bprev" id="bnPrev">尚未設定 banner——首頁會顯示「正在展出」精選</div>
@@ -391,15 +410,16 @@
   </div>
 </div>
 
-<script src="js/site.js?v=20260926"></script>
-<script src="js/store.js?v=20260926"></script>
-<script src="js/auth.js?v=20260926"></script>
-<script src="js/templates.js?v=20260926"></script>
-<script src="js/starter.js?v=20260926"></script>
+<script src="js/site.js?v=20260927"></script>
+<script src="js/dialog.js?v=20260927"></script>
+<script src="js/store.js?v=20260927"></script>
+<script src="js/auth.js?v=20260927"></script>
+<script src="js/templates.js?v=20260927"></script>
+<script src="js/starter.js?v=20260927"></script>
 <script>
 const authView = document.getElementById('authView');
 const dashView = document.getElementById('dashView');
-const VER = '20260926';   // 連結帶版本，避免 CDN 提供舊頁面
+const VER = '20260927';   // 連結帶版本，避免 CDN 提供舊頁面
 
 function fmtDate(ts) { if (!ts) return '—'; const d = new Date(ts); return `${d.getFullYear()}.${(d.getMonth()+1)}.${d.getDate()}`; }
 function thumbColor(tpl) { return (TEMPLATES[tpl]?.room.wallColor) || '#dedbd2'; }
@@ -429,25 +449,25 @@ function renderHome() {
   if (S.tagline) document.getElementById('heroTagline').textContent = S.tagline;
   if (S.headline) document.getElementById('heroTitle').textContent = S.headline;
   if (S.subline) document.getElementById('heroLead').innerHTML = esc(S.subline).replace(/\n/g, '<br>');
-  const bw = document.getElementById('bannerWrap'), fw = document.getElementById('featuredWrap');
   const cfg = __siteCfg || {};
-  const banner = cfg.banner || S.banner;
-  if (banner) {
-    document.getElementById('bannerImg').src = banner;
-    document.getElementById('bannerCap').textContent = (cfg.banner ? cfg.bannerCaption : S.bannerCaption) || '';
-    bw.classList.remove('hidden'); fw.classList.add('hidden');
-  } else {
-    bw.classList.add('hidden');
-    renderFeatured();
-  }
+  renderHeroCar(cfg);
+  renderFeatured();
   /* 策展活動三欄 */
-  const evs = (cfg.events || []).filter(e => e && (e.img || e.title));
+  const pubsAll = Store.listPublished();
+  const evs = (cfg.events || []).filter(e => e && (e.img || e.title || e.exId));
   const ew = document.getElementById('eventsWrap');
   if (evs.length) {
-    document.getElementById('eventsRow').innerHTML = evs.slice(0, 3).map(e => `<div class="ecard">
-      <div class="eimg" style="${e.img ? `background-image:url('${e.img}')` : ''}"></div>
-      <div class="ebody"><h3>${esc(e.title || '')}</h3>${e.text ? `<p>${esc(e.text)}</p>` : ''}</div>
-    </div>`).join('');
+    document.getElementById('eventsRow').innerHTML = evs.slice(0, 3).map(e => {
+      const lex = e.exId ? pubsAll.find(p => p.id === e.exId) : null;
+      const img = e.img || (lex && lex.thumb) || '';
+      const pos = e.img ? posStr(e.pos) : (lex ? posStr(lex.thumbPos) : '50% 50%');
+      const title = e.title || (lex && lex.title) || '';
+      const inner = `<div class="eimg" style="${img ? `background-image:url('${img}');background-position:${pos};` : ''}"></div>
+        <div class="ebody"><h3>${esc(title)}</h3>${e.text ? `<p>${esc(e.text)}</p>` : ''}</div>`;
+      return lex
+        ? `<a class="ecard" style="text-decoration:none;" href="view.html?id=${lex.id}&v=${VER}">${inner}</a>`
+        : `<div class="ecard">${inner}</div>`;
+    }).join('');
     ew.classList.remove('hidden');
   } else ew.classList.add('hidden');
   renderCalendar(cfg);
@@ -509,14 +529,14 @@ function doSignOut() {
 async function openStudio() {
   const me = Auth.current();
   if (!me) { document.getElementById('authOv').classList.add('show'); return; }
-  if (!me.cloud) { alert('策展工作室需以 Google 帳戶登入。'); return; }
+  if (!me.cloud) { UI.alert('策展工作室需以 Google 帳戶登入。'); return; }
   if (window.Cloud && Cloud.enabled && Cloud.curatorStatus) {
     let st = null;
     try { st = await Cloud.curatorStatus(); } catch (e) {}
     if (st) { window.__adm = !!st.admin; renderAcct(); }
     if (st && !st.approved && !st.admin) {
       if (!st.applied) { document.getElementById('applyOv').classList.add('show'); return; }   // 尚未填申請 → 開申請表單
-      alert('你的申請已送出，通過審核後即可開始策展；審核期間仍可自由觀展。');
+      UI.alert('你的申請已送出，通過審核後即可開始策展；審核期間仍可自由觀展。');
       return;
     }
   }
@@ -525,11 +545,11 @@ async function openStudio() {
 document.getElementById('pdSend').onclick = () => {
   const id = window.__pubEx; if (!id) return;
   const from = document.getElementById('pdFrom').value, to = document.getElementById('pdTo').value;
-  if (!from) { alert('請填寫開始日期。'); return; }
-  if (to && to < from) { alert('結束日期不能早於開始日期。'); return; }
+  if (!from) { UI.alert('請填寫開始日期。'); return; }
+  if (to && to < from) { UI.alert('結束日期不能早於開始日期。'); return; }
   const period = { from, to: to || '' };
   if (window.__adm) { Store.update(id, { published: true, pubPending: false, period }); }
-  else { Store.update(id, { pubPending: true, period }); alert('已送出上線申請與檔期，通過管理者審核後就會公開展出。'); }
+  else { Store.update(id, { pubPending: true, period }); UI.alert('已送出上線申請與檔期，通過管理者審核後就會公開展出。'); }
   document.getElementById('pubOv').classList.remove('show');
   renderDash();
 };
@@ -537,19 +557,48 @@ document.getElementById('pdSend').onclick = () => {
 document.getElementById('apSend').onclick = async () => {
   const org = document.getElementById('apOrg').value.trim();
   const exp = document.getElementById('apExp').value.trim();
-  if (!org) { alert('請填寫單位／學校／個人名稱。'); return; }
+  if (!org) { UI.alert('請填寫單位／學校／個人名稱。'); return; }
   try {
     await Cloud.applyCurator({ org, exp });
     document.getElementById('applyOv').classList.remove('show');
-    alert('申請已送出！通過審核後，「策展工作室」就會為你開通。');
-  } catch (e) { alert('送出失敗：' + (e.message || e)); }
+    UI.alert('申請已送出！通過審核後，「策展工作室」就會為你開通。');
+  } catch (e) { UI.alert('送出失敗：' + (e.message || e)); }
 };
+/* 首頁主視覺輪播：banner（若有）＋管理者勾選的精選展覽；都沒有時自動用最新公開展覽 */
+function posStr(p) { return p && p.x != null ? `${p.x}% ${p.y}%` : '50% 50%'; }
+function renderHeroCar(cfg) {
+  const car = document.getElementById('heroCar'), track = document.getElementById('carTrack');
+  const pubs = Store.listPublished();
+  const slides = [];
+  const banner = cfg.banner || (window.SITE || {}).banner;
+  if (banner) slides.push({ img: banner, pos: cfg.banner ? cfg.bannerPos : null, cap: cfg.banner ? cfg.bannerCaption : (window.SITE || {}).bannerCaption });
+  (cfg.featuredIds || []).forEach(id => { const e = pubs.find(p => p.id === id); if (e) slides.push({ ex: e }); });
+  if (!slides.length) pubs.slice(0, 3).forEach(e => slides.push({ ex: e }));
+  if (!slides.length) { car.classList.add('hidden'); return; }
+  track.innerHTML = slides.map(s => {
+    if (s.ex) {
+      const e = s.ex;
+      const items = (e.rooms || []).reduce((n, r) => n + (r.items || []).length, 0);
+      const bg = e.thumb ? `background-image:url('${e.thumb}');background-position:${posStr(e.thumbPos)};` : `background:linear-gradient(150deg, ${thumbColor(e.template)} 0%, #d8d4c9 100%);`;
+      return `<a class="carSlide exs" style="${bg}" href="view.html?id=${e.id}&v=${VER}"><span class="fm">${(e.rooms || []).length || 1} 個展間 · ${items} 件作品 · 進入觀展</span><span class="ft">${esc(e.title)}</span></a>`;
+    }
+    return `<div class="carSlide ${s.cap ? 'exs' : ''}" style="background-image:url('${s.img}');background-position:${posStr(s.pos)};">${s.cap ? `<span class="ft">${esc(s.cap)}</span>` : ''}</div>`;
+  }).join('');
+  const dots = document.getElementById('carDots');
+  dots.innerHTML = slides.map((_, i) => `<i class="${i === 0 ? 'on' : ''}"></i>`).join('');
+  car.classList.toggle('single', slides.length <= 1);
+  const W = () => track.clientWidth || 1;
+  document.getElementById('carPrev').onclick = () => track.scrollBy({ left: -W(), behavior: 'smooth' });
+  document.getElementById('carNext').onclick = () => track.scrollBy({ left: W(), behavior: 'smooth' });
+  track.onscroll = () => { const k = Math.round(track.scrollLeft / W()); dots.querySelectorAll('i').forEach((d, i) => d.classList.toggle('on', i === k)); };
+  car.classList.remove('hidden');
+}
 function renderFeatured() {
   const fw = document.getElementById('featuredWrap');
   const pub = Store.listPublished().slice(0, 3);
   if (!pub.length) { fw.classList.add('hidden'); return; }
   document.getElementById('featuredRow').innerHTML = pub.map(ex => {
-    const bg = ex.thumb ? `background-image:url('${ex.thumb}')` : `background:linear-gradient(150deg, ${thumbColor(ex.template)} 0%, #d8d4c9 100%)`;
+    const bg = ex.thumb ? `background-image:url('${ex.thumb}');background-position:${posStr(ex.thumbPos)};` : `background:linear-gradient(150deg, ${thumbColor(ex.template)} 0%, #d8d4c9 100%)`;
     const items = (ex.rooms || []).reduce((n, r) => n + (r.items || []).length, 0);
     return `<a class="fcard" style="${bg}" href="view.html?id=${ex.id}&v=${VER}"><span class="fm">${(ex.rooms || []).length || 1} 個展間 · ${items} 件作品</span><span class="ft">${esc(ex.title)}</span></a>`;
   }).join('');
@@ -569,7 +618,7 @@ function exCard(ex, owned) {
        <button class="btn sm quiet" data-act="pub" data-id="${ex.id}">${pubLabel}</button>
        <button class="btn sm quiet danger" data-act="del" data-id="${ex.id}">刪除</button>`
     : `<a class="btn sm fill" href="view.html?id=${ex.id}&v=${VER}">進入觀展</a>`;
-  const thumbStyle = ex.thumb ? `background:url('${ex.thumb}') center/cover` : `background:linear-gradient(150deg, ${thumbColor(ex.template)} 0%, #efece4 100%)`;
+  const thumbStyle = ex.thumb ? `background:url('${ex.thumb}') ${posStr(ex.thumbPos)}/cover` : `background:linear-gradient(150deg, ${thumbColor(ex.template)} 0%, #efece4 100%)`;
   return `<div class="card">
     <div class="thumb" style="${thumbStyle}">${owned ? badge : ''}</div>
     <div class="body">
@@ -599,7 +648,7 @@ function renderDash() {
     : `<div class="empty">目前沒有公開中的展覽。</div>`;
 
   dashView.querySelectorAll('[data-act]').forEach(btn => {
-    btn.onclick = () => {
+    btn.onclick = async () => {
       const id = btn.dataset.id;
       if (btn.dataset.act === 'pub') {
         const ex = Store.get(id);
@@ -614,7 +663,7 @@ function renderDash() {
         return;
       }
       else if (btn.dataset.act === 'mem') openMembers(id);
-      else if (btn.dataset.act === 'del') { if (confirm('確定刪除這檔展覽？此動作無法復原。')) { Store.remove(id); renderDash(); } }
+      else if (btn.dataset.act === 'del') { if (await UI.confirm('確定刪除這檔展覽？此動作無法復原。')) { Store.remove(id); renderDash(); } }
     };
   });
 }
@@ -647,14 +696,14 @@ async function renderPassList() {
       </div>`).join('')
     : `<div class="empty" style="padding:26px;">目前沒有公開中的展覽。</div>`;
   box.querySelectorAll('[data-ps]').forEach(b => b.onclick = async () => {
-    const p = prompt('設定這檔展覽的進場密碼（觀眾進場時需輸入）：'); if (!p) return;
+    const p = await UI.prompt('設定這檔展覽的進場密碼（觀眾進場時需輸入）：', { placeholder: '密碼' }); if (!p) return;
     try { await Cloud.setExPass(b.dataset.ps, await Cloud.sha256(p.trim())); renderPassList(); }
-    catch (e) { alert('設定失敗：' + (e.message || e)); }
+    catch (e) { UI.alert('設定失敗：' + (e.message || e)); }
   });
   box.querySelectorAll('[data-pc]').forEach(b => b.onclick = async () => {
-    if (!confirm('清除密碼，改為公開進場？')) return;
+    if (!(await UI.confirm('清除密碼，改為公開進場？'))) return;
     try { await Cloud.setExPass(b.dataset.pc, null); renderPassList(); }
-    catch (e) { alert('清除失敗：' + (e.message || e)); }
+    catch (e) { UI.alert('清除失敗：' + (e.message || e)); }
   });
 }
 
@@ -674,16 +723,34 @@ async function renderPubList() {
       </div>`).join('')
     : `<div class="empty" style="padding:26px;">目前沒有待審核的上線申請。</div>`;
   box.querySelectorAll('[data-pap]').forEach(b => b.onclick = async () => {
-    try { await Cloud.approvePublish(b.dataset.pap); renderPubList(); } catch (e) { alert('核准失敗：' + (e.message || e)); }
+    try { await Cloud.approvePublish(b.dataset.pap); renderPubList(); } catch (e) { UI.alert('核准失敗：' + (e.message || e)); }
   });
   box.querySelectorAll('[data-prj]').forEach(b => b.onclick = async () => {
-    if (!confirm('退回這件上線申請？')) return;
-    try { await Cloud.rejectPublish(b.dataset.prj); renderPubList(); } catch (e) { alert('退回失敗：' + (e.message || e)); }
+    if (!(await UI.confirm('退回這件上線申請？'))) return;
+    try { await Cloud.rejectPublish(b.dataset.prj); renderPubList(); } catch (e) { UI.alert('退回失敗：' + (e.message || e)); }
   });
 }
 
-/* 首頁設定編輯（banner＋策展活動） */
-const _cfgDraft = { banner: '', bannerCaption: '', events: [{}, {}, {}] };
+/* 首頁設定編輯（精選展覽＋banner＋策展活動） */
+const _cfgDraft = { banner: '', bannerCaption: '', bannerPos: null, featuredIds: [], events: [{}, {}, {}] };
+/* 在預覽圖上拖曳，調整照片顯示的位置（焦點） */
+function bindDrag(el, onPos) {
+  el.style.touchAction = 'none';
+  el.addEventListener('pointerdown', e => {
+    if (!el.style.backgroundImage) return;
+    e.preventDefault(); el.setPointerCapture(e.pointerId); el.style.cursor = 'grabbing';
+    const move = (ev) => {
+      const r = el.getBoundingClientRect();
+      const x = Math.round(Math.min(100, Math.max(0, (ev.clientX - r.left) / r.width * 100)));
+      const y = Math.round(Math.min(100, Math.max(0, (ev.clientY - r.top) / r.height * 100)));
+      el.style.backgroundPosition = x + '% ' + y + '%'; el.__pos = { x, y };
+    };
+    move(e);
+    const up = () => { el.removeEventListener('pointermove', move); el.removeEventListener('pointerup', up); el.style.cursor = 'move'; if (el.__pos) onPos(el.__pos); };
+    el.addEventListener('pointermove', move); el.addEventListener('pointerup', up);
+  });
+  el.style.cursor = 'move';
+}
 function _imgPick(cb, maxW) {
   const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*';
   inp.onchange = () => {
@@ -703,42 +770,69 @@ function _imgPick(cb, maxW) {
   };
   inp.click();
 }
-function renderSiteEditor() {
+async function renderSiteEditor() {
   const c = __siteCfg || {};
   _cfgDraft.banner = c.banner || '';
   _cfgDraft.bannerCaption = c.bannerCaption || '';
+  _cfgDraft.bannerPos = c.bannerPos || null;
+  _cfgDraft.featuredIds = [...(c.featuredIds || [])];
   _cfgDraft.events = [0, 1, 2].map(i => ({ ...((c.events || [])[i] || {}) }));
+
+  /* 精選展覽勾選（公開中的展覽） */
+  let live = [];
+  try { live = await Cloud.listLive(); } catch (e) {}
+  const fp = document.getElementById('featPick');
+  fp.innerHTML = live.length
+    ? live.map(r => `<label class="fpRow"><input type="checkbox" data-feat="${esc(r.id)}" ${_cfgDraft.featuredIds.includes(r.id) ? 'checked' : ''} /><span>${esc(r.title)}</span></label>`).join('')
+      + `<div class="dragHint">勾選的展覽會以大圖輪播出現在首頁最上方（連同 banner，一頁一頁橫向滑動）。</div>`
+    : `<div class="empty" style="padding:18px;">目前沒有公開中的展覽可精選。</div>`;
+  fp.querySelectorAll('[data-feat]').forEach(cb => cb.onchange = () => {
+    const id = cb.dataset.feat;
+    if (cb.checked) { if (!_cfgDraft.featuredIds.includes(id)) _cfgDraft.featuredIds.push(id); }
+    else _cfgDraft.featuredIds = _cfgDraft.featuredIds.filter(x => x !== id);
+  });
+
   const prev = document.getElementById('bnPrev');
   const paint = () => {
     prev.style.backgroundImage = _cfgDraft.banner ? `url('${_cfgDraft.banner}')` : '';
-    prev.textContent = _cfgDraft.banner ? '' : '尚未設定 banner——首頁會顯示「正在展出」精選';
+    prev.style.backgroundPosition = posStr(_cfgDraft.bannerPos);
+    prev.textContent = _cfgDraft.banner ? '' : '尚未設定 banner——首頁輪播會顯示精選展覽';
   };
   paint();
+  bindDrag(prev, p => { _cfgDraft.bannerPos = p; });
+  if (!prev.nextElementSibling || !prev.nextElementSibling.classList.contains('dragHint')) prev.insertAdjacentHTML('afterend', '<div class="dragHint">上傳後可直接在圖上拖曳，調整照片顯示的位置。</div>');
   document.getElementById('bnCap').value = _cfgDraft.bannerCaption;
   document.getElementById('schNote').value = c.scheduleNote || '';
-  document.getElementById('bnUp').onclick = () => _imgPick(url => { _cfgDraft.banner = url; paint(); }, 1600);
-  document.getElementById('bnClear').onclick = () => { _cfgDraft.banner = ''; paint(); };
+  document.getElementById('bnUp').onclick = () => _imgPick(url => { _cfgDraft.banner = url; _cfgDraft.bannerPos = null; paint(); }, 1280);
+  document.getElementById('bnClear').onclick = () => { _cfgDraft.banner = ''; _cfgDraft.bannerPos = null; paint(); };
+
+  const liveOpts = live.map(r => `<option value="${esc(r.id)}">${esc(r.title)}</option>`).join('');
   const ev = document.getElementById('evEdit');
   ev.innerHTML = [0, 1, 2].map(i => `<div class="slotEd" data-slot="${i}">
-      <div class="bprev" style="${_cfgDraft.events[i].img ? `background-image:url('${_cfgDraft.events[i].img}')` : ''}">${_cfgDraft.events[i].img ? '' : '活動照片'}</div>
+      <div class="bprev" style="${_cfgDraft.events[i].img ? `background-image:url('${_cfgDraft.events[i].img}');background-position:${posStr(_cfgDraft.events[i].pos)};` : ''}">${_cfgDraft.events[i].img ? '' : '活動照片'}</div>
+      <div class="dragHint">照片可拖曳調整構圖</div>
       <button class="btn sm" data-evup="${i}">上傳照片</button>
       <button class="textlink" data-evclr="${i}">清除</button>
+      <select data-evex="${i}"><option value="">連結展覽（選填，未上傳照片時用展覽封面）</option>${liveOpts}</select>
       <input data-evt="${i}" maxlength="24" placeholder="活動標題" value="${esc(_cfgDraft.events[i].title || '')}" />
       <textarea data-evx="${i}" maxlength="120" placeholder="活動簡介（選填）">${esc(_cfgDraft.events[i].text || '')}</textarea>
     </div>`).join('');
-  const repaintSlot = (i) => { const s = ev.querySelector(`[data-slot="${i}"] .bprev`); s.style.backgroundImage = _cfgDraft.events[i].img ? `url('${_cfgDraft.events[i].img}')` : ''; s.textContent = _cfgDraft.events[i].img ? '' : '活動照片'; };
-  ev.querySelectorAll('[data-evup]').forEach(b => b.onclick = () => _imgPick(url => { _cfgDraft.events[+b.dataset.evup].img = url; repaintSlot(+b.dataset.evup); }, 900));
+  ev.querySelectorAll('[data-evex]').forEach(s => { s.value = _cfgDraft.events[+s.dataset.evex].exId || ''; s.onchange = () => { _cfgDraft.events[+s.dataset.evex].exId = s.value; }; });
+  const repaintSlot = (i) => { const s = ev.querySelector(`[data-slot="${i}"] .bprev`); s.style.backgroundImage = _cfgDraft.events[i].img ? `url('${_cfgDraft.events[i].img}')` : ''; s.style.backgroundPosition = posStr(_cfgDraft.events[i].pos); s.textContent = _cfgDraft.events[i].img ? '' : '活動照片'; };
+  ev.querySelectorAll('.bprev').forEach((el, i) => bindDrag(el, p => { _cfgDraft.events[i].pos = p; }));
+  ev.querySelectorAll('[data-evup]').forEach(b => b.onclick = () => _imgPick(url => { const i = +b.dataset.evup; _cfgDraft.events[i].img = url; _cfgDraft.events[i].pos = null; repaintSlot(i); }, 800));
   ev.querySelectorAll('[data-evclr]').forEach(b => b.onclick = () => { _cfgDraft.events[+b.dataset.evclr] = {}; renderSiteEditor(); });
   ev.querySelectorAll('[data-evt]').forEach(inp => inp.oninput = () => { _cfgDraft.events[+inp.dataset.evt].title = inp.value; });
   ev.querySelectorAll('[data-evx]').forEach(inp => inp.oninput = () => { _cfgDraft.events[+inp.dataset.evx].text = inp.value; });
   document.getElementById('siteSave').onclick = async () => {
     _cfgDraft.bannerCaption = document.getElementById('bnCap').value.trim();
+    const patch = { banner: _cfgDraft.banner, bannerCaption: _cfgDraft.bannerCaption, bannerPos: _cfgDraft.bannerPos, featuredIds: _cfgDraft.featuredIds, events: _cfgDraft.events, scheduleNote: document.getElementById('schNote').value.trim() };
+    if (JSON.stringify(patch).length > 900000) { UI.alert('圖片總量太大，超過雲端單筆上限。請把 banner 或活動照片換成小一點的圖（或減少張數）再儲存。'); return; }
     try {
-      const patch = { banner: _cfgDraft.banner, bannerCaption: _cfgDraft.bannerCaption, events: _cfgDraft.events, scheduleNote: document.getElementById('schNote').value.trim() };
       await Cloud.saveSiteConfig(patch);
-      __siteCfg = { ...( __siteCfg || {}), ...patch };
+      __siteCfg = { ...(__siteCfg || {}), ...patch };
       const m = document.getElementById('siteSaveMsg'); m.style.opacity = 1; setTimeout(() => m.style.opacity = 0, 2200);
-    } catch (e) { alert('儲存失敗（可能是 Firestore 規則尚未加上 vex_site）：' + (e.message || e)); }
+    } catch (e) { UI.alert('儲存失敗：' + (e.message || e)); }
   };
 }
 
@@ -771,20 +865,20 @@ async function renderAdmin() {
   pager.querySelectorAll('[data-pg]').forEach(b => b.onclick = () => { adminPage += +b.dataset.pg; renderAdmin(); });
   document.querySelectorAll('#adminList [data-cu]').forEach(b => b.onclick = async () => {
     try { await Cloud.setCurator(b.dataset.cu, b.dataset.ap === '1'); renderAdmin(); }
-    catch (e) { alert('操作失敗：' + (e.message || e)); }
+    catch (e) { UI.alert('操作失敗：' + (e.message || e)); }
   });
   document.querySelectorAll('#adminList [data-adm]').forEach(b => b.onclick = async () => {
     const mk = b.dataset.mk === '1';
-    if (!confirm(mk ? '設為管理者？對方將能審核、開通與停用其他帳號。' : '取消這位帳號的管理者權限？')) return;
+    if (!(await UI.confirm(mk ? '設為管理者？對方將能審核、開通與停用其他帳號。' : '取消這位帳號的管理者權限？'))) return;
     try { await Cloud.setCuratorAdmin(b.dataset.adm, mk); renderAdmin(); }
-    catch (e) { alert('操作失敗：' + (e.message || e)); }
+    catch (e) { UI.alert('操作失敗：' + (e.message || e)); }
   });
   box.classList.remove('hidden');
 }
 
 /* 擁有者：成員與權限管理 */
 async function openMembers(exId) {
-  if (!window.Cloud || !Cloud.enabled) { alert('連線中，請稍候再試。'); return; }
+  if (!window.Cloud || !Cloud.enabled) { UI.alert('連線中，請稍候再試。'); return; }
   document.getElementById('memOv').classList.add('show');
   document.getElementById('memCode').textContent = '……';
   document.getElementById('memList').innerHTML = '';
@@ -805,13 +899,13 @@ async function openMembers(exId) {
         </div>`).join('')
       : `<div class="empty" style="padding:24px;">尚無成員——把上方代號給夥伴即可加入。</div>`;
     document.querySelectorAll('#memList [data-role]').forEach(s => s.onchange = async () => {
-      try { await Cloud.setRole(exId, s.dataset.role, s.value); } catch (e) { alert('更新失敗：' + (e.message || e)); }
+      try { await Cloud.setRole(exId, s.dataset.role, s.value); } catch (e) { UI.alert('更新失敗：' + (e.message || e)); }
     });
     document.querySelectorAll('#memList [data-rm]').forEach(b => b.onclick = async () => {
-      if (!confirm('移除這位成員？')) return;
-      try { await Cloud.removeMember(exId, b.dataset.rm); openMembers(exId); } catch (e) { alert('移除失敗：' + (e.message || e)); }
+      if (!(await UI.confirm('移除這位成員？'))) return;
+      try { await Cloud.removeMember(exId, b.dataset.rm); openMembers(exId); } catch (e) { UI.alert('移除失敗：' + (e.message || e)); }
     });
-  } catch (e) { alert('讀取成員失敗：' + (e.message || e)); }
+  } catch (e) { UI.alert('讀取成員失敗：' + (e.message || e)); }
 }
 
 /* 個人設定 */
@@ -890,12 +984,12 @@ addEventListener('cloud-sync', () => { route(); });
 
 /* Google 登入 → 通過審核者直接進工作室 */
 document.getElementById('googleBtn').onclick = async () => {
-  if (!window.Cloud || !Cloud.signInGoogle) { alert('連線中，請稍候再試。'); return; }
+  if (!window.Cloud || !Cloud.signInGoogle) { UI.alert('連線中，請稍候再試。'); return; }
   try { const u = await Cloud.signInGoogle(); Auth.signInCloud(u); authOv.classList.remove('show'); route(); openStudio(); }
   catch (e) {
     const code = e.code || '';
     if (code !== 'auth/popup-closed-by-user' && code !== 'auth/cancelled-popup-request')
-      alert('登入未完成，請再試一次。');
+      UI.alert('登入未完成，請再試一次。');
   }
 };
 /* 已登入過 Google（此瀏覽器記得你）→ 顯示帳號選單＋確認管理者身分 */
@@ -909,20 +1003,20 @@ addEventListener('cloud-auth', async () => {
 /* 加入協作：任何登入的帳號（不需通過策展審核）都能用代號進入該展覽共編；權限由創辦人設定 */
 async function joinFlow() {
   if (!Auth.current()) { document.getElementById('authOv').classList.add('show'); return; }
-  if (!window.Cloud || !Cloud.enabled) { alert('連線中，請稍候再試。'); return; }
-  const v = prompt('輸入加入代號（6 碼），或貼上展覽連結：'); if (!v) return;
+  if (!window.Cloud || !Cloud.enabled) { UI.alert('連線中，請稍候再試。'); return; }
+  const v = await UI.prompt('輸入加入代號（6 碼），或貼上展覽連結：', { placeholder: '例如 K3WPQ7' }); if (!v) return;
   try {
     const looksCode = !v.includes('=') && v.trim().length <= 8;
     const ex = looksCode ? await Cloud.joinByCode(v) : await Cloud.join(v);
-    if (confirm('已加入「' + (ex.title || '') + '」的共同策展！\n現在就進入展場開始佈展嗎？')) {
+    if (await UI.confirm('已加入「' + (ex.title || '') + '」的共同策展！\n現在就進入展場開始佈展嗎？')) {
       location.href = 'view.html?id=' + ex.id + '&edit=1&v=' + VER;
       return;
     }
     if (page === 'studio') renderDash();
-  } catch (e) { alert('加入失敗：' + (e.message || e)); }
+  } catch (e) { UI.alert('加入失敗：' + (e.message || e)); }
 }
 document.getElementById('joinBtn').onclick = joinFlow;
 </script>
-<script type="module" src="js/cloud.js?v=20260926"></script>
+<script type="module" src="js/cloud.js?v=20260927"></script>
 </body>
 </html>

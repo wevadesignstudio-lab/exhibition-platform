@@ -144,16 +144,17 @@
   </aside>
 </div>
 
-<script src="js/store.js?v=20260926"></script>
-<script src="js/auth.js?v=20260926"></script>
-<script src="js/templates.js?v=20260926"></script>
-<script src="js/props.js?v=20260926"></script>
+<script src="js/dialog.js?v=20260927"></script>
+<script src="js/store.js?v=20260927"></script>
+<script src="js/auth.js?v=20260927"></script>
+<script src="js/templates.js?v=20260927"></script>
+<script src="js/props.js?v=20260927"></script>
 <script>
 Auth.requireOrRedirect();
 const params = new URLSearchParams(location.search);
 const exId = params.get('id');
 let ex = Store.get(exId);
-if (!ex || ex.ownerId !== Auth.current().id) { alert('找不到這檔展覽，或你沒有編輯權限。'); location.href = 'index.html'; }
+if (!ex || ex.ownerId !== Auth.current().id) { UI.alert('找不到這檔展覽，或你沒有編輯權限。'); location.href = 'index.html'; }
 
 // 多房間遷移（與觀展器一致）。此表單編輯器一次編輯一個房間。
 if (!ex.rooms || !ex.rooms.length) ex.rooms = [{ id: 'rm0', name: '展廳 1', template: ex.template || 'white', items: ex.items || [] }];
@@ -164,8 +165,8 @@ let room = ex.rooms[roomSel];
 ex.items = room.items;          // 別名：下方程式都用 ex.items / ex.template 指向當前房間
 Object.defineProperty(ex, 'template', { get() { return room.template; }, set(v) { room.template = v; }, configurable: true });
 
-document.getElementById('previewBtn').href = 'view.html?id=' + exId + '&mode=tour&v=20260926';
-document.getElementById('edit3dBtn').href = 'view.html?id=' + exId + '&edit=1&v=20260926';
+document.getElementById('previewBtn').href = 'view.html?id=' + exId + '&mode=tour&v=20260927';
+document.getElementById('edit3dBtn').href = 'view.html?id=' + exId + '&edit=1&v=20260927';
 
 /* ---- 儲存（防抖）---- */
 let saveTimer = null;
@@ -193,8 +194,8 @@ descEl.oninput = () => { ex.description = descEl.value; save(); };
 /* ---- 房間選擇 ---- */
 renderRoomSelect();
 document.getElementById('roomSelect').onchange = e => switchRoom(+e.target.value);
-document.getElementById('roomAddBtn').onclick = () => { if (ex.rooms.length >= 5) { alert('最多 5 個房間'); return; } ex.rooms.push({ id: 'rm' + Date.now().toString(36), name: '展廳 ' + (ex.rooms.length + 1), template: room.template, items: [] }); save(); switchRoom(ex.rooms.length - 1); };
-document.getElementById('roomDelBtn').onclick = () => { if (ex.rooms.length <= 1) { alert('至少保留一個房間'); return; } if (!confirm('刪除房間「' + (room.name || '') + '」？')) return; ex.rooms.splice(roomSel, 1); save(); switchRoom(Math.max(0, roomSel - 1)); };
+document.getElementById('roomAddBtn').onclick = () => { if (ex.rooms.length >= 5) { UI.alert('最多 5 個房間'); return; } ex.rooms.push({ id: 'rm' + Date.now().toString(36), name: '展廳 ' + (ex.rooms.length + 1), template: room.template, items: [] }); save(); switchRoom(ex.rooms.length - 1); };
+document.getElementById('roomDelBtn').onclick = async () => { if (ex.rooms.length <= 1) { UI.alert('至少保留一個房間'); return; } if (!(await UI.confirm('刪除房間「' + (room.name || '') + '」？'))) return; ex.rooms.splice(roomSel, 1); save(); switchRoom(Math.max(0, roomSel - 1)); };
 
 /* ---- 模板 ---- */
 const tplsEl = document.getElementById('tpls');
@@ -342,9 +343,9 @@ function bindItems() {
       img.src = dataUrl;
     });
   });
-  itemsEl.querySelectorAll('[data-del]').forEach(b => b.onclick = () => {
+  itemsEl.querySelectorAll('[data-del]').forEach(b => b.onclick = async () => {
     const i = +b.dataset.del;
-    if (confirm('刪除「' + (ex.items[i].title || '此展品') + '」？')) { ex.items.splice(i, 1); save(); renderItems(); }
+    if (await UI.confirm('刪除「' + (ex.items[i].title || '此展品') + '」？')) { ex.items.splice(i, 1); save(); renderItems(); }
   });
 }
 document.querySelectorAll('[data-add]').forEach(b => b.onclick = () => {
@@ -358,9 +359,9 @@ function readImageDownscaled(file, cb) {
     const c = document.createElement('canvas'); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
     c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
     URL.revokeObjectURL(url);
-    try { cb(c.toDataURL('image/jpeg', 0.82)); } catch (e) { alert('圖片處理失敗'); }
+    try { cb(c.toDataURL('image/jpeg', 0.82)); } catch (e) { UI.alert('圖片處理失敗'); }
   };
-  img.onerror = () => { URL.revokeObjectURL(url); alert('無法讀取圖片'); };
+  img.onerror = () => { URL.revokeObjectURL(url); UI.alert('無法讀取圖片'); };
   img.src = url;
 }
 
@@ -415,6 +416,6 @@ renderItems();
 drawPlan();
 addEventListener('resize', drawPlan);
 </script>
-<script type="module" src="js/cloud.js?v=20260926"></script>
+<script type="module" src="js/cloud.js?v=20260927"></script>
 </body>
 </html>
