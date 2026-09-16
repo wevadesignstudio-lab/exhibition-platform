@@ -279,15 +279,15 @@
   </div>
 </div>
 
-<script src="js/site.js?v=20260921"></script>
-<script src="js/store.js?v=20260921"></script>
-<script src="js/auth.js?v=20260921"></script>
-<script src="js/templates.js?v=20260921"></script>
-<script src="js/starter.js?v=20260921"></script>
+<script src="js/site.js?v=20260922"></script>
+<script src="js/store.js?v=20260922"></script>
+<script src="js/auth.js?v=20260922"></script>
+<script src="js/templates.js?v=20260922"></script>
+<script src="js/starter.js?v=20260922"></script>
 <script>
 const authView = document.getElementById('authView');
 const dashView = document.getElementById('dashView');
-const VER = '20260921';   // 連結帶版本，避免 CDN 提供舊頁面
+const VER = '20260922';   // 連結帶版本，避免 CDN 提供舊頁面
 
 function fmtDate(ts) { if (!ts) return '—'; const d = new Date(ts); return `${d.getFullYear()}.${(d.getMonth()+1)}.${d.getDate()}`; }
 function thumbColor(tpl) { return (TEMPLATES[tpl]?.room.wallColor) || '#dedbd2'; }
@@ -434,12 +434,19 @@ async function renderAdmin() {
     ? rows.map(c => `<div class="mrow">
         <span class="nm">${esc(c.name || '（未命名）')}</span>
         <span class="em">${esc(c.email || '')}</span>
-        <span class="st ${c.approved ? 'ok' : 'no'}">${c.approved ? '已開通' : '待審核'}</span>
+        <span class="st ${c.admin ? 'ok' : (c.approved ? 'ok' : 'no')}">${c.admin ? '管理者' : (c.approved ? '已開通' : '待審核')}</span>
         <button class="btn sm ${c.approved ? 'quiet' : 'fill'}" data-cu="${esc(c.uid)}" data-ap="${c.approved ? 0 : 1}">${c.approved ? '停用' : '核准'}</button>
+        <button class="textlink" data-adm="${esc(c.uid)}" data-mk="${c.admin ? 0 : 1}">${c.admin ? '取消管理者' : '設為管理者'}</button>
       </div>`).join('')
     : `<div class="empty" style="padding:26px;">目前沒有其他帳號申請。</div>`;
   document.querySelectorAll('#adminList [data-cu]').forEach(b => b.onclick = async () => {
     try { await Cloud.setCurator(b.dataset.cu, b.dataset.ap === '1'); renderAdmin(); }
+    catch (e) { alert('操作失敗：' + (e.message || e)); }
+  });
+  document.querySelectorAll('#adminList [data-adm]').forEach(b => b.onclick = async () => {
+    const mk = b.dataset.mk === '1';
+    if (!confirm(mk ? '設為管理者？對方將能審核、開通與停用其他帳號。' : '取消這位帳號的管理者權限？')) return;
+    try { await Cloud.setCuratorAdmin(b.dataset.adm, mk); renderAdmin(); }
     catch (e) { alert('操作失敗：' + (e.message || e)); }
   });
   box.classList.remove('hidden');
@@ -573,6 +580,6 @@ document.getElementById('joinBtn').onclick = async () => {
   } catch (e) { alert('加入失敗：' + (e.message || e)); }
 };
 </script>
-<script type="module" src="js/cloud.js?v=20260921"></script>
+<script type="module" src="js/cloud.js?v=20260922"></script>
 </body>
 </html>

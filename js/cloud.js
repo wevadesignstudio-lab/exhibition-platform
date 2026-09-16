@@ -24,7 +24,7 @@ const CLIENT_ID = 'c' + Math.random().toString(36).slice(2, 10);
 const KEY = 'exhib_platform_v1';
 
 window.Cloud = { status: '連線中…', uid: null, user: null, enabled: false, err: null, join, watch, pushNow, signInGoogle, signOutGoogle, presence,
-  curatorStatus, listCurators, setCurator, joinByCode, exMeta, ensureJoinCode, setRole, removeMember };
+  curatorStatus, listCurators, setCurator, setCuratorAdmin, joinByCode, exMeta, ensureJoinCode, setRole, removeMember };
 
 let db, auth;
 try {
@@ -157,6 +157,7 @@ async function listCurators() {
   return out.sort((a, b) => (a.approved ? 1 : 0) - (b.approved ? 1 : 0) || (b.requestedAt || 0) - (a.requestedAt || 0));
 }
 async function setCurator(uid, approved) { await updateDoc(doc(db, CUR_COL, uid), { approved: !!approved }); }
+async function setCuratorAdmin(uid, admin) { await updateDoc(doc(db, CUR_COL, uid), admin ? { admin: true, approved: true } : { admin: false }); }
 
 /* ===== 共同策展：加入代號與成員權限 =====
    雲端展覽 doc 增加 joinCode（6 碼）、roles:{uid:'full'|'own'}、memberInfo:{uid:{name}}。
