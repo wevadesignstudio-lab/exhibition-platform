@@ -176,7 +176,7 @@ async function saveSiteConfig(patch) { await setDoc(doc(db, 'vex_site', 'config'
 async function listPubRequests() {
   const out = [];
   (await getDocs(query(collection(db, COL), where('pubPending', '==', true)))).forEach(d => {
-    const cd = d.data(); out.push({ id: d.id, title: (cd.data || {}).title || d.id, thumb: (cd.data || {}).thumb || '' });
+    const cd = d.data(); out.push({ id: d.id, title: (cd.data || {}).title || d.id, thumb: (cd.data || {}).thumb || '', period: (cd.data || {}).period || null });
   });
   return out;
 }

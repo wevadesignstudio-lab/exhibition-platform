@@ -78,6 +78,15 @@
   .ecard .ebody { padding: 18px 20px 22px; }
   .ecard h3 { font-family: "Noto Serif TC", serif; font-size: 16px; font-weight: 600; letter-spacing: 3px; }
   .ecard p { margin-top: 10px; font-size: 13px; color: var(--muted); line-height: 1.9; letter-spacing: .5px; white-space: pre-wrap; }
+  /* 展覽檔期 */
+  .calRows { border-top: 1px solid var(--line); }
+  .calRow { display: flex; align-items: baseline; gap: 22px; padding: 16px 4px; border-bottom: 1px solid var(--hair); text-decoration: none; transition: background .2s; }
+  .calRow:hover { background: rgba(26,25,22,.03); }
+  .calRow .cd { font-family: "Cormorant Garamond", serif; font-size: 16px; letter-spacing: .1em; min-width: 10.5em; color: var(--accent); }
+  .calRow .ct { font-family: "Noto Serif TC", serif; font-size: 16px; font-weight: 600; letter-spacing: 2px; flex: 1; }
+  .calRow .ca { font-size: 11px; letter-spacing: 2px; color: var(--muted); }
+  #calNote { margin-top: 14px; font-size: 13px; color: var(--muted); line-height: 2; letter-spacing: .5px; white-space: pre-wrap; }
+  #calNote:empty { display: none; }
   /* 管理後台編輯區 */
   .panelA { background: var(--card); border: 1px solid var(--line); padding: 22px; }
   .bprev { height: 200px; border: 1px dashed var(--line); display: grid; place-items: center; color: var(--faint); font-size: 13px; letter-spacing: 1px; background: center/cover no-repeat; }
@@ -205,6 +214,11 @@
       <div class="fhead"><span class="en">Programs</span><span class="fzh">策展活動</span></div>
       <div class="erow" id="eventsRow"></div>
     </div>
+    <div class="featured hidden" id="calWrap">
+      <div class="fhead"><span class="en">Calendar</span><span class="fzh">展覽檔期</span></div>
+      <div class="calRows" id="calRows"></div>
+      <p id="calNote"></p>
+    </div>
     <div class="authOv" id="authOv">
     <div class="gate">
       <button class="gclose" id="authClose">✕</button>
@@ -306,8 +320,28 @@
   <h2 class="section"><span class="zh">策展活動（首頁三欄）</span><span class="en">Programs</span></h2>
   <div class="erow" id="evEdit"></div>
 
+  <h2 class="section"><span class="zh">檔期補充說明（首頁「展覽檔期」下方）</span><span class="en">Calendar Note</span></h2>
+  <div class="panelA">
+    <textarea id="schNote" maxlength="400" placeholder="例如：十月起每週六 14:00 有策展人導覽；期末聯展開放至 1/15。" style="width:100%;padding:10px 12px;font-size:13px;background:#fff;border:1px solid var(--line);border-radius:2px;color:var(--ink);font-family:inherit;min-height:80px;resize:vertical;line-height:1.8;"></textarea>
+  </div>
+
   <button class="btn fill" id="siteSave" style="margin-top:26px;">儲存首頁設定</button>
   <span id="siteSaveMsg" style="margin-left:14px;font-size:12px;letter-spacing:2px;color:#4c8f6e;opacity:0;transition:opacity .3s;">已儲存</span>
+</div>
+
+<!-- 展覽檔期（申請上線時填寫） -->
+<div class="authOv" id="pubOv">
+  <div class="gate">
+    <button class="gclose" data-close="pubOv">✕</button>
+    <span class="en">Exhibition Period</span>
+    <h2>展覽檔期</h2>
+    <p style="margin-top:14px;font-size:13px;color:var(--muted);line-height:1.9;letter-spacing:.5px;">填寫希望展出的時段。上線後檔期會顯示在首頁「展覽檔期」；結束日期留空代表常設展出。</p>
+    <label for="pdFrom">開始日期</label>
+    <input type="date" id="pdFrom" />
+    <label for="pdTo">結束日期（選填）</label>
+    <input type="date" id="pdTo" />
+    <button class="btn fill" id="pdSend" style="width:100%;margin-top:26px;padding:13px;">送出</button>
+  </div>
 </div>
 
 <!-- 策展工作室開通申請 -->
@@ -357,15 +391,15 @@
   </div>
 </div>
 
-<script src="js/site.js?v=20260925"></script>
-<script src="js/store.js?v=20260925"></script>
-<script src="js/auth.js?v=20260925"></script>
-<script src="js/templates.js?v=20260925"></script>
-<script src="js/starter.js?v=20260925"></script>
+<script src="js/site.js?v=20260926"></script>
+<script src="js/store.js?v=20260926"></script>
+<script src="js/auth.js?v=20260926"></script>
+<script src="js/templates.js?v=20260926"></script>
+<script src="js/starter.js?v=20260926"></script>
 <script>
 const authView = document.getElementById('authView');
 const dashView = document.getElementById('dashView');
-const VER = '20260925';   // 連結帶版本，避免 CDN 提供舊頁面
+const VER = '20260926';   // 連結帶版本，避免 CDN 提供舊頁面
 
 function fmtDate(ts) { if (!ts) return '—'; const d = new Date(ts); return `${d.getFullYear()}.${(d.getMonth()+1)}.${d.getDate()}`; }
 function thumbColor(tpl) { return (TEMPLATES[tpl]?.room.wallColor) || '#dedbd2'; }
@@ -416,6 +450,25 @@ function renderHome() {
     </div>`).join('');
     ew.classList.remove('hidden');
   } else ew.classList.add('hidden');
+  renderCalendar(cfg);
+}
+/* 展覽檔期：公開展覽依開始日期排序；無檔期者列為常設展出 */
+function fmtPd(d) { if (!d) return ''; const p = d.split('-'); return p.length === 3 ? `${p[1]}.${p[2]}` : d; }
+function renderCalendar(cfg) {
+  const cw = document.getElementById('calWrap');
+  const pubs = Store.listPublished();
+  const note = (cfg && cfg.scheduleNote) || '';
+  if (!pubs.length && !note) { cw.classList.add('hidden'); return; }
+  const dated = pubs.filter(e => e.period && e.period.from).sort((a, b) => a.period.from.localeCompare(b.period.from));
+  const undated = pubs.filter(e => !e.period || !e.period.from);
+  document.getElementById('calRows').innerHTML = dated.concat(undated).map(e => {
+    const pd = e.period && e.period.from
+      ? (e.period.to ? `${fmtPd(e.period.from)} — ${fmtPd(e.period.to)}` : `${fmtPd(e.period.from)} 起`)
+      : '常設展出';
+    return `<a class="calRow" href="view.html?id=${e.id}&v=${VER}"><span class="cd">${pd}</span><span class="ct">${esc(e.title)}</span><span class="ca">進入觀展</span></a>`;
+  }).join('');
+  document.getElementById('calNote').textContent = note;
+  cw.classList.remove('hidden');
 }
 
 /* ===== 右上角帳號區：未登入=登入鈕；已登入=頭像＋名字下拉選單 ===== */
@@ -425,6 +478,7 @@ function acctHTML(me) {
     <div class="menu">
       <button data-m="prof">個人設定</button>
       ${me.cloud ? '<button data-m="studio">策展工作室</button>' : ''}
+      <button data-m="join">加入協作</button>
       ${window.__adm ? '<button data-m="admin">管理後台</button>' : ''}
       <div class="sep"></div>
       <button data-m="out">登出</button>
@@ -440,6 +494,7 @@ function renderAcct() {
     b.closest('details').removeAttribute('open');
     if (b.dataset.m === 'prof') openProfile();
     else if (b.dataset.m === 'studio') openStudio();
+    else if (b.dataset.m === 'join') joinFlow();
     else if (b.dataset.m === 'admin') { page = 'admin'; route(); window.scrollTo(0, 0); }
     else if (b.dataset.m === 'out') doSignOut();
   });
@@ -467,6 +522,18 @@ async function openStudio() {
   }
   page = 'studio'; route(); window.scrollTo(0, 0);
 }
+document.getElementById('pdSend').onclick = () => {
+  const id = window.__pubEx; if (!id) return;
+  const from = document.getElementById('pdFrom').value, to = document.getElementById('pdTo').value;
+  if (!from) { alert('請填寫開始日期。'); return; }
+  if (to && to < from) { alert('結束日期不能早於開始日期。'); return; }
+  const period = { from, to: to || '' };
+  if (window.__adm) { Store.update(id, { published: true, pubPending: false, period }); }
+  else { Store.update(id, { pubPending: true, period }); alert('已送出上線申請與檔期，通過管理者審核後就會公開展出。'); }
+  document.getElementById('pubOv').classList.remove('show');
+  renderDash();
+};
+
 document.getElementById('apSend').onclick = async () => {
   const org = document.getElementById('apOrg').value.trim();
   const exp = document.getElementById('apExp').value.trim();
@@ -536,11 +603,15 @@ function renderDash() {
       const id = btn.dataset.id;
       if (btn.dataset.act === 'pub') {
         const ex = Store.get(id);
-        if (ex.published) Store.update(id, { published: false, pubPending: false });
-        else if (ex.pubPending) Store.update(id, { pubPending: false });
-        else if (window.__adm) Store.update(id, { published: true, pubPending: false });   // 管理員直接上線
-        else { Store.update(id, { pubPending: true }); alert('已送出上線申請，通過管理者審核後就會公開展出。'); }
-        renderDash();
+        if (ex.published) { Store.update(id, { published: false, pubPending: false }); renderDash(); }
+        else if (ex.pubPending) { Store.update(id, { pubPending: false }); renderDash(); }
+        else {   // 申請上線／公開展出前先填檔期
+          window.__pubEx = id;
+          document.getElementById('pdFrom').value = (ex.period || {}).from || '';
+          document.getElementById('pdTo').value = (ex.period || {}).to || '';
+          document.getElementById('pubOv').classList.add('show');
+        }
+        return;
       }
       else if (btn.dataset.act === 'mem') openMembers(id);
       else if (btn.dataset.act === 'del') { if (confirm('確定刪除這檔展覽？此動作無法復原。')) { Store.remove(id); renderDash(); } }
@@ -596,7 +667,7 @@ async function renderPubList() {
   box.innerHTML = list.length
     ? list.map(r => `<div class="mrow">
         <span class="pthumb" style="${r.thumb ? `background-image:url('${r.thumb}')` : ''}"></span>
-        <span class="nm">${esc(r.title)}</span>
+        <span class="nm">${esc(r.title)}${r.period && r.period.from ? `<div style="font-size:11px;color:var(--faint);letter-spacing:1px;margin-top:3px;">申請檔期：${esc(r.period.from)}${r.period.to ? ' — ' + esc(r.period.to) : ' 起（常設）'}</div>` : ''}</span>
         <a class="btn sm" href="view.html?id=${esc(r.id)}&mode=tour&v=${VER}" target="_blank">預覽</a>
         <button class="btn sm fill" data-pap="${esc(r.id)}">核准上線</button>
         <button class="textlink" data-prj="${esc(r.id)}">退回</button>
@@ -644,6 +715,7 @@ function renderSiteEditor() {
   };
   paint();
   document.getElementById('bnCap').value = _cfgDraft.bannerCaption;
+  document.getElementById('schNote').value = c.scheduleNote || '';
   document.getElementById('bnUp').onclick = () => _imgPick(url => { _cfgDraft.banner = url; paint(); }, 1600);
   document.getElementById('bnClear').onclick = () => { _cfgDraft.banner = ''; paint(); };
   const ev = document.getElementById('evEdit');
@@ -662,8 +734,9 @@ function renderSiteEditor() {
   document.getElementById('siteSave').onclick = async () => {
     _cfgDraft.bannerCaption = document.getElementById('bnCap').value.trim();
     try {
-      await Cloud.saveSiteConfig({ banner: _cfgDraft.banner, bannerCaption: _cfgDraft.bannerCaption, events: _cfgDraft.events });
-      __siteCfg = { ...( __siteCfg || {}), ..._cfgDraft };
+      const patch = { banner: _cfgDraft.banner, bannerCaption: _cfgDraft.bannerCaption, events: _cfgDraft.events, scheduleNote: document.getElementById('schNote').value.trim() };
+      await Cloud.saveSiteConfig(patch);
+      __siteCfg = { ...( __siteCfg || {}), ...patch };
       const m = document.getElementById('siteSaveMsg'); m.style.opacity = 1; setTimeout(() => m.style.opacity = 0, 2200);
     } catch (e) { alert('儲存失敗（可能是 Firestore 規則尚未加上 vex_site）：' + (e.message || e)); }
   };
@@ -833,17 +906,23 @@ addEventListener('cloud-auth', async () => {
   }
 });
 
-document.getElementById('joinBtn').onclick = async () => {
+/* 加入協作：任何登入的帳號（不需通過策展審核）都能用代號進入該展覽共編；權限由創辦人設定 */
+async function joinFlow() {
+  if (!Auth.current()) { document.getElementById('authOv').classList.add('show'); return; }
   if (!window.Cloud || !Cloud.enabled) { alert('連線中，請稍候再試。'); return; }
   const v = prompt('輸入加入代號（6 碼），或貼上展覽連結：'); if (!v) return;
   try {
     const looksCode = !v.includes('=') && v.trim().length <= 8;
     const ex = looksCode ? await Cloud.joinByCode(v) : await Cloud.join(v);
-    alert('已加入共同策展：' + (ex.title || ''));
-    renderDash();
+    if (confirm('已加入「' + (ex.title || '') + '」的共同策展！\n現在就進入展場開始佈展嗎？')) {
+      location.href = 'view.html?id=' + ex.id + '&edit=1&v=' + VER;
+      return;
+    }
+    if (page === 'studio') renderDash();
   } catch (e) { alert('加入失敗：' + (e.message || e)); }
-};
+}
+document.getElementById('joinBtn').onclick = joinFlow;
 </script>
-<script type="module" src="js/cloud.js?v=20260925"></script>
+<script type="module" src="js/cloud.js?v=20260926"></script>
 </body>
 </html>

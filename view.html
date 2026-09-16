@@ -153,7 +153,7 @@
 
 <div id="topbar">
   <a class="back" href="index.html">返回</a>
-  <span class="tbtn hidden" id="tourBtn">導覽</span>
+  <span class="tbtn hidden" id="tourBtn">導覽模式</span>
   <span class="tbtn hidden" id="mapBtn">地圖</span>
   <span class="tbtn hidden" id="muteBtn">音樂</span>
   <span class="tbtn hidden" id="editToggle">編輯展場</span>
@@ -238,12 +238,12 @@
   </div>
 </div>
 
-<script src="js/site.js?v=20260925"></script>
-<script src="js/store.js?v=20260925"></script>
-<script src="js/auth.js?v=20260925"></script>
-<script src="js/templates.js?v=20260925"></script>
-<script src="js/props.js?v=20260925"></script>
-<script src="js/starter.js?v=20260925"></script>
+<script src="js/site.js?v=20260926"></script>
+<script src="js/store.js?v=20260926"></script>
+<script src="js/auth.js?v=20260926"></script>
+<script src="js/templates.js?v=20260926"></script>
+<script src="js/props.js?v=20260926"></script>
+<script src="js/starter.js?v=20260926"></script>
 
 <script type="importmap">
 { "imports": {
@@ -1082,6 +1082,10 @@ function renderReactions(id) {
 function openInfo(index) {
   const d = EX.items[index]; if (!isInteractive(d)) return;
   infoEl.classList.add('open'); document.getElementById('editPanel').classList.remove('open'); document.getElementById('scenePanel').classList.remove('open');
+  /* 留言功能由策展人決定是否開放（EX.comments === false 時隱藏） */
+  const cOff = EX.comments === false;
+  document.getElementById('commentList').style.display = cOff ? 'none' : '';
+  const cf = infoEl.querySelector('.cForm'); if (cf) cf.style.display = cOff ? 'none' : '';
   infoEl.querySelector('.kind').textContent = KIND[d.type] || '';
   infoEl.querySelector('h2').textContent = d.title + (d.artist ? ` · ${d.artist}` : '');
   infoEl.querySelector('.body').textContent = d.description || '';
@@ -1342,11 +1346,14 @@ function renderScenePanel() {
   f += `<label>展覽標題</label><input type="text" id="spExTitle" maxlength="40" value="${(EX.title || '').replace(/"/g, '&quot;')}">`;
   f += `<label>展覽介紹（顯示於入場頁與展覽卡片）</label><textarea id="spExDesc" maxlength="500" placeholder="策展理念、展覽主題…" style="min-height:88px;">${(EX.description || '').replace(/</g, '&lt;')}</textarea>`;
   f += `<label>封面圖片（展覽卡片）</label><div class="seg"><button id="spCoverUp">上傳圖片</button><button id="spCoverAuto" ${(Store.get(EX.id) || {}).thumbCustom ? '' : 'disabled style="opacity:.4"'}>改回自動截圖</button></div><input type="file" id="spCoverFile" accept="image/*" style="display:none"><div class="ph">未上傳時，會自動以你目前的視角截圖當封面。</div>`;
+  f += `<label>作品留言（觀眾能否在作品下留言）</label><div class="seg"><button id="spCmOn" class="${EX.comments !== false ? 'sel' : ''}">開放</button><button id="spCmOff" class="${EX.comments === false ? 'sel' : ''}">關閉</button></div>`;
   f += `<div style="border-top:1px solid var(--phair);margin:22px 0 6px;"></div>`;
   // 房間管理
   f += `<label>房間（${EX.rooms.length} / 5）</label><div class="seg" id="roomList">${EX.rooms.map((rm, k) => `<button data-roomsel="${k}" class="${k === roomIdx ? 'sel' : ''}">${(rm.name || ('展廳' + (k + 1))).replace(/</g, '&lt;')}</button>`).join('')}</div>`;
   f += `<div class="row" style="margin-top:8px;"><div><input type="text" id="roomName" value="${(room.name || '').replace(/"/g, '&quot;')}" placeholder="房間名稱"></div></div>`;
-  f += `<div class="seg" style="margin-top:8px;"><button id="roomAdd" ${EX.rooms.length >= 5 ? 'disabled style="opacity:.4"' : ''}>＋ 新增房間</button><button id="roomDel" ${EX.rooms.length <= 1 ? 'disabled style="opacity:.4"' : ''}>刪除此房間</button></div>`;
+  f += myRole === 'owner'
+    ? `<div class="seg" style="margin-top:8px;"><button id="roomAdd" ${EX.rooms.length >= 5 ? 'disabled style="opacity:.4"' : ''}>＋ 新增房間</button><button id="roomDel" ${EX.rooms.length <= 1 ? 'disabled style="opacity:.4"' : ''}>刪除此房間</button></div>`
+    : `<div class="ph">房間的新增／刪除僅展覽創辦人可操作。</div>`;
   f += `<div class="ph">一個展覽可有 1~5 個房間，觀眾用上方「房間」鈕切換。以下設定為「當前房間」。</div>`;
   f += `<label style="margin-top:18px;">此房間模板</label><select id="spTpl">${Object.entries(TEMPLATES).map(([k, t]) => `<option value="${k}" ${room.template === k ? 'selected' : ''}>${t.name}</option>`).join('')}</select><div class="ph">換模板會套用新的尺寸與基礎配色。</div>`;
   f += `<label>各牆面顏色</label><div class="row"><div><div class="ph">前牆</div><input type="color" data-wall="north" value="${wc.north || R.wallColor}"></div><div><div class="ph">後牆</div><input type="color" data-wall="south" value="${wc.south || R.wallColor}"></div><div><div class="ph">左牆</div><input type="color" data-wall="west" value="${wc.west || R.wallColor}"></div><div><div class="ph">右牆</div><input type="color" data-wall="east" value="${wc.east || R.wallColor}"></div></div>`;
@@ -1390,6 +1397,8 @@ function bindScenePanel() {
   };
   const cauto = document.getElementById('spCoverAuto');
   cauto.onclick = () => { Store.update(EX.id, { thumbCustom: false }); captureThumb(); showToast('已改回自動截圖封面', 2000); renderScenePanel(); };
+  document.getElementById('spCmOn').onclick = () => { EX.comments = true; Store.update(EX.id, { comments: true }); renderScenePanel(); };
+  document.getElementById('spCmOff').onclick = () => { EX.comments = false; Store.update(EX.id, { comments: false }); renderScenePanel(); };
   document.getElementById('spTpl').onchange = e => { room.template = e.target.value; buildRoomGeometry(); rebuildAll(); saveEx(); renderScenePanel(); };
   document.querySelectorAll('#roomList [data-roomsel]').forEach(b => b.onclick = () => { switchRoom(+b.dataset.roomsel); renderScenePanel(); });
   const rn = document.getElementById('roomName'); if (rn) rn.oninput = () => { room.name = rn.value; saveEx(); renderRoomBar(); document.querySelectorAll('#roomList [data-roomsel]')[roomIdx] && (document.querySelectorAll('#roomList [data-roomsel]')[roomIdx].textContent = rn.value || ('展廳' + (roomIdx + 1))); };
@@ -1592,8 +1601,8 @@ function gotoStop(k) {
   tour.lastSection = sec;
   tour._target = i; rebuildMarkers(); markerGroup.visible = true;
 }
-function startTour() { tour.lastSection = null; tourbar.classList.add('show'); tourBtn.classList.add('on'); mapOn = true; minimap.classList.add('show'); gotoStop(tour.idx || 0); }   // 從上次中斷的站續播
-function exitTour() { tour.active = false; tour.tween = null; tour._target = null; tourbar.classList.remove('show'); tourBtn.classList.remove('on'); markerGroup.visible = false; guideGroup.visible = false; document.getElementById('focusVig').classList.remove('show'); }
+function startTour() { tour.lastSection = null; tourbar.classList.add('show'); tourBtn.classList.add('on'); tourBtn.textContent = '自由參觀'; mapOn = true; minimap.classList.add('show'); gotoStop(tour.idx || 0); }   // 從上次中斷的站續播；按鈕變成「切回自由參觀」
+function exitTour() { tour.active = false; tour.tween = null; tour._target = null; tourbar.classList.remove('show'); tourBtn.classList.remove('on'); tourBtn.textContent = '導覽模式'; markerGroup.visible = false; guideGroup.visible = false; document.getElementById('focusVig').classList.remove('show'); }
 tourBtn.onclick = () => tour.active ? exitTour() : startTour();
 document.getElementById('tourPrev').onclick = () => gotoStop(tour.idx - 1);
 document.getElementById('tourNext').onclick = () => gotoStop(tour.idx + 1);
@@ -1606,7 +1615,8 @@ function updateTour() {
   yawObj.position.z += (tw.pos.z - yawObj.position.z) * k;
   yaw = angLerp(yaw, tw.yaw, k); pitch += (tw.pitch - pitch) * k; applyLook();
   if (Math.abs(tw.pos.x - yawObj.position.x) < 0.03 && Math.abs(tw.pos.z - yawObj.position.z) < 0.03) {
-    tour.tween = null; if (tour._target != null) openInfo(tour._target);
+    tour.tween = null;
+    if (tour._target != null && !tour._hinted) { tour._hinted = true; showToast('想看作品說明時，準心對準作品點一下即可', 3200); }   // 不自動開啟說明，由觀眾自己點
   }
 }
 
@@ -1831,6 +1841,6 @@ if (EX.id) {
   }, 800);
 }
 </script>
-<script type="module" src="js/cloud.js?v=20260925"></script>
+<script type="module" src="js/cloud.js?v=20260926"></script>
 </body>
 </html>
