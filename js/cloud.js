@@ -25,7 +25,8 @@ const KEY = 'exhib_platform_v1';
 
 window.Cloud = { status: '連線中…', uid: null, user: null, enabled: false, err: null, join, watch, pushNow, signInGoogle, signOutGoogle, presence,
   curatorStatus, listCurators, setCurator, setCuratorAdmin, joinByCode, exMeta, ensureJoinCode, setRole, removeMember,
-  getSiteConfig, saveSiteConfig, listPubRequests, approvePublish, rejectPublish };
+  getSiteConfig, saveSiteConfig, listPubRequests, approvePublish, rejectPublish,
+  applyCurator, listLive, setExPass, sha256 };
 
 let db, auth;
 try {
@@ -150,8 +151,12 @@ async function curatorStatus() {
   try {
     const snap = await getDoc(doc(db, CUR_COL, Cloud.uid));
     if (!snap.exists()) { await ensureCurator(); return curatorStatus(); }
-    const d = snap.data(); return { approved: !!d.approved, admin: !!d.admin };
+    const d = snap.data(); return { approved: !!d.approved, admin: !!d.admin, applied: !!(d.applied || d.org || d.exp) };
   } catch (e) { return null; }   // 讀不到（規則未設）→ 呼叫端決定放行與否
+}
+/* 送出策展工作室開通申請（單位名稱＋相關經驗或作品） */
+async function applyCurator(fields) {
+  await setDoc(doc(db, CUR_COL, Cloud.uid), { org: fields.org || '', exp: fields.exp || '', applied: true, appliedAt: Date.now() }, { merge: true });
 }
 async function listCurators() {
   const out = []; (await getDocs(collection(db, CUR_COL))).forEach(d => out.push(d.data()));
@@ -180,6 +185,22 @@ async function approvePublish(exId) {
 }
 async function rejectPublish(exId) {
   await updateDoc(doc(db, COL, exId), { pubPending: false, 'data.pubPending': false, 'data.updatedAt': Date.now(), updatedAt: Date.now() });
+}
+
+/* ===== 展覽密碼（僅管理員設定）：存 SHA-256 雜湊，觀眾進場輸入比對 ===== */
+async function listLive() {
+  const out = [];
+  (await getDocs(query(collection(db, COL), where('published', '==', true)))).forEach(d => {
+    const cd = d.data(); out.push({ id: d.id, title: (cd.data || {}).title || d.id, hasPass: !!cd.passHash });
+  });
+  return out;
+}
+async function setExPass(exId, passHash) {
+  await updateDoc(doc(db, COL, exId), { passHash: passHash || null, 'data.passHash': passHash || null, 'data.updatedAt': Date.now(), updatedAt: Date.now() });
+}
+async function sha256(s) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 /* ===== 共同策展：加入代號與成員權限 =====

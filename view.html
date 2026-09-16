@@ -238,12 +238,12 @@
   </div>
 </div>
 
-<script src="js/site.js?v=20260923"></script>
-<script src="js/store.js?v=20260923"></script>
-<script src="js/auth.js?v=20260923"></script>
-<script src="js/templates.js?v=20260923"></script>
-<script src="js/props.js?v=20260923"></script>
-<script src="js/starter.js?v=20260923"></script>
+<script src="js/site.js?v=20260924"></script>
+<script src="js/store.js?v=20260924"></script>
+<script src="js/auth.js?v=20260924"></script>
+<script src="js/templates.js?v=20260924"></script>
+<script src="js/props.js?v=20260924"></script>
+<script src="js/starter.js?v=20260924"></script>
 
 <script type="importmap">
 { "imports": {
@@ -1765,8 +1765,24 @@ function ready() {
   document.getElementById('loadBar').classList.add('hidden');
 }
 THREE.DefaultLoadingManager.onLoad = ready; setTimeout(ready, 900);
-function enterExhibition(withTour) {
+/* 展覽密碼（管理員設定）：擁有者免輸，其他人進場前驗證，本分頁記住 */
+async function checkPass() {
+  if (!EX.passHash || isOwner) return true;
+  try {
+    const key = 'sight_pass_' + EX.id;
+    try { if (sessionStorage.getItem(key) === EX.passHash) return true; } catch (e) {}
+    const p = prompt('這檔展覽需要進場密碼：');
+    if (p == null) return false;
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(p.trim()));
+    const h = [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+    if (h === EX.passHash) { try { sessionStorage.setItem(key, h); } catch (e) {} return true; }
+    alert('密碼不正確。');
+    return false;
+  } catch (e) { return true; }   // 環境不支援雜湊時不擋人
+}
+async function enterExhibition(withTour) {
   if (entered) return; entered = true;
+  if (!(await checkPass())) { entered = false; return; }
   intro.classList.add('hidden'); topbar.classList.add('show'); crosshair.classList.add('show');
   minimap.classList.add('show'); chatBar.classList.add('show');
   capturePortals(); applyPortals();   // 渲染各房間快照，貼到門戶窗上
@@ -1801,6 +1817,6 @@ if (EX.id) {
   }, 800);
 }
 </script>
-<script type="module" src="js/cloud.js?v=20260923"></script>
+<script type="module" src="js/cloud.js?v=20260924"></script>
 </body>
 </html>

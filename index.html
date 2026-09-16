@@ -286,6 +286,10 @@
 
   <h2 class="section"><span class="zh">帳號審核與權限</span><span class="en">Curator Approvals</span></h2>
   <div id="adminList"></div>
+  <div id="adminPager" style="display:flex;align-items:center;gap:16px;justify-content:center;margin-top:16px;"></div>
+
+  <h2 class="section"><span class="zh">展覽密碼</span><span class="en">Access Control</span></h2>
+  <div id="passList"></div>
 
   <h2 class="section"><span class="zh">首頁主視覺</span><span class="en">Homepage Banner</span></h2>
   <div class="panelA">
@@ -304,6 +308,21 @@
 
   <button class="btn fill" id="siteSave" style="margin-top:26px;">儲存首頁設定</button>
   <span id="siteSaveMsg" style="margin-left:14px;font-size:12px;letter-spacing:2px;color:#4c8f6e;opacity:0;transition:opacity .3s;">已儲存</span>
+</div>
+
+<!-- 策展工作室開通申請 -->
+<div class="authOv" id="applyOv">
+  <div class="gate">
+    <button class="gclose" data-close="applyOv">✕</button>
+    <span class="en">Curator Application</span>
+    <h2>申請開通策展</h2>
+    <p style="margin-top:14px;font-size:13px;color:var(--muted);line-height:1.9;letter-spacing:.5px;">策展工作室採審核制。填寫以下資料送出申請，通過後即可建立與發佈展覽；審核期間仍可自由觀展。</p>
+    <label for="apOrg">單位／學校／個人名稱</label>
+    <input id="apOrg" maxlength="40" autocomplete="off" />
+    <label for="apExp">相關經驗或作品（可貼連結）</label>
+    <textarea id="apExp" maxlength="500" style="width:100%;margin-top:10px;padding:10px 12px;font-size:14px;background:#fff;border:1px solid var(--line);border-radius:2px;color:var(--ink);font-family:inherit;min-height:110px;resize:vertical;line-height:1.7;"></textarea>
+    <button class="btn fill" id="apSend" style="width:100%;margin-top:26px;padding:13px;">送出申請</button>
+  </div>
 </div>
 
 <!-- 個人設定 -->
@@ -338,15 +357,15 @@
   </div>
 </div>
 
-<script src="js/site.js?v=20260923"></script>
-<script src="js/store.js?v=20260923"></script>
-<script src="js/auth.js?v=20260923"></script>
-<script src="js/templates.js?v=20260923"></script>
-<script src="js/starter.js?v=20260923"></script>
+<script src="js/site.js?v=20260924"></script>
+<script src="js/store.js?v=20260924"></script>
+<script src="js/auth.js?v=20260924"></script>
+<script src="js/templates.js?v=20260924"></script>
+<script src="js/starter.js?v=20260924"></script>
 <script>
 const authView = document.getElementById('authView');
 const dashView = document.getElementById('dashView');
-const VER = '20260923';   // 連結帶版本，避免 CDN 提供舊頁面
+const VER = '20260924';   // 連結帶版本，避免 CDN 提供舊頁面
 
 function fmtDate(ts) { if (!ts) return '—'; const d = new Date(ts); return `${d.getFullYear()}.${(d.getMonth()+1)}.${d.getDate()}`; }
 function thumbColor(tpl) { return (TEMPLATES[tpl]?.room.wallColor) || '#dedbd2'; }
@@ -440,10 +459,24 @@ async function openStudio() {
     let st = null;
     try { st = await Cloud.curatorStatus(); } catch (e) {}
     if (st) { window.__adm = !!st.admin; renderAcct(); }
-    if (st && !st.approved && !st.admin) { alert('你的策展工作室正在審核中，開通後即可使用。'); return; }
+    if (st && !st.approved && !st.admin) {
+      if (!st.applied) { document.getElementById('applyOv').classList.add('show'); return; }   // 尚未填申請 → 開申請表單
+      alert('你的申請已送出，通過審核後即可開始策展；審核期間仍可自由觀展。');
+      return;
+    }
   }
   page = 'studio'; route(); window.scrollTo(0, 0);
 }
+document.getElementById('apSend').onclick = async () => {
+  const org = document.getElementById('apOrg').value.trim();
+  const exp = document.getElementById('apExp').value.trim();
+  if (!org) { alert('請填寫單位／學校／個人名稱。'); return; }
+  try {
+    await Cloud.applyCurator({ org, exp });
+    document.getElementById('applyOv').classList.remove('show');
+    alert('申請已送出！通過審核後，「策展工作室」就會為你開通。');
+  } catch (e) { alert('送出失敗：' + (e.message || e)); }
+};
 function renderFeatured() {
   const fw = document.getElementById('featuredWrap');
   const pub = Store.listPublished().slice(0, 3);
@@ -524,7 +557,34 @@ function renderAdminConsole() {
   renderAcct();
   renderAdmin();
   renderPubList();
+  renderPassList();
   renderSiteEditor();
+}
+
+/* 展覽密碼（僅管理員）：對公開中的展覽設定進場密碼 */
+async function renderPassList() {
+  const box = document.getElementById('passList');
+  box.innerHTML = '<div class="empty" style="padding:22px;">載入中…</div>';
+  let list = [];
+  try { list = await Cloud.listLive(); } catch (e) { box.innerHTML = '<div class="empty" style="padding:22px;">讀取失敗。</div>'; return; }
+  box.innerHTML = list.length
+    ? list.map(r => `<div class="mrow">
+        <span class="nm">${esc(r.title)}</span>
+        <span class="st ${r.hasPass ? 'ok' : ''}" style="${r.hasPass ? '' : 'color:var(--faint);'}">${r.hasPass ? '已設密碼' : '公開進場'}</span>
+        <button class="btn sm quiet" data-ps="${esc(r.id)}">${r.hasPass ? '更改密碼' : '設定密碼'}</button>
+        ${r.hasPass ? `<button class="textlink" data-pc="${esc(r.id)}">清除</button>` : ''}
+      </div>`).join('')
+    : `<div class="empty" style="padding:26px;">目前沒有公開中的展覽。</div>`;
+  box.querySelectorAll('[data-ps]').forEach(b => b.onclick = async () => {
+    const p = prompt('設定這檔展覽的進場密碼（觀眾進場時需輸入）：'); if (!p) return;
+    try { await Cloud.setExPass(b.dataset.ps, await Cloud.sha256(p.trim())); renderPassList(); }
+    catch (e) { alert('設定失敗：' + (e.message || e)); }
+  });
+  box.querySelectorAll('[data-pc]').forEach(b => b.onclick = async () => {
+    if (!confirm('清除密碼，改為公開進場？')) return;
+    try { await Cloud.setExPass(b.dataset.pc, null); renderPassList(); }
+    catch (e) { alert('清除失敗：' + (e.message || e)); }
+  });
 }
 
 /* 上線審核清單 */
@@ -609,20 +669,33 @@ function renderSiteEditor() {
   };
 }
 
-/* 管理者：帳號審核清單 */
+/* 管理者：帳號審核清單（每頁 5 筆） */
+let adminPage = 0;
+const ADMIN_PAGE_SIZE = 5;
 async function renderAdmin() {
   const box = document.getElementById('adminList');
   let list = []; try { list = await Cloud.listCurators(); } catch (e) { box.innerHTML = '<div class="empty" style="padding:22px;">讀取失敗。</div>'; return; }
-  const rows = list.filter(c => c.uid !== Cloud.uid);
+  const all = list.filter(c => c.uid !== Cloud.uid);
+  const pages = Math.max(1, Math.ceil(all.length / ADMIN_PAGE_SIZE));
+  adminPage = Math.min(adminPage, pages - 1);
+  const rows = all.slice(adminPage * ADMIN_PAGE_SIZE, (adminPage + 1) * ADMIN_PAGE_SIZE);
   document.getElementById('adminList').innerHTML = rows.length
-    ? rows.map(c => `<div class="mrow">
+    ? rows.map(c => `<div class="mrow" style="flex-wrap:wrap;">
         <span class="nm">${esc(c.name || '（未命名）')}</span>
-        <span class="em">${esc(c.email || '')}</span>
+        <span class="em">${esc(c.org ? c.org + ' · ' : '')}${esc(c.email || '')}</span>
         <span class="st ${c.admin ? 'ok' : (c.approved ? 'ok' : 'no')}">${c.admin ? '管理者' : (c.approved ? '已開通' : '待審核')}</span>
         <button class="btn sm ${c.approved ? 'quiet' : 'fill'}" data-cu="${esc(c.uid)}" data-ap="${c.approved ? 0 : 1}">${c.approved ? '停用' : '核准'}</button>
         <button class="textlink" data-adm="${esc(c.uid)}" data-mk="${c.admin ? 0 : 1}">${c.admin ? '取消管理者' : '設為管理者'}</button>
+        ${c.exp ? `<div style="flex-basis:100%;font-size:12px;color:var(--faint);line-height:1.8;padding:2px 0 4px;">相關經驗／作品：${esc(c.exp)}</div>` : ''}
       </div>`).join('')
     : `<div class="empty" style="padding:26px;">目前沒有其他帳號申請。</div>`;
+  const pager = document.getElementById('adminPager');
+  pager.innerHTML = pages > 1
+    ? `<button class="textlink" data-pg="-1" ${adminPage === 0 ? 'disabled style="opacity:.35"' : ''}>上一頁</button>
+       <span style="font-size:12px;letter-spacing:2px;color:var(--faint);">第 ${adminPage + 1} / ${pages} 頁 · 共 ${all.length} 筆</span>
+       <button class="textlink" data-pg="1" ${adminPage >= pages - 1 ? 'disabled style="opacity:.35"' : ''}>下一頁</button>`
+    : '';
+  pager.querySelectorAll('[data-pg]').forEach(b => b.onclick = () => { adminPage += +b.dataset.pg; renderAdmin(); });
   document.querySelectorAll('#adminList [data-cu]').forEach(b => b.onclick = async () => {
     try { await Cloud.setCurator(b.dataset.cu, b.dataset.ap === '1'); renderAdmin(); }
     catch (e) { alert('操作失敗：' + (e.message || e)); }
@@ -771,6 +844,6 @@ document.getElementById('joinBtn').onclick = async () => {
   } catch (e) { alert('加入失敗：' + (e.message || e)); }
 };
 </script>
-<script type="module" src="js/cloud.js?v=20260923"></script>
+<script type="module" src="js/cloud.js?v=20260924"></script>
 </body>
 </html>
