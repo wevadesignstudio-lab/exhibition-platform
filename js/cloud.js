@@ -26,7 +26,7 @@ const KEY = 'exhib_platform_v1';
 window.Cloud = { status: '連線中…', uid: null, user: null, enabled: false, err: null, join, watch, pushNow, signInGoogle, signOutGoogle, presence,
   curatorStatus, listCurators, setCurator, setCuratorAdmin, joinByCode, exMeta, ensureJoinCode, setRole, removeMember,
   getSiteConfig, saveSiteConfig, listPubRequests, approvePublish, rejectPublish,
-  applyCurator, listLive, setExPass, sha256 };
+  applyCurator, listLive, setExPass, sha256, fetchOne };
 
 let db, auth;
 try {
@@ -271,6 +271,23 @@ function presence(exId, getState, onPeers) {
   };
 }
 
+/* 省讀策略：進站時同步一次；只有首頁保留低頻輪詢（5 分鐘），
+   觀展／編輯頁不輪詢——單一展覽的即時更新走 watch(onSnapshot) 訂閱，讀取量約為舊輪詢的 1/10。 */
+const PAGE = (location.pathname.split('/').pop() || 'index.html');
+const POLL_MS = PAGE.startsWith('view') || PAGE.startsWith('editor') ? 0 : 300000;
 let syncStarted = false;
-function startSync() { hookStore(); pull(); if (!syncStarted) { syncStarted = true; setInterval(pull, 45000); } }
+function startSync() { hookStore(); pull(); if (!syncStarted) { syncStarted = true; if (POLL_MS) setInterval(pull, POLL_MS); } }
+
+/* 從雲端抓單一展覽（直接開連結、本機還沒有這檔時用；只花 1 次讀取） */
+async function fetchOne(exId) {
+  const snap = await getDoc(doc(db, COL, exId));
+  if (!snap.exists()) return false;
+  const cd = snap.data();
+  if (!cd.data) return false;
+  const ldb = localDB();
+  if (!ldb.exhibitions[cd.data.id]) { ldb.exhibitions[cd.data.id] = cd.data; saveLocal(ldb); }
+  else mergeIn([cd]);
+  knownDocs.add(cd.data.id);
+  return true;
+}
 hookStore(); setInterval(hookStore, 1000);

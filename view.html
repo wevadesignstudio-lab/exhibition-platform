@@ -238,12 +238,12 @@
   </div>
 </div>
 
-<script src="js/site.js?v=20260924"></script>
-<script src="js/store.js?v=20260924"></script>
-<script src="js/auth.js?v=20260924"></script>
-<script src="js/templates.js?v=20260924"></script>
-<script src="js/props.js?v=20260924"></script>
-<script src="js/starter.js?v=20260924"></script>
+<script src="js/site.js?v=20260925"></script>
+<script src="js/store.js?v=20260925"></script>
+<script src="js/auth.js?v=20260925"></script>
+<script src="js/templates.js?v=20260925"></script>
+<script src="js/props.js?v=20260925"></script>
+<script src="js/starter.js?v=20260925"></script>
 
 <script type="importmap">
 { "imports": {
@@ -1800,6 +1800,20 @@ document.getElementById('tourEnterBtn').addEventListener('click', () => enterExh
 addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
 applyLook(); tick();
 
+/* 直接開展覽連結、本機還沒有這檔資料 → 從雲端抓一次（1 次讀取）再重新載入 */
+if (exId && !fromStore) {
+  const tryFetch = setInterval(async () => {
+    if (!window.Cloud || !Cloud.enabled || !Cloud.fetchOne) return;
+    clearInterval(tryFetch);
+    const guard = 'sight_fetched_' + exId;
+    try { if (sessionStorage.getItem(guard)) return; } catch (e) {}   // 抓過還是沒有 → 停止，避免重載迴圈
+    try {
+      if (await Cloud.fetchOne(exId)) { try { sessionStorage.setItem(guard, '1'); } catch (e) {} location.reload(); }
+      else { try { sessionStorage.setItem(guard, '1'); } catch (e) {} }
+    } catch (e) {}
+  }, 700);
+}
+
 /* ===== 即時協作：訂閱這檔展覽，協作者的變更即時同步進場景 ===== */
 if (EX.id) {
   const tryWatch = setInterval(() => {
@@ -1817,6 +1831,6 @@ if (EX.id) {
   }, 800);
 }
 </script>
-<script type="module" src="js/cloud.js?v=20260924"></script>
+<script type="module" src="js/cloud.js?v=20260925"></script>
 </body>
 </html>
