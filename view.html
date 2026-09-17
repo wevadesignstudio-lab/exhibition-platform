@@ -226,6 +226,7 @@
   <div id="enterRow" class="hidden">
     <button id="tourEnterBtn">導覽模式</button>
     <button id="enterBtn">自由參觀</button>
+    <button id="introImport" class="hidden" style="padding:14px 30px;font-size:13px;letter-spacing:3px;color:var(--pmuted);background:transparent;border:1px solid var(--pline);border-radius:2px;cursor:pointer;font-family:inherit;">匯入以編輯</button>
   </div>
   <div id="loadBar"><i></i></div>
 </div>
@@ -284,7 +285,8 @@ const isOwner = !!(fromStore && me && EX.ownerId === me.id);
 /* 設定檔展覽 → 匯入成自己的展覽（複製一份到工作室，之後用平台編輯器修改） */
 if (planEX && me && me.cloud && window.Store) {
   const ib = document.getElementById('importBtn'); ib.classList.remove('hidden');
-  ib.onclick = async () => {
+  const ib2 = document.getElementById('introImport'); ib2.classList.remove('hidden');
+  ib.onclick = ib2.onclick = async () => {
     if (!(await UI.confirm('把這檔設定檔展覽複製到你的策展工作室？複製後可在平台裡直接編輯（設定檔本身不會改變）。'))) return;
     const ex = Store.create(me.id, { title: EX.title, description: EX.description, style: EX.style, rooms: JSON.parse(JSON.stringify(EX.rooms)), start: EX.start, comments: EX.comments, fromPlan: params.get('plan') });
     location.href = 'view.html?id=' + ex.id + '&edit=1&v=' + Date.now();

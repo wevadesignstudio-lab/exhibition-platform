@@ -279,6 +279,7 @@
       <button class="btn fill" id="newStarterBtn">建立展覽</button>
       <button class="btn" id="newExBtn">空白展間</button>
       <button class="textlink" id="joinBtn">加入協作</button>
+      <button class="textlink" id="importPlanBtn">匯入設定檔展覽</button>
     </div>
   </div>
 
@@ -416,6 +417,7 @@
 <script src="js/auth.js?v=20260929"></script>
 <script src="js/templates.js?v=20260929"></script>
 <script src="js/starter.js?v=20260929"></script>
+<script src="js/plan.js?v=20260929"></script>
 <script>
 const authView = document.getElementById('authView');
 const dashView = document.getElementById('dashView');
@@ -1016,6 +1018,19 @@ async function joinFlow() {
   } catch (e) { UI.alert('加入失敗：' + (e.message || e)); }
 }
 document.getElementById('joinBtn').onclick = joinFlow;
+/* 匯入設定檔展覽（exhibitions/xxx/exhibition.json）→ 複製成自己的展覽，之後用平台編輯器修改 */
+document.getElementById('importPlanBtn').onclick = async () => {
+  const me = Auth.current(); if (!me) return;
+  const path = await UI.prompt('輸入設定檔路徑：', { value: 'exhibitions/jeju/exhibition.json', placeholder: 'exhibitions/xxx/exhibition.json' });
+  if (!path) return;
+  try {
+    const r = await fetch(path.trim(), { cache: 'no-store' }); if (!r.ok) throw new Error('找不到檔案（' + r.status + '）');
+    const ex0 = PLAN.compile(await r.json(), 'zh');
+    const ex = Store.create(me.id, { title: ex0.title, description: ex0.description, style: ex0.style, rooms: ex0.rooms, start: ex0.start, comments: ex0.comments, fromPlan: path.trim() });
+    await UI.alert('已匯入「' + ex.title + '」到你的展覽。按「佈展」即可在展場內編輯。');
+    renderDash();
+  } catch (e) { UI.alert('匯入失敗：' + (e.message || e)); }
+};
 </script>
 <script type="module" src="js/cloud.js?v=20260929"></script>
 </body>
