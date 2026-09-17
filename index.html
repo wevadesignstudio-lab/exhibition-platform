@@ -410,16 +410,16 @@
   </div>
 </div>
 
-<script src="js/site.js?v=20260927"></script>
-<script src="js/dialog.js?v=20260927"></script>
-<script src="js/store.js?v=20260927"></script>
-<script src="js/auth.js?v=20260927"></script>
-<script src="js/templates.js?v=20260927"></script>
-<script src="js/starter.js?v=20260927"></script>
+<script src="js/site.js?v=20260928"></script>
+<script src="js/dialog.js?v=20260928"></script>
+<script src="js/store.js?v=20260928"></script>
+<script src="js/auth.js?v=20260928"></script>
+<script src="js/templates.js?v=20260928"></script>
+<script src="js/starter.js?v=20260928"></script>
 <script>
 const authView = document.getElementById('authView');
 const dashView = document.getElementById('dashView');
-const VER = '20260927';   // 連結帶版本，避免 CDN 提供舊頁面
+const VER = '20260928';   // 連結帶版本，避免 CDN 提供舊頁面
 
 function fmtDate(ts) { if (!ts) return '—'; const d = new Date(ts); return `${d.getFullYear()}.${(d.getMonth()+1)}.${d.getDate()}`; }
 function thumbColor(tpl) { return (TEMPLATES[tpl]?.room.wallColor) || '#dedbd2'; }
@@ -1017,6 +1017,6 @@ async function joinFlow() {
 }
 document.getElementById('joinBtn').onclick = joinFlow;
 </script>
-<script type="module" src="js/cloud.js?v=20260927"></script>
+<script type="module" src="js/cloud.js?v=20260928"></script>
 </body>
 </html>

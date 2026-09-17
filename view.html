@@ -6,7 +6,7 @@
 <title>觀展中…｜Sight</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet" />
 <style>
   :root { color-scheme: dark; --gold: #c8ab6e; --paper: #f7f5f0; --pink: #1a1916; --pmuted: #7a7468; --pline: rgba(26,25,22,.16); --phair: rgba(26,25,22,.09); }
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -238,13 +238,14 @@
   </div>
 </div>
 
-<script src="js/site.js?v=20260927"></script>
-<script src="js/dialog.js?v=20260927"></script>
-<script src="js/store.js?v=20260927"></script>
-<script src="js/auth.js?v=20260927"></script>
-<script src="js/templates.js?v=20260927"></script>
-<script src="js/props.js?v=20260927"></script>
-<script src="js/starter.js?v=20260927"></script>
+<script src="js/site.js?v=20260928"></script>
+<script src="js/dialog.js?v=20260928"></script>
+<script src="js/store.js?v=20260928"></script>
+<script src="js/auth.js?v=20260928"></script>
+<script src="js/templates.js?v=20260928"></script>
+<script src="js/props.js?v=20260928"></script>
+<script src="js/starter.js?v=20260928"></script>
+<script src="js/plan.js?v=20260928"></script>
 
 <script type="importmap">
 { "imports": {
@@ -270,7 +271,13 @@ const params = new URLSearchParams(location.search);
 const exId = params.get('id'), wantEdit = params.get('edit') === '1';
 const DEMO = Object.assign({ id: null }, window.STARTER_EXHIBITION ? STARTER_EXHIBITION('示範展覽 · 基礎展覽空間') : { title: '示範展覽', style: {}, rooms: [] });
 const fromStore = exId && window.Store ? Store.get(exId) : null;
-const EX = fromStore || DEMO;
+/* 設定檔展覽（?plan=exhibitions/xxx/exhibition.json）：程式只讀 JSON，由 js/plan.js 編譯成場景 */
+let planEX = null;
+if (params.get('plan') && window.PLAN) {
+  try { const r = await fetch(params.get('plan'), { cache: 'no-store' }); planEX = PLAN.compile(await r.json(), params.get('lang')); }
+  catch (e) { console.error('設定檔載入失敗', e); }
+}
+const EX = planEX || fromStore || DEMO;
 const me = window.Auth ? Auth.current() : null;
 const isOwner = !!(fromStore && me && EX.ownerId === me.id);
 /* 共同策展權限：owner=創辦人、full=全權編輯、own=僅限自己上架的作品（雲端 roles 決定） */
@@ -308,7 +315,10 @@ let room = EX.rooms[roomIdx];
 EX.items = room.items;   // 別名：下方程式都用 EX.items 指向「當前房間」展品
 
 const DEF_ROOM = { width: 18, height: 4.2, depth: 13, wallColor: '#eceae4', floorColor: '#b9b6ad', ceilingColor: '#f6f4ee', skirtingColor: '#d8d5cd', lightColor: '#fff6e8', floorType: 'concrete', ambient: 0.55 };
-function roomDims() { return (window.TEMPLATES && TEMPLATES[room.template] ? TEMPLATES[room.template].room : null) || DEF_ROOM; }
+function roomDims() {
+  const base = (window.TEMPLATES && TEMPLATES[room.template] ? TEMPLATES[room.template].room : null) || DEF_ROOM;
+  return room.dims ? Object.assign({}, base, room.dims) : base;   // room.dims：設定檔可覆寫尺寸／顏色／天花型式
+}
 let R = roomDims();
 
 const STYLE = Object.assign({
@@ -414,6 +424,10 @@ const sky = new Sky(); sky.scale.setScalar(600); scene.add(sky);
 const HDRIS = { park: { file: 'assets/hdr/san_giuseppe_bridge_2k.hdr', name: '歐洲街景（白天）' }, night: { file: 'assets/hdr/moonless_golf_1k.hdr', name: '夜晚（星空）', night: true } };
 let hdrLoaded = null, envSunScale = 1;
 function loadHDRI(key) {
+  if (key === 'none') {   // 全封閉展場：不下載全景（省 6MB），用內建室內環境光＋純色背景
+    scene.background = new THREE.Color(R.wallColor || '#f6f4ee'); sky.visible = false; hdrLoaded = 'none';
+    envSunScale = 1; hemi.intensity = R.ambient ?? 0.55; placeSun(); setOutdoorFallback(false); return;
+  }
   if (!HDRIS[key]) key = 'park';   // 舊資料的「日夜自動／原野」一律回到白天
   const h = HDRIS[key];
   new RGBELoader().load(AS(h.file), tex => {
@@ -596,6 +610,10 @@ function buildRoomGeometry() {
     sp.position.set(hw + 5, 4.5, 1.5); sp.target.position.set(-hw * 0.4, 0, -1); sp.map = gobo;
     sp.castShadow = true; sp.shadow.mapSize.set(512, 512);
     roomGroup.add(sp); roomGroup.add(sp.target);
+  } else if (R.plain) {
+    // ── 素面天花（設定檔展覽用）：整片均勻微發光，無天窗、無光斑；各區高度差由 slab 板另做 ──
+    const pc = new THREE.Mesh(new THREE.PlaneGeometry(R.width, R.depth), new THREE.MeshStandardMaterial({ color: R.ceilingColor, roughness: 1, emissive: new THREE.Color(R.ceilingColor), emissiveIntensity: R.ceilingGlow ?? 0.55 }));
+    pc.rotation.x = Math.PI / 2; pc.position.y = R.height; roomGroup.add(pc);
   } else if (R.dark) {
     // ── 設計黑盒：深色外露天花＋黑色軌道管線＋暖白投射光 ──
     const dk = new THREE.Mesh(new THREE.PlaneGeometry(R.width, R.depth), new THREE.MeshStandardMaterial({ color: R.ceilingColor, roughness: 0.95 }));
@@ -713,7 +731,7 @@ const texLoader = new THREE.TextureLoader(); texLoader.crossOrigin = 'anonymous'
 const gltfLoader = new GLTFLoader();
 { const draco = new DRACOLoader(); draco.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/libs/draco/'); gltfLoader.setDRACOLoader(draco); }   // 支援 Draco 壓縮模型
 const stlLoader = new STLLoader();
-const CEILING_PROP = { hanging_panel: 1, banner: 1, track_light: 1, hang_screen: 1 };       // 天花板物件：不套用整體縮放
+const CEILING_PROP = { hanging_panel: 1, banner: 1, track_light: 1, hang_screen: 1, slab: 1, wall: 1, cyl: 1, orb: 1, disc: 1 };       // 天花板／參數化物件：不套用整體縮放
 /* 真實 GLB 模型：目標高度（公尺）、是否放在展台上；載入後快取並 clone 重用 */
 // h=目標高度(m)；plinth=放在展台上；y=離地高度（掛牆物件）；ceiling=貼天花板吊掛；r=碰撞半徑
 const PH = (n) => AS(`assets/models/${n}/${n}.gltf`);   // Poly Haven 資料夾版 glTF（線上走 jsDelivr）
@@ -755,7 +773,7 @@ function loadGlbProp(group, name, yOverride) {
   if (_glbCache[name]) { place(_glbCache[name]); return; }
   gltfLoader.load(AS(info.file || ('assets/models/' + name + '.glb')), gltf => { _glbCache[name] = gltf.scene; place(gltf.scene); }, undefined, () => console.warn('GLB 載入失敗', name));
 }
-const MOUNTABLE_PROP = { partition: 1, locker_grid: 1, shelf_unit: 1, acrylic_stand: 1, glass_partition: 1, slat_wall: 1, wall_seg: 1, wall_arch: 1, wall_door: 1 };     // 可掛展品的結構
+const MOUNTABLE_PROP = { wall: 1, partition: 1, locker_grid: 1, shelf_unit: 1, acrylic_stand: 1, glass_partition: 1, slat_wall: 1, wall_seg: 1, wall_arch: 1, wall_door: 1 };     // 可掛展品的結構
 /* 牆體道具的碰撞：沿牆佈點、開口處留通道（可走過洞） */
 const WALL_OBS = { wall_seg: { w: 3.0 }, wall_arch: { w: 3.6, gap: [-0.75, 0.75] }, wall_door: { w: 3.2, gap: [-0.65, 0.65] }, doorway: { w: 2.6, gap: [-0.73, 0.73] } };
 /* 展台／櫃體材質（可選）：霧白、清水模水泥、OSB 木板、黑色；未指定則用道具主色 */
@@ -790,12 +808,13 @@ function snapDoorToWall(d) {
   else if (m === dW) { d.x = -hw + inset; d.rot = 90; d.z = THREE.MathUtils.clamp(d.z, -hd + 0.9, hd - 0.9); }
   else { d.x = hw - inset; d.rot = -90; d.z = THREE.MathUtils.clamp(d.z, -hd + 0.9, hd - 0.9); }
 }
-function placeholderTexture(label, color = '#6b8cae') {
+function placeholderTexture(label, color = '#6b8cae', flat = false) {
   const c = document.createElement('canvas'); c.width = 1536; c.height = 1152; const g = c.getContext('2d'); g.scale(2, 2);
-  const grad = g.createLinearGradient(0, 0, 768, 576); grad.addColorStop(0, color); grad.addColorStop(1, '#dcdce2');
-  g.fillStyle = grad; g.fillRect(0, 0, 768, 576);
-  g.fillStyle = 'rgba(20,20,28,.7)'; g.font = '600 44px sans-serif'; g.textAlign = 'center'; g.fillText(label || '', 384, 300);
-  g.font = '400 22px sans-serif'; g.fillStyle = 'rgba(20,20,28,.4)'; g.fillText('（佔位圖）', 384, 350);
+  if (flat) { g.fillStyle = color; g.fillRect(0, 0, 768, 576); }   // 設定檔佔位板：純色＋等寬字編號
+  else { const grad = g.createLinearGradient(0, 0, 768, 576); grad.addColorStop(0, color); grad.addColorStop(1, '#dcdce2'); g.fillStyle = grad; g.fillRect(0, 0, 768, 576); }
+  const dark = flat && /^#(1|2|0)/.test(color);
+  g.fillStyle = dark ? 'rgba(246,244,238,.8)' : 'rgba(20,20,28,.7)'; g.font = (flat ? '500 52px "IBM Plex Mono", monospace' : '600 44px sans-serif'); g.textAlign = 'center'; g.fillText(label || '', 384, 300);
+  if (!flat) { g.font = '400 22px sans-serif'; g.fillStyle = 'rgba(20,20,28,.4)'; g.fillText('（佔位圖）', 384, 350); }
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = MAX_ANISO; return t;
 }
 /* 文字版面（共用）：title 大字 + 金線 + 內文自動換行。fill 為 { title, line, body }，line 可為 null */
@@ -921,7 +940,7 @@ function buildItem(d, i) {
   let group;
   if (d.type === 'image' || d.type === 'text' || d.type === 'video') {
     let tex;
-    if (d.type === 'image') tex = d.src ? texLoader.load(AS(d.src), t => { t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = MAX_ANISO; }, undefined, () => showToast('「' + (d.title || '圖片') + '」的圖片載入失敗：此網址不允許跨網域使用（Notion／Google Drive 等都不行）。請改用「上傳檔案」，或把圖放進 assets/img/ 後填 assets/img/檔名。', 9000)) : placeholderTexture(d.title, d.color);
+    if (d.type === 'image') tex = d.src ? texLoader.load(AS(d.src), t => { t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = MAX_ANISO; }, undefined, () => showToast('「' + (d.title || '圖片') + '」的圖片載入失敗：此網址不允許跨網域使用（Notion／Google Drive 等都不行）。請改用「上傳檔案」，或把圖放進 assets/img/ 後填 assets/img/檔名。', 9000)) : placeholderTexture(d.title, d.color, !!d.flat);
     else if (d.type === 'text') tex = textMaterial(d.title, d.description || '', d.textStyle || 'board', d.textColor);
     else { if (d.src) { const v = document.createElement('video'); v.src = d.src; v.crossOrigin = 'anonymous'; v.loop = true; v.muted = true; v.playsInline = true; v.play().catch(() => {}); d._video = v; tex = new THREE.VideoTexture(v); tex.colorSpace = THREE.SRGBColorSpace; } else tex = placeholderTexture('▶  影片展品', '#444'); }
     group = makeWallArt(d, tex);
@@ -939,7 +958,7 @@ function buildItem(d, i) {
     animated.push({ obj: holder, spin: 0.4, _i: i });
   } else if (d.type === 'prop') {
     if (d.shape === 'doorway') { if (d.target == null) d.target = (roomIdx + 1) % EX.rooms.length; snapDoorToWall(d); }   // 門戶吸附到牆
-    group = window.PROPS ? PROPS.build(THREE, d.shape, { color: d.color, roomHeight: R.height, prim: propMaterial(d.mat, d.color) }) : new THREE.Group();
+    group = window.PROPS ? PROPS.build(THREE, d.shape, { color: d.color, roomHeight: R.height, prim: propMaterial(d.mat, d.color), d }) : new THREE.Group();
     if (d.shape && d.shape.startsWith('glb:')) loadGlbProp(group, d.shape.slice(4), d.y);   // 真實模型（d.y＝自訂離地高度）
     if (d.shape === 'acrylic_stand' && d.src) {   // 圖直接印在壓克力板上
       texLoader.load(AS(d.src), tex => {
@@ -1001,11 +1020,21 @@ function buildItem(d, i) {
 function disposeItem(i) { if (built[i]) { scene.remove(built[i]); built[i] = null; } for (let k = interactables.length - 1; k >= 0; k--) if (interactables[k].index === i) interactables.splice(k, 1); for (let k = animated.length - 1; k >= 0; k--) if (animated[k]._i === i) animated.splice(k, 1); }
 // 碰撞障礙物（圓形足跡）：傢俱／道具／3D 物件擋住玩家；門戶、燈、熱點、牆上展品不擋
 const obstacles = [];
-const OBS_R = { bench: 0.85, bench_pad: 0.85, sofa: 1.1, coffee_table: 0.7, desk: 0.95, reception_desk: 1.1, bookshelf: 0.7, cabinet: 0.6, shelf_unit: 0.6, partition: 1.3, glass_partition: 0.7, plinth: 0.4, plinth_low: 0.45, plinth_wide: 0.6, vitrine: 0.5, acrylic_riser: 0.35, column: 0.45, plant_large: 0.45, plant_small: 0.25, rope_barrier: 0.9, info_stand: 0.45, easel: 0.5, card_rail: 0.9, locker_grid: 1.0, hex_shelf: 0, floor_lamp: 0.25, sphere_lamp: 0.25, track_light: 0, doorway: 0, curved_bench: 1.25, slat_wall: 1.3, slat_screen: 1.05, hanging_panel: 0, banner: 0, acrylic_stand: 0.95, wall_seg: 0, wall_arch: 0, wall_door: 0, lightbox: 0.42, curve_plinth: 1.3, hang_screen: 0.25 };
+const OBS_R = { bench: 0.85, bench_pad: 0.85, sofa: 1.1, coffee_table: 0.7, desk: 0.95, reception_desk: 1.1, bookshelf: 0.7, cabinet: 0.6, shelf_unit: 0.6, partition: 1.3, glass_partition: 0.7, plinth: 0.4, plinth_low: 0.45, plinth_wide: 0.6, vitrine: 0.5, acrylic_riser: 0.35, column: 0.45, plant_large: 0.45, plant_small: 0.25, rope_barrier: 0.9, info_stand: 0.45, easel: 0.5, card_rail: 0.9, locker_grid: 1.0, hex_shelf: 0, floor_lamp: 0.25, sphere_lamp: 0.25, track_light: 0, doorway: 0, curved_bench: 1.25, slat_wall: 1.3, slat_screen: 1.05, hanging_panel: 0, banner: 0, acrylic_stand: 0.95, wall_seg: 0, wall_arch: 0, wall_door: 0, lightbox: 0.42, curve_plinth: 1.3, hang_screen: 0.25, wall: 0, slab: 0, cyl: 0, orb: 0, disc: 0 };
 function propRadius(shape) { if (shape && shape.startsWith('glb:')) { const i = GLB_INFO[shape.slice(4)]; return i ? (i.r ?? 0.5) : 0.5; } return OBS_R[shape] ?? 0.5; }
 function rebuildObstacles() {
   obstacles.length = 0;
   for (const d of (EX.items || [])) {
+    if (d.type === 'prop' && d.shape === 'wall') {   // 參數化展牆：沿長度佈碰撞點，開口留通道；厚牆佈兩排
+      const L = d.len || 4, T = d.t || 0.2, rr = (d.rot || 0) * Math.PI / 180, c = Math.cos(rr), si = Math.sin(rr);
+      const rows = T > 0.6 ? [-(T / 2 - 0.22), T / 2 - 0.22] : [0];
+      for (let lx = -L / 2 + 0.2; lx <= L / 2 - 0.2 + 1e-6; lx += 0.4) {
+        if ((d.gaps || []).some(gp => Math.abs(lx - ((gp.at ?? L / 2) - L / 2)) < (gp.w || 1.6) / 2 - 0.05)) continue;
+        for (const lz of rows) obstacles.push({ x: (d.x || 0) + lx * c + lz * si, z: (d.z || 0) - lx * si + lz * c, r: T > 0.6 ? 0.26 : 0.18 });   // 薄牆用小半徑，繞行通道才過得去
+      }
+      continue;
+    }
+    if (d.type === 'prop' && d.obs != null) { if (d.obs > 0.05) obstacles.push({ x: d.x || 0, z: d.z || 0, r: d.obs }); continue; }   // 設定檔指定碰撞半徑
     if (d.type === 'prop' && WALL_OBS[d.shape]) {   // 牆體：沿長度佈碰撞點，開口留通道
       const info = WALL_OBS[d.shape], s = d.scale || 1, rr = (d.rot || 0) * Math.PI / 180, c = Math.cos(rr), si = Math.sin(rr);
       for (let ox = -info.w / 2 + 0.2; ox <= info.w / 2 - 0.2 + 1e-6; ox += 0.4) {
@@ -1830,6 +1859,8 @@ enterBtn.addEventListener('click', () => enterExhibition(false));
 document.getElementById('tourEnterBtn').addEventListener('click', () => enterExhibition(true));
 addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
 applyLook(); tick();
+if (window.__dbg) window.__dbg.blocked = blocked;
+if (window.__dbg) window.__dbg.tp = (x, z, yd) => { yawObj.position.set(x, EYE, z); yaw = (yd || 0) * Math.PI / 180; pitch = 0; applyLook(); };   // 除錯：傳送到座標（引擎座標、朝向角度）
 
 /* 直接開展覽連結、本機還沒有這檔資料 → 從雲端抓一次（1 次讀取）再重新載入 */
 if (exId && !fromStore) {
@@ -1862,6 +1893,6 @@ if (EX.id) {
   }, 800);
 }
 </script>
-<script type="module" src="js/cloud.js?v=20260927"></script>
+<script type="module" src="js/cloud.js?v=20260928"></script>
 </body>
 </html>

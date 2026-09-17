@@ -1,0 +1,2316 @@
+{
+ "_readme": [
+  "微島計畫・息濟州 — 場景設定檔。程式只讀這個檔案；改內容不用改程式。",
+  "座標：公尺，x 向右、z 向前、y 向上。hall.x / hall.z 是大廳範圍（含所有展區與隱藏廳）。",
+  "walls：from→to 為牆的起點與終點；gaps 是真開口，at＝開口中心離起點的距離，w 寬、h 高。",
+  "boards：掛牆物件。on.wall 指定牆 id，on.at 離牆起點幾公尺，on.side L/R＝面向牆行進方向（from→to）的左／右側，on.y 中心高度（預設 1.5）。",
+  "boards.kind：work 作品佔位板／text 牆文／video 黑板／audio 發光小點。src 留空，之後填素材路徑。",
+  "props：自由擺放。shape 可用 slab（板：w,d,t,y）、cyl（圓柱：r,h,y）、wall（參數牆）、orb（發光點）、disc（地面發光圓）、bench、plinth 等；obs＝碰撞半徑。",
+  "lights：pos/h 燈位，aim 瞄準點 [x, z, y]；kind spot/wash/up。引擎同時最多 8 盞真燈，作品光斑由作品自帶光暈呈現。",
+  "所有文字欄位皆 {zh, en, ko}，缺某語言時退回英文。stops / pickups 為階段二、三的互動中繼資料。"
+ ],
+ "id": "jeju",
+ "lang": "zh",
+ "title": {
+  "zh": "微島計畫・息濟州",
+  "en": "Little Island Project · Breathe. Jeju",
+  "ko": "작은 섬 프로젝트 · 숨, 제주"
+ },
+ "description": {
+  "zh": "一檔關於濟州的旅行、注視與再敘述的展覽。",
+  "en": "An exhibition on travelling to, looking at and retelling Jeju.",
+  "ko": "제주를 여행하고, 바라보고, 다시 이야기하는 전시."
+ },
+ "palette": {
+  "wall": "#F6F4EE",
+  "floor": "#D9D7D1",
+  "dark": "#181D1B",
+  "accent": "#E0701F",
+  "accent2": "#0F4C50",
+  "board": "#D8D3C6"
+ },
+ "hall": {
+  "x": [
+   3,
+   34
+  ],
+  "z": [
+   4.5,
+   21
+  ],
+  "height": 6,
+  "ambient": 0.62,
+  "ceilingGlow": 0.5,
+  "sun": 1.4,
+  "sunAzimuth": 200,
+  "sunElev": 72
+ },
+ "spawn": {
+  "x": 5.5,
+  "z": 5.3,
+  "face": [
+   5.5,
+   9.5
+  ]
+ },
+ "zones": [
+  {
+   "id": "Z00",
+   "name": {
+    "zh": "序廳",
+    "en": "Prologue",
+    "ko": "프롤로그"
+   },
+   "rect": [
+    3,
+    4.5,
+    8,
+    9.5
+   ],
+   "ceiling": 3,
+   "mood": "white"
+  },
+  {
+   "id": "Z01",
+   "name": {
+    "zh": "出發之前",
+    "en": "Before Departure",
+    "ko": "출발 전"
+   },
+   "rect": [
+    9,
+    4.5,
+    14.5,
+    9.5
+   ],
+   "ceiling": 3,
+   "mood": "white"
+  },
+  {
+   "id": "Z02",
+   "name": {
+    "zh": "走過的濟州",
+    "en": "Jeju, Walked",
+    "ko": "걸어온 제주"
+   },
+   "rect": [
+    15.5,
+    4.5,
+    24,
+    9.5
+   ],
+   "ceiling": 4,
+   "mood": "white"
+  },
+  {
+   "id": "Z03",
+   "name": {
+    "zh": "聲音廳",
+    "en": "Sound Room",
+    "ko": "소리의 방"
+   },
+   "rect": [
+    25,
+    4.5,
+    30.5,
+    9.5
+   ],
+   "ceiling": 2.6,
+   "mood": "dim"
+  },
+  {
+   "id": "C0",
+   "name": {
+    "zh": "走道",
+    "en": "Passage",
+    "ko": "통로"
+   },
+   "rect": [
+    15.7,
+    9.5,
+    30.5,
+    11
+   ],
+   "ceiling": 2.6,
+   "mood": "dim"
+  },
+  {
+   "id": "Z04",
+   "name": {
+    "zh": "他們的濟州",
+    "en": "Their Jeju",
+    "ko": "그들의 제주"
+   },
+   "rect": [
+    9,
+    11,
+    24,
+    21
+   ],
+   "ceiling": 6,
+   "mood": "sky"
+  },
+  {
+   "id": "Z05",
+   "name": {
+    "zh": "影像廳",
+    "en": "Screening Room",
+    "ko": "영상실"
+   },
+   "rect": [
+    25,
+    11,
+    30.5,
+    15.5
+   ],
+   "ceiling": 3,
+   "mood": "dark",
+   "floor": "dark"
+  },
+  {
+   "id": "Z06",
+   "name": {
+    "zh": "尾廳",
+    "en": "Epilogue",
+    "ko": "에필로그"
+   },
+   "rect": [
+    25,
+    16.5,
+    30.5,
+    21
+   ],
+   "ceiling": 3,
+   "mood": "warm"
+  },
+  {
+   "id": "H6",
+   "name": {
+    "zh": "第六張",
+    "en": "The Sixth",
+    "ko": "여섯 번째"
+   },
+   "rect": [
+    31,
+    17,
+    34,
+    20
+   ],
+   "ceiling": 2.8,
+   "mood": "dim"
+  }
+ ],
+ "walls": [
+  {
+   "id": "S1",
+   "from": [
+    3,
+    4.6
+   ],
+   "to": [
+    30.5,
+    4.6
+   ],
+   "h": 4,
+   "t": 0.2
+  },
+  {
+   "id": "N1",
+   "from": [
+    3,
+    9.5
+   ],
+   "to": [
+    30.5,
+    9.5
+   ],
+   "h": 4,
+   "t": 0.2,
+   "gaps": [
+    {
+     "at": 26.0,
+     "w": 1.6,
+     "h": 2.4
+    }
+   ]
+  },
+  {
+   "id": "Z00-W",
+   "from": [
+    3.1,
+    4.5
+   ],
+   "to": [
+    3.1,
+    9.5
+   ],
+   "h": 3,
+   "t": 0.2
+  },
+  {
+   "id": "B01",
+   "from": [
+    8.5,
+    4.5
+   ],
+   "to": [
+    8.5,
+    9.5
+   ],
+   "h": 3,
+   "t": 1.0,
+   "gaps": [
+    {
+     "at": 2.5,
+     "w": 1.6,
+     "h": 2.4
+    }
+   ]
+  },
+  {
+   "id": "B12",
+   "from": [
+    15,
+    4.5
+   ],
+   "to": [
+    15,
+    9.5
+   ],
+   "h": 4,
+   "t": 1.0,
+   "gaps": [
+    {
+     "at": 2.5,
+     "w": 1.6,
+     "h": 2.4
+    }
+   ]
+  },
+  {
+   "id": "B23",
+   "from": [
+    24.5,
+    4.5
+   ],
+   "to": [
+    24.5,
+    9.5
+   ],
+   "h": 4,
+   "t": 1.0,
+   "gaps": [
+    {
+     "at": 2.5,
+     "w": 1.6,
+     "h": 2.4
+    }
+   ]
+  },
+  {
+   "id": "F1",
+   "from": [
+    19.75,
+    5.5
+   ],
+   "to": [
+    19.75,
+    8.5
+   ],
+   "h": 3,
+   "t": 0.2
+  },
+  {
+   "id": "C-W",
+   "from": [
+    15.7,
+    9.5
+   ],
+   "to": [
+    15.7,
+    11
+   ],
+   "h": 2.6,
+   "t": 0.2
+  },
+  {
+   "id": "N2a",
+   "from": [
+    9,
+    11
+   ],
+   "to": [
+    24,
+    11
+   ],
+   "h": 4,
+   "t": 0.2,
+   "gaps": [
+    {
+     "at": 7.5,
+     "w": 1.6,
+     "h": 2.4
+    }
+   ]
+  },
+  {
+   "id": "N2b",
+   "from": [
+    24,
+    11
+   ],
+   "to": [
+    30.5,
+    11
+   ],
+   "h": 3,
+   "t": 0.2,
+   "color": "#181D1B"
+  },
+  {
+   "id": "Z04-W",
+   "from": [
+    9,
+    11
+   ],
+   "to": [
+    9,
+    21
+   ],
+   "h": 4,
+   "t": 0.2
+  },
+  {
+   "id": "Z04-E",
+   "from": [
+    24,
+    11
+   ],
+   "to": [
+    24,
+    21
+   ],
+   "h": 4,
+   "t": 0.2,
+   "gaps": [
+    {
+     "at": 2.25,
+     "w": 1.6,
+     "h": 2.4
+    }
+   ]
+  },
+  {
+   "id": "N4",
+   "from": [
+    9,
+    20.9
+   ],
+   "to": [
+    24,
+    20.9
+   ],
+   "h": 4,
+   "t": 0.2
+  },
+  {
+   "id": "Z05-W",
+   "from": [
+    25,
+    11
+   ],
+   "to": [
+    25,
+    15.5
+   ],
+   "h": 3,
+   "t": 0.2,
+   "gaps": [
+    {
+     "at": 2.25,
+     "w": 1.6,
+     "h": 2.3
+    }
+   ],
+   "color": "#181D1B",
+   "glow": 0.25
+  },
+  {
+   "id": "Z05-B",
+   "from": [
+    26.6,
+    11
+   ],
+   "to": [
+    26.6,
+    14.0
+   ],
+   "h": 3,
+   "t": 0.2,
+   "color": "#181D1B"
+  },
+  {
+   "id": "Z05-N",
+   "from": [
+    25,
+    15.5
+   ],
+   "to": [
+    30.5,
+    15.5
+   ],
+   "h": 3,
+   "t": 0.2,
+   "gaps": [
+    {
+     "at": 3.5,
+     "w": 1.6,
+     "h": 2.3
+    }
+   ],
+   "color": "#181D1B",
+   "glow": 0.3
+  },
+  {
+   "id": "Z06-S",
+   "from": [
+    25,
+    16.5
+   ],
+   "to": [
+    30.5,
+    16.5
+   ],
+   "h": 3,
+   "t": 0.2,
+   "gaps": [
+    {
+     "at": 3.5,
+     "w": 1.6,
+     "h": 2.4
+    }
+   ]
+  },
+  {
+   "id": "Z06-W",
+   "from": [
+    25,
+    16.5
+   ],
+   "to": [
+    25,
+    21
+   ],
+   "h": 3,
+   "t": 0.2
+  },
+  {
+   "id": "Z06-N",
+   "from": [
+    25,
+    20.7
+   ],
+   "to": [
+    30.5,
+    20.7
+   ],
+   "h": 3,
+   "t": 0.2,
+   "gaps": [
+    {
+     "at": 2.75,
+     "w": 1.6,
+     "h": 2.4
+    }
+   ]
+  },
+  {
+   "id": "E1a",
+   "from": [
+    30.5,
+    4.5
+   ],
+   "to": [
+    30.5,
+    9.5
+   ],
+   "h": 4,
+   "t": 0.2
+  },
+  {
+   "id": "E1c",
+   "from": [
+    30.5,
+    9.5
+   ],
+   "to": [
+    30.5,
+    11
+   ],
+   "h": 2.6,
+   "t": 0.2
+  },
+  {
+   "id": "E1b",
+   "from": [
+    30.5,
+    11
+   ],
+   "to": [
+    30.5,
+    15.5
+   ],
+   "h": 3,
+   "t": 0.2,
+   "color": "#181D1B"
+  },
+  {
+   "id": "E1d",
+   "from": [
+    30.5,
+    15.5
+   ],
+   "to": [
+    30.5,
+    21
+   ],
+   "h": 3,
+   "t": 0.2
+  },
+  {
+   "id": "H6-S",
+   "from": [
+    31,
+    17
+   ],
+   "to": [
+    34,
+    17
+   ],
+   "h": 2.8,
+   "t": 0.2
+  },
+  {
+   "id": "H6-N",
+   "from": [
+    31,
+    20
+   ],
+   "to": [
+    34,
+    20
+   ],
+   "h": 2.8,
+   "t": 0.2
+  },
+  {
+   "id": "H6-E",
+   "from": [
+    33.9,
+    17
+   ],
+   "to": [
+    33.9,
+    20
+   ],
+   "h": 2.8,
+   "t": 0.2
+  },
+  {
+   "id": "W11",
+   "from": [
+    17.703,
+    10.941
+   ],
+   "to": [
+    20.939,
+    13.292
+   ],
+   "h": 3,
+   "t": 0.2,
+   "student": "A"
+  },
+  {
+   "id": "W12",
+   "from": [
+    21.683,
+    15.581
+   ],
+   "to": [
+    20.447,
+    19.385
+   ],
+   "h": 3,
+   "t": 0.2,
+   "student": "B"
+  },
+  {
+   "id": "W13",
+   "from": [
+    18.5,
+    20.8
+   ],
+   "to": [
+    14.5,
+    20.8
+   ],
+   "h": 3,
+   "t": 0.2,
+   "student": "C"
+  },
+  {
+   "id": "W14",
+   "from": [
+    12.553,
+    19.385
+   ],
+   "to": [
+    11.317,
+    15.581
+   ],
+   "h": 3,
+   "t": 0.2,
+   "student": "D"
+  },
+  {
+   "id": "W15",
+   "from": [
+    12.061,
+    13.292
+   ],
+   "to": [
+    15.297,
+    10.941
+   ],
+   "h": 3,
+   "t": 0.2,
+   "student": "E"
+  }
+ ],
+ "boards": [
+  {
+   "id": "W01",
+   "kind": "text",
+   "zone": "Z00",
+   "on": {
+    "wall": "N1",
+    "at": 2.5,
+    "side": "R",
+    "y": 1.5
+   },
+   "size": [
+    2.4,
+    1.2
+   ],
+   "label": "W01",
+   "src": "",
+   "text": {
+    "zh": "（策展論述 200–300 字，待填。這面牆是觀眾進場後的第一個視覺焦點，字高 4 cm、置中。）",
+    "en": "(Curatorial statement, 200–300 words, to be written.)",
+    "ko": "(기획의 글, 200–300자, 작성 예정.)"
+   },
+   "title": {
+    "zh": "策展論述",
+    "en": "Curatorial Statement",
+    "ko": "기획의 글"
+   }
+  },
+  {
+   "id": "W02",
+   "kind": "work",
+   "zone": "Z00",
+   "on": {
+    "wall": "Z00-W",
+    "at": 3.8,
+    "side": "R",
+    "y": 1.5
+   },
+   "size": [
+    1.6,
+    1.0
+   ],
+   "label": "W02 七等分畫",
+   "src": ""
+  },
+  {
+   "id": "W03",
+   "kind": "text",
+   "zone": "Z01",
+   "on": {
+    "wall": "N1",
+    "at": 6.9,
+    "side": "R",
+    "y": 1.5
+   },
+   "size": [
+    1.2,
+    0.9
+   ],
+   "label": "W03",
+   "src": "",
+   "text": {
+    "zh": "（章節牆文 60–80 字，待填。）",
+    "en": "(Chapter text, 60–80 words.)",
+    "ko": "(챕터 텍스트, 60–80자.)"
+   },
+   "title": {
+    "zh": "出發之前",
+    "en": "Before Departure",
+    "ko": "출발 전"
+   }
+  },
+  {
+   "id": "W04-1",
+   "kind": "work",
+   "zone": "Z01",
+   "on": {
+    "wall": "S1",
+    "at": 6.6,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    0.6,
+    0.4
+   ],
+   "label": "W04-1",
+   "src": ""
+  },
+  {
+   "id": "W04-2",
+   "kind": "work",
+   "zone": "Z01",
+   "on": {
+    "wall": "S1",
+    "at": 7.75,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    0.6,
+    0.4
+   ],
+   "label": "W04-2",
+   "src": ""
+  },
+  {
+   "id": "W04-3",
+   "kind": "work",
+   "zone": "Z01",
+   "on": {
+    "wall": "S1",
+    "at": 8.9,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    0.6,
+    0.4
+   ],
+   "label": "W04-3",
+   "src": ""
+  },
+  {
+   "id": "W04-4",
+   "kind": "work",
+   "zone": "Z01",
+   "on": {
+    "wall": "S1",
+    "at": 10.05,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    0.6,
+    0.4
+   ],
+   "label": "W04-4",
+   "src": ""
+  },
+  {
+   "id": "W04-5",
+   "kind": "work",
+   "zone": "Z01",
+   "on": {
+    "wall": "S1",
+    "at": 11.2,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    0.6,
+    0.4
+   ],
+   "label": "W04-5",
+   "src": ""
+  },
+  {
+   "id": "AI1",
+   "kind": "text",
+   "zone": "Z01",
+   "on": {
+    "wall": "N1",
+    "at": 10.0,
+    "side": "R",
+    "y": 1.5
+   },
+   "size": [
+    1.2,
+    0.9
+   ],
+   "label": "AI1",
+   "src": "",
+   "text": {
+    "zh": "（對話文字，其中一句可點選。階段三接互動。）",
+    "en": "(Dialogue text; one line is clickable. Interaction in phase 3.)",
+    "ko": "(대화 텍스트; 한 문장 선택 가능. 3단계에서 연결.)"
+   },
+   "title": {
+    "zh": "抓包 AI",
+    "en": "Catch the AI",
+    "ko": "AI 잡기"
+   }
+  },
+  {
+   "id": "Z02-T",
+   "kind": "text",
+   "zone": "Z02",
+   "on": {
+    "wall": "F1",
+    "at": 1.5,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    2.0,
+    1.2
+   ],
+   "label": "Z02-T",
+   "src": "",
+   "title": {
+    "zh": "走過的濟州",
+    "en": "Jeju, Walked",
+    "ko": "걸어온 제주"
+   },
+   "text": {
+    "zh": "（主展廳章節總標：進廳正對的視覺焦點。五個章節——熱鬧、沉靜、跨過去、火、家——依序繞行。）",
+    "en": "(Main hall title wall: the focal point on entering. Five chapters follow in order.)",
+    "ko": "(주전시실 챕터 제목 벽. 다섯 챕터가 차례로 이어진다.)"
+   }
+  },
+  {
+   "id": "W05-T",
+   "kind": "text",
+   "zone": "Z02",
+   "on": {
+    "wall": "N1",
+    "at": 13.15,
+    "side": "R",
+    "y": 1.5
+   },
+   "size": [
+    0.9,
+    0.9
+   ],
+   "label": "W05-T",
+   "src": "",
+   "text": {
+    "zh": "（章節牆文 60–80 字，待填。）",
+    "en": "(Chapter text, 60–80 words.)",
+    "ko": "(챕터 텍스트, 60–80자.)"
+   },
+   "title": {
+    "zh": "熱鬧",
+    "en": "Bustle",
+    "ko": "북적임"
+   }
+  },
+  {
+   "id": "W05-2",
+   "kind": "work",
+   "zone": "Z02",
+   "on": {
+    "wall": "N1",
+    "at": 14.1,
+    "side": "R",
+    "y": 1.5
+   },
+   "size": [
+    0.8,
+    1.1
+   ],
+   "label": "W05-2",
+   "src": ""
+  },
+  {
+   "id": "W05-1",
+   "kind": "work",
+   "zone": "Z02",
+   "on": {
+    "wall": "N1",
+    "at": 15.5,
+    "side": "R",
+    "y": 1.5
+   },
+   "size": [
+    1.6,
+    1.0
+   ],
+   "label": "W05-1",
+   "src": ""
+  },
+  {
+   "id": "W06-T",
+   "kind": "text",
+   "zone": "Z02",
+   "on": {
+    "wall": "S1",
+    "at": 13.15,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    0.9,
+    0.9
+   ],
+   "label": "W06-T",
+   "src": "",
+   "text": {
+    "zh": "（章節牆文 60–80 字，待填。）",
+    "en": "(Chapter text, 60–80 words.)",
+    "ko": "(챕터 텍스트, 60–80자.)"
+   },
+   "title": {
+    "zh": "沉靜",
+    "en": "Stillness",
+    "ko": "고요"
+   }
+  },
+  {
+   "id": "W06-2",
+   "kind": "work",
+   "zone": "Z02",
+   "on": {
+    "wall": "S1",
+    "at": 14.1,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    0.8,
+    1.1
+   ],
+   "label": "W06-2",
+   "src": ""
+  },
+  {
+   "id": "W06-1",
+   "kind": "work",
+   "zone": "Z02",
+   "on": {
+    "wall": "S1",
+    "at": 15.5,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    1.6,
+    1.0
+   ],
+   "label": "W06-1",
+   "src": ""
+  },
+  {
+   "id": "W07-T",
+   "kind": "text",
+   "zone": "Z02",
+   "on": {
+    "wall": "F1",
+    "at": 0.45,
+    "side": "R",
+    "y": 1.5
+   },
+   "size": [
+    0.9,
+    0.9
+   ],
+   "label": "W07-T",
+   "src": "",
+   "text": {
+    "zh": "（章節牆文 60–80 字，待填。）",
+    "en": "(Chapter text, 60–80 words.)",
+    "ko": "(챕터 텍스트, 60–80자.)"
+   },
+   "title": {
+    "zh": "跨過去",
+    "en": "Crossing",
+    "ko": "건너가기"
+   }
+  },
+  {
+   "id": "W07-2",
+   "kind": "work",
+   "zone": "Z02",
+   "on": {
+    "wall": "F1",
+    "at": 1.4,
+    "side": "R",
+    "y": 1.5
+   },
+   "size": [
+    0.8,
+    1.1
+   ],
+   "label": "W07-2",
+   "src": ""
+  },
+  {
+   "id": "W07-1",
+   "kind": "work",
+   "zone": "Z02",
+   "on": {
+    "wall": "F1",
+    "at": 2.8,
+    "side": "R",
+    "y": 1.5
+   },
+   "size": [
+    1.6,
+    1.0
+   ],
+   "label": "W07-1",
+   "src": ""
+  },
+  {
+   "id": "W08-T",
+   "kind": "text",
+   "zone": "Z02",
+   "on": {
+    "wall": "N1",
+    "at": 17.85,
+    "side": "R",
+    "y": 1.5
+   },
+   "size": [
+    0.9,
+    0.9
+   ],
+   "label": "W08-T",
+   "src": "",
+   "text": {
+    "zh": "（章節牆文 60–80 字，待填。）",
+    "en": "(Chapter text, 60–80 words.)",
+    "ko": "(챕터 텍스트, 60–80자.)"
+   },
+   "title": {
+    "zh": "火",
+    "en": "Fire",
+    "ko": "불"
+   }
+  },
+  {
+   "id": "W08-2",
+   "kind": "work",
+   "zone": "Z02",
+   "on": {
+    "wall": "N1",
+    "at": 18.8,
+    "side": "R",
+    "y": 1.5
+   },
+   "size": [
+    0.8,
+    1.1
+   ],
+   "label": "W08-2",
+   "src": ""
+  },
+  {
+   "id": "W08-1",
+   "kind": "work",
+   "zone": "Z02",
+   "on": {
+    "wall": "N1",
+    "at": 20.2,
+    "side": "R",
+    "y": 1.5
+   },
+   "size": [
+    1.6,
+    1.0
+   ],
+   "label": "W08-1",
+   "src": ""
+  },
+  {
+   "id": "W09-T",
+   "kind": "text",
+   "zone": "Z02",
+   "on": {
+    "wall": "S1",
+    "at": 17.85,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    0.9,
+    0.9
+   ],
+   "label": "W09-T",
+   "src": "",
+   "text": {
+    "zh": "（章節牆文 60–80 字，待填。）",
+    "en": "(Chapter text, 60–80 words.)",
+    "ko": "(챕터 텍스트, 60–80자.)"
+   },
+   "title": {
+    "zh": "家",
+    "en": "Home",
+    "ko": "집"
+   }
+  },
+  {
+   "id": "W09-2",
+   "kind": "work",
+   "zone": "Z02",
+   "on": {
+    "wall": "S1",
+    "at": 18.8,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    0.8,
+    1.1
+   ],
+   "label": "W09-2",
+   "src": ""
+  },
+  {
+   "id": "W09-1",
+   "kind": "work",
+   "zone": "Z02",
+   "on": {
+    "wall": "S1",
+    "at": 20.2,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    1.6,
+    1.0
+   ],
+   "label": "W09-1",
+   "src": ""
+  },
+  {
+   "id": "W10",
+   "kind": "text",
+   "zone": "Z03",
+   "on": {
+    "wall": "N1",
+    "at": 23.5,
+    "side": "R",
+    "y": 1.5
+   },
+   "size": [
+    2.4,
+    1.4
+   ],
+   "label": "W10",
+   "src": "",
+   "text": {
+    "zh": "（觀眾留言以小字卡貼滿。階段三接資料庫。）",
+    "en": "(Visitor notes as small cards. Database in phase 3.)",
+    "ko": "(관객의 한마디가 카드로 붙는다. 3단계에서 DB 연결.)"
+   },
+   "title": {
+    "zh": "回聲牆",
+    "en": "Echo Wall",
+    "ko": "메아리 벽"
+   }
+  },
+  {
+   "id": "C1",
+   "kind": "text",
+   "zone": "C0",
+   "on": {
+    "wall": "C-W",
+    "at": 0.75,
+    "side": "R",
+    "y": 1.5
+   },
+   "size": [
+    1.0,
+    0.7
+   ],
+   "label": "C1",
+   "src": "",
+   "text": {
+    "zh": "（走道焦點板：一句過渡文字。）",
+    "en": "(Passage focal text.)",
+    "ko": "(통로 문구.)"
+   },
+   "title": {
+    "zh": "往學生大廳",
+    "en": "To the Student Hall",
+    "ko": "학생 홀로"
+   }
+  },
+  {
+   "id": "W11-T",
+   "kind": "text",
+   "zone": "Z04",
+   "on": {
+    "wall": "W11",
+    "at": 0.6,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    0.9,
+    0.9
+   ],
+   "label": "W11-T",
+   "src": "",
+   "text": {
+    "zh": "（一句話＋房名，讀自 students.json。）",
+    "en": "(One line + room name, from students.json.)",
+    "ko": "(한 문장 + 방 이름, students.json.)"
+   },
+   "title": {
+    "zh": "學生 A",
+    "en": "Student A",
+    "ko": "학생 A"
+   }
+  },
+  {
+   "id": "W11-2",
+   "kind": "work",
+   "zone": "Z04",
+   "on": {
+    "wall": "W11",
+    "at": 1.5,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    0.8,
+    1.1
+   ],
+   "label": "W11-2",
+   "src": ""
+  },
+  {
+   "id": "W11-1",
+   "kind": "work",
+   "zone": "Z04",
+   "on": {
+    "wall": "W11",
+    "at": 2.9,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    1.6,
+    1.0
+   ],
+   "label": "W11-1",
+   "src": ""
+  },
+  {
+   "id": "W12-T",
+   "kind": "text",
+   "zone": "Z04",
+   "on": {
+    "wall": "W12",
+    "at": 0.6,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    0.9,
+    0.9
+   ],
+   "label": "W12-T",
+   "src": "",
+   "text": {
+    "zh": "（一句話＋房名，讀自 students.json。）",
+    "en": "(One line + room name, from students.json.)",
+    "ko": "(한 문장 + 방 이름, students.json.)"
+   },
+   "title": {
+    "zh": "學生 B",
+    "en": "Student B",
+    "ko": "학생 B"
+   }
+  },
+  {
+   "id": "W12-2",
+   "kind": "work",
+   "zone": "Z04",
+   "on": {
+    "wall": "W12",
+    "at": 1.5,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    0.8,
+    1.1
+   ],
+   "label": "W12-2",
+   "src": ""
+  },
+  {
+   "id": "W12-1",
+   "kind": "work",
+   "zone": "Z04",
+   "on": {
+    "wall": "W12",
+    "at": 2.9,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    1.6,
+    1.0
+   ],
+   "label": "W12-1",
+   "src": ""
+  },
+  {
+   "id": "W13-T",
+   "kind": "text",
+   "zone": "Z04",
+   "on": {
+    "wall": "W13",
+    "at": 0.6,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    0.9,
+    0.9
+   ],
+   "label": "W13-T",
+   "src": "",
+   "text": {
+    "zh": "（一句話＋房名，讀自 students.json。）",
+    "en": "(One line + room name, from students.json.)",
+    "ko": "(한 문장 + 방 이름, students.json.)"
+   },
+   "title": {
+    "zh": "學生 C",
+    "en": "Student C",
+    "ko": "학생 C"
+   }
+  },
+  {
+   "id": "W13-2",
+   "kind": "work",
+   "zone": "Z04",
+   "on": {
+    "wall": "W13",
+    "at": 1.5,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    0.8,
+    1.1
+   ],
+   "label": "W13-2",
+   "src": ""
+  },
+  {
+   "id": "W13-1",
+   "kind": "work",
+   "zone": "Z04",
+   "on": {
+    "wall": "W13",
+    "at": 2.9,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    1.6,
+    1.0
+   ],
+   "label": "W13-1",
+   "src": ""
+  },
+  {
+   "id": "W14-T",
+   "kind": "text",
+   "zone": "Z04",
+   "on": {
+    "wall": "W14",
+    "at": 0.6,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    0.9,
+    0.9
+   ],
+   "label": "W14-T",
+   "src": "",
+   "text": {
+    "zh": "（一句話＋房名，讀自 students.json。）",
+    "en": "(One line + room name, from students.json.)",
+    "ko": "(한 문장 + 방 이름, students.json.)"
+   },
+   "title": {
+    "zh": "學生 D",
+    "en": "Student D",
+    "ko": "학생 D"
+   }
+  },
+  {
+   "id": "W14-2",
+   "kind": "work",
+   "zone": "Z04",
+   "on": {
+    "wall": "W14",
+    "at": 1.5,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    0.8,
+    1.1
+   ],
+   "label": "W14-2",
+   "src": ""
+  },
+  {
+   "id": "W14-1",
+   "kind": "work",
+   "zone": "Z04",
+   "on": {
+    "wall": "W14",
+    "at": 2.9,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    1.6,
+    1.0
+   ],
+   "label": "W14-1",
+   "src": ""
+  },
+  {
+   "id": "W15-T",
+   "kind": "text",
+   "zone": "Z04",
+   "on": {
+    "wall": "W15",
+    "at": 0.6,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    0.9,
+    0.9
+   ],
+   "label": "W15-T",
+   "src": "",
+   "text": {
+    "zh": "（一句話＋房名，讀自 students.json。）",
+    "en": "(One line + room name, from students.json.)",
+    "ko": "(한 문장 + 방 이름, students.json.)"
+   },
+   "title": {
+    "zh": "學生 E",
+    "en": "Student E",
+    "ko": "학생 E"
+   }
+  },
+  {
+   "id": "W15-2",
+   "kind": "work",
+   "zone": "Z04",
+   "on": {
+    "wall": "W15",
+    "at": 1.5,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    0.8,
+    1.1
+   ],
+   "label": "W15-2",
+   "src": ""
+  },
+  {
+   "id": "W15-1",
+   "kind": "work",
+   "zone": "Z04",
+   "on": {
+    "wall": "W15",
+    "at": 2.9,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    1.6,
+    1.0
+   ],
+   "label": "W15-1",
+   "src": ""
+  },
+  {
+   "id": "W16-A",
+   "kind": "text",
+   "zone": "Z04",
+   "on": {
+    "wall": "N4",
+    "at": 4.5,
+    "side": "R",
+    "y": 1.5
+   },
+   "size": [
+    0.9,
+    1.2
+   ],
+   "label": "W16-A",
+   "src": "",
+   "text": {
+    "zh": "（觀眾便條欄，階段三。）",
+    "en": "(Visitor notes, phase 3.)",
+    "ko": "(관객 메모, 3단계.)"
+   },
+   "title": {
+    "zh": "給 A",
+    "en": "For A",
+    "ko": "A에게"
+   }
+  },
+  {
+   "id": "W16-B",
+   "kind": "text",
+   "zone": "Z04",
+   "on": {
+    "wall": "N4",
+    "at": 6.0,
+    "side": "R",
+    "y": 1.5
+   },
+   "size": [
+    0.9,
+    1.2
+   ],
+   "label": "W16-B",
+   "src": "",
+   "text": {
+    "zh": "（觀眾便條欄，階段三。）",
+    "en": "(Visitor notes, phase 3.)",
+    "ko": "(관객 메모, 3단계.)"
+   },
+   "title": {
+    "zh": "給 B",
+    "en": "For B",
+    "ko": "B에게"
+   }
+  },
+  {
+   "id": "W16-C",
+   "kind": "text",
+   "zone": "Z04",
+   "on": {
+    "wall": "N4",
+    "at": 7.5,
+    "side": "R",
+    "y": 1.5
+   },
+   "size": [
+    0.9,
+    1.2
+   ],
+   "label": "W16-C",
+   "src": "",
+   "text": {
+    "zh": "（觀眾便條欄，階段三。）",
+    "en": "(Visitor notes, phase 3.)",
+    "ko": "(관객 메모, 3단계.)"
+   },
+   "title": {
+    "zh": "給 C",
+    "en": "For C",
+    "ko": "C에게"
+   }
+  },
+  {
+   "id": "W16-D",
+   "kind": "text",
+   "zone": "Z04",
+   "on": {
+    "wall": "N4",
+    "at": 9.0,
+    "side": "R",
+    "y": 1.5
+   },
+   "size": [
+    0.9,
+    1.2
+   ],
+   "label": "W16-D",
+   "src": "",
+   "text": {
+    "zh": "（觀眾便條欄，階段三。）",
+    "en": "(Visitor notes, phase 3.)",
+    "ko": "(관객 메모, 3단계.)"
+   },
+   "title": {
+    "zh": "給 D",
+    "en": "For D",
+    "ko": "D에게"
+   }
+  },
+  {
+   "id": "W16-E",
+   "kind": "text",
+   "zone": "Z04",
+   "on": {
+    "wall": "N4",
+    "at": 10.5,
+    "side": "R",
+    "y": 1.5
+   },
+   "size": [
+    0.9,
+    1.2
+   ],
+   "label": "W16-E",
+   "src": "",
+   "text": {
+    "zh": "（觀眾便條欄，階段三。）",
+    "en": "(Visitor notes, phase 3.)",
+    "ko": "(관객 메모, 3단계.)"
+   },
+   "title": {
+    "zh": "給 E",
+    "en": "For E",
+    "ko": "E에게"
+   }
+  },
+  {
+   "id": "W17",
+   "kind": "video",
+   "zone": "Z05",
+   "on": {
+    "wall": "E1b",
+    "at": 2.25,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    4.2,
+    2.4
+   ],
+   "label": "W17 投影牆",
+   "src": ""
+  },
+  {
+   "id": "W19",
+   "kind": "work",
+   "zone": "Z06",
+   "on": {
+    "wall": "E1d",
+    "at": 3.0,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    2.4,
+    1.2
+   ],
+   "label": "W19 預言卡／寄回濟州",
+   "src": ""
+  },
+  {
+   "id": "W20",
+   "kind": "text",
+   "zone": "Z06",
+   "on": {
+    "wall": "Z06-S",
+    "at": 1.7,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    2.4,
+    1.2
+   ],
+   "label": "W20",
+   "src": "",
+   "text": {
+    "zh": "（投票：四個地名。下方小字：關於橡實旅、聯絡方式。）",
+    "en": "(Vote: four places. Small text: about Acorn Trip, contact.)",
+    "ko": "(투표: 네 곳. 작은 글씨: 도토리 여행 소개, 연락처.)"
+   },
+   "title": {
+    "zh": "下一站，去哪呢？",
+    "en": "Where to next?",
+    "ko": "다음은, 어디로?"
+   }
+  },
+  {
+   "id": "H6-1",
+   "kind": "text",
+   "zone": "H6",
+   "on": {
+    "wall": "H6-E",
+    "at": 1.5,
+    "side": "L",
+    "y": 1.5
+   },
+   "size": [
+    1.2,
+    0.9
+   ],
+   "label": "H6-1",
+   "src": "",
+   "text": {
+    "zh": "（一張卡、一句話。集滿五顆橡實後開放。）",
+    "en": "(One card, one line. Opens after five acorns.)",
+    "ko": "(카드 한 장, 한 문장.)"
+   },
+   "title": {
+    "zh": "第六張",
+    "en": "The Sixth",
+    "ko": "여섯 번째"
+   }
+  }
+ ],
+ "props": [
+  {
+   "id": "P1",
+   "shape": "slab",
+   "pos": [
+    12.5,
+    7.8
+   ],
+   "w": 0.6,
+   "d": 0.6,
+   "t": 0.9,
+   "y": 0,
+   "obs": 0.45,
+   "label": "P1 展台"
+  },
+  {
+   "id": "P1-tab",
+   "shape": "slab",
+   "pos": [
+    12.5,
+    7.8
+   ],
+   "w": 0.34,
+   "d": 0.24,
+   "t": 0.015,
+   "y": 0.9,
+   "color": "#181D1B",
+   "label": "P1 平板（外部網址佔位）"
+  },
+  {
+   "id": "L1-bench",
+   "shape": "bench",
+   "pos": [
+    26.3,
+    6.0
+   ],
+   "rot": 0,
+   "obs": 0.7,
+   "label": "L1 長椅"
+  },
+  {
+   "id": "L1-disc",
+   "shape": "disc",
+   "pos": [
+    26.3,
+    6.9
+   ],
+   "dia": 0.4,
+   "emis": "#E0701F",
+   "label": "L1 站位"
+  },
+  {
+   "id": "L1-audio",
+   "shape": "orb",
+   "pos": [
+    26.3,
+    6.9
+   ],
+   "y": 1.25,
+   "r": 0.05,
+   "emis": "#E0701F",
+   "label": "L1 音檔（佔位）"
+  },
+  {
+   "id": "L2-bench",
+   "shape": "bench",
+   "pos": [
+    29.2,
+    6.0
+   ],
+   "rot": 0,
+   "obs": 0.7,
+   "label": "L2 長椅"
+  },
+  {
+   "id": "L2-disc",
+   "shape": "disc",
+   "pos": [
+    29.2,
+    6.9
+   ],
+   "dia": 0.4,
+   "emis": "#E0701F",
+   "label": "L2 站位"
+  },
+  {
+   "id": "L2-audio",
+   "shape": "orb",
+   "pos": [
+    29.2,
+    6.9
+   ],
+   "y": 1.25,
+   "r": 0.05,
+   "emis": "#E0701F",
+   "label": "L2 音檔（佔位）"
+  },
+  {
+   "id": "L3-bench",
+   "shape": "bench",
+   "pos": [
+    26.3,
+    8.2
+   ],
+   "rot": 0,
+   "obs": 0.7,
+   "label": "L3 長椅"
+  },
+  {
+   "id": "L3-disc",
+   "shape": "disc",
+   "pos": [
+    26.3,
+    9.1
+   ],
+   "dia": 0.4,
+   "emis": "#E0701F",
+   "label": "L3 站位"
+  },
+  {
+   "id": "L3-audio",
+   "shape": "orb",
+   "pos": [
+    26.3,
+    9.1
+   ],
+   "y": 1.25,
+   "r": 0.05,
+   "emis": "#E0701F",
+   "label": "L3 音檔（佔位）"
+  },
+  {
+   "id": "L4-bench",
+   "shape": "bench",
+   "pos": [
+    29.2,
+    8.2
+   ],
+   "rot": 0,
+   "obs": 0.7,
+   "label": "L4 長椅"
+  },
+  {
+   "id": "L4-disc",
+   "shape": "disc",
+   "pos": [
+    29.2,
+    9.1
+   ],
+   "dia": 0.4,
+   "emis": "#E0701F",
+   "label": "L4 站位"
+  },
+  {
+   "id": "L4-audio",
+   "shape": "orb",
+   "pos": [
+    29.2,
+    9.1
+   ],
+   "y": 1.25,
+   "r": 0.05,
+   "emis": "#E0701F",
+   "label": "L4 音檔（佔位）"
+  },
+  {
+   "id": "TABLE",
+   "shape": "cyl",
+   "pos": [
+    16.5,
+    16.0
+   ],
+   "r": 1.5,
+   "h": 0.8,
+   "y": 0,
+   "obs": 1.65,
+   "label": "盲書桌"
+  },
+  {
+   "id": "PKG-A",
+   "shape": "slab",
+   "pos": [
+    16.5,
+    17.0
+   ],
+   "rot": 0,
+   "w": 0.32,
+   "d": 0.22,
+   "t": 0.1,
+   "y": 0.8,
+   "color": "#C9B48C",
+   "label": "包裹 A（佔位）"
+  },
+  {
+   "id": "PKG-B",
+   "shape": "slab",
+   "pos": [
+    15.549,
+    16.309
+   ],
+   "rot": 72,
+   "w": 0.32,
+   "d": 0.22,
+   "t": 0.1,
+   "y": 0.8,
+   "color": "#C9B48C",
+   "label": "包裹 B（佔位）"
+  },
+  {
+   "id": "PKG-C",
+   "shape": "slab",
+   "pos": [
+    15.912,
+    15.191
+   ],
+   "rot": 144,
+   "w": 0.32,
+   "d": 0.22,
+   "t": 0.1,
+   "y": 0.8,
+   "color": "#C9B48C",
+   "label": "包裹 C（佔位）"
+  },
+  {
+   "id": "PKG-D",
+   "shape": "slab",
+   "pos": [
+    17.088,
+    15.191
+   ],
+   "rot": 216,
+   "w": 0.32,
+   "d": 0.22,
+   "t": 0.1,
+   "y": 0.8,
+   "color": "#C9B48C",
+   "label": "包裹 D（佔位）"
+  },
+  {
+   "id": "PKG-E",
+   "shape": "slab",
+   "pos": [
+    17.451,
+    16.309
+   ],
+   "rot": 288,
+   "w": 0.32,
+   "d": 0.22,
+   "t": 0.1,
+   "y": 0.8,
+   "color": "#C9B48C",
+   "label": "包裹 E（佔位）"
+  },
+  {
+   "id": "Z05-bench",
+   "shape": "bench",
+   "pos": [
+    27.3,
+    13.25
+   ],
+   "rot": 90,
+   "obs": 0.7,
+   "label": "觀眾長凳"
+  },
+  {
+   "id": "W18-pit",
+   "shape": "cyl",
+   "pos": [
+    25.9,
+    18.7
+   ],
+   "r": 0.45,
+   "h": 0.5,
+   "y": 0,
+   "obs": 0.6,
+   "color": "#181D1B",
+   "label": "W18 願望之火（火盆）"
+  },
+  {
+   "id": "W18-fire",
+   "shape": "orb",
+   "pos": [
+    25.9,
+    18.7
+   ],
+   "y": 0.7,
+   "r": 0.09,
+   "emis": "#E0701F",
+   "label": "火（佔位）"
+  }
+ ],
+ "lights": [
+  {
+   "id": "LZ00",
+   "kind": "wash",
+   "pos": [
+    5.5,
+    7.2
+   ],
+   "h": 2.9,
+   "aim": [
+    5.5,
+    9.5,
+    1.3
+   ],
+   "color": "#fff6e8",
+   "intensity": 6,
+   "angle": 72
+  },
+  {
+   "id": "LZ01",
+   "kind": "wash",
+   "pos": [
+    12.0,
+    6.9
+   ],
+   "h": 2.9,
+   "aim": [
+    12.0,
+    4.5,
+    1.4
+   ],
+   "color": "#fff6e8",
+   "intensity": 5,
+   "angle": 75
+  },
+  {
+   "id": "LZ02a",
+   "kind": "spot",
+   "pos": [
+    17.6,
+    7.3
+   ],
+   "h": 3.9,
+   "aim": [
+    18.5,
+    9.5,
+    1.5
+   ],
+   "color": "#fff4e0",
+   "intensity": 7,
+   "angle": 42
+  },
+  {
+   "id": "LZ02b",
+   "kind": "spot",
+   "pos": [
+    22.6,
+    7.3
+   ],
+   "h": 3.9,
+   "aim": [
+    23.2,
+    9.5,
+    1.5
+   ],
+   "color": "#fff4e0",
+   "intensity": 7,
+   "angle": 42
+  },
+  {
+   "id": "LZ03",
+   "kind": "wash",
+   "pos": [
+    27.7,
+    7.0
+   ],
+   "h": 2.5,
+   "aim": [
+    26.5,
+    9.5,
+    1.2
+   ],
+   "color": "#ffefd6",
+   "intensity": 1.6,
+   "angle": 70
+  },
+  {
+   "id": "LZ04",
+   "kind": "spot",
+   "pos": [
+    16.5,
+    15.0
+   ],
+   "h": 5.8,
+   "aim": [
+    16.5,
+    16.0,
+    0.8
+   ],
+   "color": "#fff8ec",
+   "intensity": 6,
+   "angle": 30
+  },
+  {
+   "id": "LZ06",
+   "kind": "wash",
+   "pos": [
+    27.7,
+    18.8
+   ],
+   "h": 2.9,
+   "aim": [
+    26.7,
+    16.5,
+    1.4
+   ],
+   "color": "#FFB46B",
+   "intensity": 4,
+   "angle": 75
+  },
+  {
+   "id": "LC0",
+   "kind": "spot",
+   "pos": [
+    16.5,
+    10.3
+   ],
+   "h": 2.5,
+   "aim": [
+    16.5,
+    11.6,
+    0.0
+   ],
+   "color": "#fff6e8",
+   "intensity": 3,
+   "angle": 50
+  }
+ ],
+ "stops": [
+  {
+   "id": "D1",
+   "zone": "Z00",
+   "pos": [
+    5.1,
+    8.3
+   ],
+   "target": "W02"
+  },
+  {
+   "id": "D2",
+   "zone": "Z02",
+   "pos": [
+    18.5,
+    7.5
+   ],
+   "target": "W05-1"
+  },
+  {
+   "id": "D3",
+   "zone": "Z02",
+   "pos": [
+    18.5,
+    6.6
+   ],
+   "target": "W06-1"
+  },
+  {
+   "id": "D4",
+   "zone": "Z02",
+   "pos": [
+    21.75,
+    7.0
+   ],
+   "target": "W07-1"
+  },
+  {
+   "id": "D5",
+   "zone": "Z02",
+   "pos": [
+    23.2,
+    7.5
+   ],
+   "target": "W08-1"
+  },
+  {
+   "id": "D6",
+   "zone": "Z02",
+   "pos": [
+    23.2,
+    6.6
+   ],
+   "target": "W09-1"
+  }
+ ],
+ "pickups": [
+  {
+   "id": "A1",
+   "zone": "Z00",
+   "pos": [
+    3.6,
+    7.9
+   ]
+  },
+  {
+   "id": "A2",
+   "zone": "Z01",
+   "pos": [
+    12.5,
+    8.3
+   ]
+  },
+  {
+   "id": "A3",
+   "zone": "Z02",
+   "pos": [
+    19.95,
+    5.6
+   ]
+  },
+  {
+   "id": "A4",
+   "zone": "Z03",
+   "pos": [
+    29.2,
+    8.2
+   ]
+  },
+  {
+   "id": "A5",
+   "zone": "Z04",
+   "pos": [
+    16.5,
+    17.6
+   ]
+  }
+ ]
+}

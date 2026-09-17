@@ -207,6 +207,51 @@ window.PROPS = {
         }
         break;
       }
+      /* ── 參數化基礎件（給 exhibition.json 設定檔用）：尺寸全由 opts.d 決定 ── */
+      case 'wall': {
+        // 參數化展牆：len 長、h 高、t 厚，gaps=[{at:距牆起點的開口中心, w, h}] 為真開口
+        const d = opts.d || {}; const L = d.len || 4, H = d.h || 3, T = d.t || 0.2;
+        const s = new THREE.Shape();
+        s.moveTo(-L / 2, 0); s.lineTo(L / 2, 0); s.lineTo(L / 2, H); s.lineTo(-L / 2, H); s.closePath();
+        for (const gp of (d.gaps || [])) {
+          const cx = (gp.at ?? L / 2) - L / 2, gw = (gp.w || 1.6) / 2, gh = Math.min(H - 0.05, gp.h || 2.4);
+          const o = new THREE.Path(); o.moveTo(cx - gw, 0); o.lineTo(cx - gw, gh); o.lineTo(cx + gw, gh); o.lineTo(cx + gw, 0); o.closePath(); s.holes.push(o);
+        }
+        const geo = new THREE.ExtrudeGeometry(s, { depth: T, bevelEnabled: false });
+        const m = new THREE.Mesh(geo, prim); m.position.z = -T / 2; m.castShadow = true; m.receiveShadow = true; g.add(m);
+        break;
+      }
+      case 'slab': {
+        // 板：w×d 平面、厚 t、底面離地 y（天花板、地面色塊、展台都能用）；emis 可發光（天光／門楣）
+        const d = opts.d || {}; const W = d.w || 4, D = d.d || 4, T = d.t || 0.25;
+        const mat = d.emis ? new THREE.MeshStandardMaterial({ color: primary, emissive: d.emis, emissiveIntensity: d.ei ?? 1, roughness: 0.9 }) : prim;
+        const m = new THREE.Mesh(new THREE.BoxGeometry(W, T, D), mat); m.position.y = (d.y || 0) + T / 2;
+        m.castShadow = !d.emis; m.receiveShadow = true; g.add(m);
+        break;
+      }
+      case 'cyl': {
+        // 圓柱：r 半徑、h 高、底面離地 y（圓桌、火盆、圓形展台）
+        const d = opts.d || {}; const r = d.r || 0.5, h = d.h || 0.8;
+        const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, 48), prim); m.position.y = (d.y || 0) + h / 2;
+        m.castShadow = true; m.receiveShadow = true; g.add(m);
+        break;
+      }
+      case 'orb': {
+        // 發光小點（音檔佔位／聆聽點標記）：離地 y，色 emis
+        const d = opts.d || {}; const c = d.emis || '#E0701F';
+        const m = new THREE.Mesh(new THREE.SphereGeometry(d.r || 0.06, 20, 16), new THREE.MeshStandardMaterial({ color: '#222', emissive: c, emissiveIntensity: 2.2, roughness: 0.4 }));
+        m.position.y = d.y ?? 1.5; g.add(m);
+        const halo = new THREE.Mesh(new THREE.SphereGeometry((d.r || 0.06) * 2.6, 16, 12), new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: 0.18, depthWrite: false }));
+        halo.position.y = d.y ?? 1.5; g.add(halo);
+        break;
+      }
+      case 'disc': {
+        // 地面發光圓點（聆聽點站位）：直徑 dia
+        const d = opts.d || {}; const c = d.emis || '#E0701F';
+        const m = new THREE.Mesh(new THREE.CircleGeometry((d.dia || 0.4) / 2, 40), new THREE.MeshStandardMaterial({ color: '#333', emissive: c, emissiveIntensity: 1.4, roughness: 0.6 }));
+        m.rotation.x = -Math.PI / 2; m.position.y = 0.012; g.add(m);
+        break;
+      }
       case 'wall_seg': case 'wall_arch': case 'wall_door': case 'doorway': {
         // 牆體／出入口：有厚度的實牆，開口是真的洞（可穿越、可掛作品）
         const wallPiece = (W, H, T, opening) => {
