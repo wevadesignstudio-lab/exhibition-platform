@@ -157,6 +157,7 @@
   <span class="tbtn hidden" id="mapBtn">地圖</span>
   <span class="tbtn hidden" id="muteBtn">音樂</span>
   <span class="tbtn hidden" id="editToggle">編輯展場</span>
+  <span class="tbtn hidden" id="importBtn">匯入以編輯</span>
   <span class="title"></span>
   <span class="roomBar" id="roomBar"></span>
   <span class="count"></span>
@@ -238,14 +239,14 @@
   </div>
 </div>
 
-<script src="js/site.js?v=20260928"></script>
-<script src="js/dialog.js?v=20260928"></script>
-<script src="js/store.js?v=20260928"></script>
-<script src="js/auth.js?v=20260928"></script>
-<script src="js/templates.js?v=20260928"></script>
-<script src="js/props.js?v=20260928"></script>
-<script src="js/starter.js?v=20260928"></script>
-<script src="js/plan.js?v=20260928"></script>
+<script src="js/site.js?v=20260929"></script>
+<script src="js/dialog.js?v=20260929"></script>
+<script src="js/store.js?v=20260929"></script>
+<script src="js/auth.js?v=20260929"></script>
+<script src="js/templates.js?v=20260929"></script>
+<script src="js/props.js?v=20260929"></script>
+<script src="js/starter.js?v=20260929"></script>
+<script src="js/plan.js?v=20260929"></script>
 
 <script type="importmap">
 { "imports": {
@@ -280,6 +281,15 @@ if (params.get('plan') && window.PLAN) {
 const EX = planEX || fromStore || DEMO;
 const me = window.Auth ? Auth.current() : null;
 const isOwner = !!(fromStore && me && EX.ownerId === me.id);
+/* 設定檔展覽 → 匯入成自己的展覽（複製一份到工作室，之後用平台編輯器修改） */
+if (planEX && me && me.cloud && window.Store) {
+  const ib = document.getElementById('importBtn'); ib.classList.remove('hidden');
+  ib.onclick = async () => {
+    if (!(await UI.confirm('把這檔設定檔展覽複製到你的策展工作室？複製後可在平台裡直接編輯（設定檔本身不會改變）。'))) return;
+    const ex = Store.create(me.id, { title: EX.title, description: EX.description, style: EX.style, rooms: JSON.parse(JSON.stringify(EX.rooms)), start: EX.start, comments: EX.comments, fromPlan: params.get('plan') });
+    location.href = 'view.html?id=' + ex.id + '&edit=1&v=' + Date.now();
+  };
+}
 /* 共同策展權限：owner=創辦人、full=全權編輯、own=僅限自己上架的作品（雲端 roles 決定） */
 let myRole = 'owner';
 function canTouch(d) { return myRole !== 'own' || !d.by || (window.Cloud && d.by === Cloud.uid); }
@@ -919,7 +929,7 @@ function makeWallArt(d, tex) {
   panel.position.z = stickerText ? 0.004 : (frameStyle === 'none') ? 0.015 : 0.06; group.add(panel); group.userData.panel = panel;
   build3DFrame(group, sz.w, sz.h, frameStyle);
   // 美術館畫作打光：牆面柔和光暈＋上方燈條
-  if (d.type !== 'text') {
+  if (d.type !== 'text' && STYLE.artBar !== false && !d.noBar) {   // 畫作光暈＋燈條（設定檔展覽可整體關閉）
     const glowTex = cachedTex('artglow', 256, 256, (g, w, h) => { g.clearRect(0, 0, w, h); const gr = g.createRadialGradient(128, 118, 10, 128, 118, 128); gr.addColorStop(0, 'rgba(255,248,230,0.42)'); gr.addColorStop(0.55, 'rgba(255,248,230,0.14)'); gr.addColorStop(1, 'rgba(255,248,230,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, h); });
     const glow = new THREE.Mesh(new THREE.PlaneGeometry(sz.w * 2.1, sz.h * 2.3), new THREE.MeshBasicMaterial({ map: glowTex, transparent: true, depthWrite: false }));
     glow.position.set(0, sz.h * 0.12, -0.08); group.add(glow);
@@ -1030,7 +1040,7 @@ function rebuildObstacles() {
       const rows = T > 0.6 ? [-(T / 2 - 0.22), T / 2 - 0.22] : [0];
       for (let lx = -L / 2 + 0.2; lx <= L / 2 - 0.2 + 1e-6; lx += 0.4) {
         if ((d.gaps || []).some(gp => Math.abs(lx - ((gp.at ?? L / 2) - L / 2)) < (gp.w || 1.6) / 2 - 0.05)) continue;
-        for (const lz of rows) obstacles.push({ x: (d.x || 0) + lx * c + lz * si, z: (d.z || 0) - lx * si + lz * c, r: T > 0.6 ? 0.26 : 0.18 });   // 薄牆用小半徑，繞行通道才過得去
+        for (const lz of rows) obstacles.push({ x: (d.x || 0) + lx * c + lz * si, z: (d.z || 0) - lx * si + lz * c, r: T > 0.6 ? 0.26 : 0.14 });   // 薄牆用小半徑，繞行通道才過得去
       }
       continue;
     }
@@ -1101,7 +1111,7 @@ const commentList = document.getElementById('commentList'), cName = document.get
 let infoItemId = null;
 const KIND = { image: '圖片', text: '文字', video: '影片', model: '立體物件', prop: '立體作品', light: '燈具', hotspot: '彩蛋' };
 const NONINTERACTIVE = { prop: 1, light: 1 };   // 觀展時不可點開（無介紹）
-function isInteractive(d) { return !!d && (!NONINTERACTIVE[d.type] || (d.type === 'prop' && !!(d.description && d.description.trim()))); }   // 有說明的道具（展台上的立體作品）也可點、可導覽
+function isInteractive(d) { return !!d && !d.noInfo && (!NONINTERACTIVE[d.type] || (d.type === 'prop' && !!(d.description && d.description.trim()))); }   // 有說明的道具（展台上的立體作品）也可點、可導覽；noInfo 的展品不彈視窗
 function likedKey(id) { return `liked:${EX.id}:${id}`; }
 function renderReactions(id) {
   const r = Store.getReactions(EX.id, id); likeCount.textContent = r.likes;
@@ -1285,6 +1295,13 @@ function renderEditPanel(i) {
         <div class="ph">${d.shape === 'hang_screen' ? '圖會顯示在懸吊螢幕的畫面上。' : '圖會直接印在透明壓克力板中央，不用另外掛畫。'}</div>`;
     }
     if (d.shape && d.shape.startsWith('glb:')) { const gi = GLB_INFO[d.shape.slice(4)] || {}; if (!gi.ceiling) f += rangeRow('離地高度（放展台就調高）', 'y', d.y ?? (gi.y || 0), 0, 3, 0.05); }
+    /* 參數化基礎件的尺寸欄位 */
+    if (d.shape === 'wall') { f += rangeRow('長度', 'len', d.len ?? 4, 0.5, 30, 0.1) + rangeRow('高度', 'h', d.h ?? 3, 0.5, 8, 0.1) + rangeRow('厚度', 't', d.t ?? 0.2, 0.1, 1.5, 0.05); }
+    if (d.shape === 'slab') { f += rangeRow('寬', 'w', d.w ?? 4, 0.1, 30, 0.1) + rangeRow('深', 'd', d.d ?? 4, 0.1, 30, 0.1) + rangeRow('厚', 't', d.t ?? 0.25, 0.01, 2, 0.01) + rangeRow('底面離地', 'y', d.y ?? 0, 0, 8, 0.05); }
+    if (d.shape === 'pod') { f += rangeRow('寬', 'w', d.w ?? 1.4, 0.2, 6, 0.05) + rangeRow('高', 'h', d.h ?? 0.45, 0.1, 3, 0.05) + rangeRow('深', 'd', d.d ?? 0.55, 0.2, 6, 0.05) + rangeRow('圓角', 'r', d.r ?? 0.2, 0.02, 1.5, 0.02); }
+    if (d.shape === 'cyl') { f += rangeRow('半徑', 'r', d.r ?? 0.5, 0.1, 4, 0.05) + rangeRow('高', 'h', d.h ?? 0.8, 0.1, 4, 0.05); }
+    if (d.shape === 'orb') { f += rangeRow('離地高度', 'y', d.y ?? 1.5, 0, 4, 0.05); }
+    if (d.shape === 'disc') { f += rangeRow('直徑', 'dia', d.dia ?? 0.4, 0.2, 3, 0.05); }
     if (MAT_PROPS[d.shape]) f += `<label>材質</label><div class="seg" id="matSeg">${MAT_OPTS.map(([v, n]) => `<button data-pmat="${v}" class="${(d.mat || '') === v ? 'sel' : ''}">${n}</button>`).join('')}</div>`;
     f += rangeRow('大小', 'scale', d.scale ?? 1, 0.4, 3, 0.1); f += rangeRow('旋轉', 'rot', d.rot ?? 0, 0, 360, 15);
     f += `<label>主色</label><input type="color" data-ef="color" value="${d.color || '#e8e5dd'}">`;
@@ -1893,6 +1910,6 @@ if (EX.id) {
   }, 800);
 }
 </script>
-<script type="module" src="js/cloud.js?v=20260928"></script>
+<script type="module" src="js/cloud.js?v=20260929"></script>
 </body>
 </html>

@@ -72,7 +72,8 @@
     for (const b of (plan.boards || [])) {
       const m = mountOn(b.on || {}); if (!m) continue;
       const size = { w: (b.size || [1.2, 0.8])[0], h: (b.size || [1.2, 0.8])[1] };
-      const base = { id: b.id, title: b.label || b.id, description: L(b.text, lang), size, frame: 'none', mount: { p: m.p, ry: m.ry }, zone: b.zone, src: b.src || '', meta: b };
+      // noInfo：階段三接互動前，展品不彈出說明視窗（b.interactive=true 可個別打開）
+      const base = { id: b.id, title: b.label || b.id, description: L(b.text, lang), size, frame: 'none', mount: { p: m.p, ry: m.ry }, zone: b.zone, src: b.src || '', meta: b, noInfo: !b.interactive };
       if (b.kind === 'text') items.push(Object.assign(base, { type: 'text', textStyle: b.style || 'vinyl', title: L(b.title, lang) || '', description: L(b.text, lang) || base.title }));
       else if (b.kind === 'audio') items.push({ id: b.id, type: 'prop', shape: 'orb', x: m.p[0], z: m.p[2], y: b.on.y ?? 1.5, emis: pal.accent, title: b.label || b.id, description: L(b.text, lang), zone: b.zone, meta: b });
       else items.push(Object.assign(base, { type: 'image', color: b.kind === 'video' ? pal.dark : (b.color || pal.board), flat: true }));
@@ -106,7 +107,7 @@
     return {
       id: 'plan_' + (plan.id || 'ex'), plan, lang,
       title: L(plan.title, lang), description: L(plan.description, lang),
-      style: Object.assign({ hdri: 'none', floorTex: 'plain', frameDefault: 'none', font: 'serif', sun: H.sun ?? 1.6, sunAzimuth: H.sunAzimuth ?? 200, sunElev: H.sunElev ?? 72, moodWarm: 50, moodBright: 100, wallColors: {} }, plan.style || {}),
+      style: Object.assign({ hdri: 'none', floorTex: 'plain', frameDefault: 'none', font: 'serif', artBar: false, sun: H.sun ?? 1.6, sunAzimuth: H.sunAzimuth ?? 200, sunElev: H.sunElev ?? 72, moodWarm: 50, moodBright: 100, wallColors: {} }, plan.style || {}),
       rooms: [{ id: 'hall', name: L(plan.title, lang), template: 'white', dims, items }],
       start: { x: sx, z: sz, lookAt: { x: fx, z: fz } },
       comments: plan.comments !== false, published: false

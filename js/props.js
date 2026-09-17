@@ -36,6 +36,9 @@ window.PROPS = {
     { cat: '當代展場', items: [
       ['lightbox', '發光燈箱板'], ['curve_plinth', '流線展島（白）'], ['hang_screen', '懸吊螢幕（可放圖）']
     ]},
+    { cat: '參數化基礎件（尺寸可調）', items: [
+      ['wall', '展牆（長／高／厚／開口）'], ['slab', '板（天花／地面／展台）'], ['pod', '流線量體（椅／台）'], ['cyl', '圓柱（圓桌／火盆）'], ['orb', '發光小點'], ['disc', '地面發光圓']
+    ]},
     { cat: '動線', items: [['doorway', '門戶（通往其他房間）']] },
     { cat: '牆體／隔間', items: [['wall_seg', '直牆段'], ['wall_arch', '拱門牆（可穿越）'], ['wall_door', '門洞牆（可穿越）']] },
     { cat: '傢俱', items: [
@@ -230,10 +233,26 @@ window.PROPS = {
         break;
       }
       case 'cyl': {
-        // 圓柱：r 半徑、h 高、底面離地 y（圓桌、火盆、圓形展台）
+        // 圓柱：r 半徑、h 高、底面離地 y（圓桌、火盆、圓形展台）；soft=true 用流線無縫白材質＋圓角上緣
         const d = opts.d || {}; const r = d.r || 0.5, h = d.h || 0.8;
-        const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, 48), prim); m.position.y = (d.y || 0) + h / 2;
+        const softM = new THREE.MeshPhysicalMaterial({ color: primary, roughness: 0.32, metalness: 0, clearcoat: 0.25, clearcoatRoughness: 0.4 });
+        const mat = d.soft ? softM : prim;
+        const rr = d.soft ? Math.min(0.18, h * 0.3) : 0;
+        const m = new THREE.Mesh(new THREE.CylinderGeometry(r - rr, r, h - rr, 64), mat); m.position.y = (d.y || 0) + (h - rr) / 2;
         m.castShadow = true; m.receiveShadow = true; g.add(m);
+        if (rr > 0) {   // 圓角上緣：環＋頂面
+          const tor = new THREE.Mesh(new THREE.TorusGeometry(r - rr, rr, 14, 64), mat); tor.rotation.x = Math.PI / 2; tor.position.y = (d.y || 0) + h - rr; tor.castShadow = true; g.add(tor);
+          const top = new THREE.Mesh(new THREE.CircleGeometry(r - rr, 64), mat); top.rotation.x = -Math.PI / 2; top.position.y = (d.y || 0) + h; g.add(top);
+        }
+        break;
+      }
+      case 'pod': {
+        // 流線無縫量體：大圓角的白色軟形（長椅、展台、火盆等都用這個語彙）；w×h×d，圓角 r
+        const d = opts.d || {}; const W = d.w || 1.4, H = d.h || 0.45, D = d.d || 0.55;
+        const r = Math.min(d.r ?? 0.2, W / 2, H / 2, D / 2);
+        const soft = new THREE.MeshPhysicalMaterial({ color: primary, roughness: 0.32, metalness: 0, clearcoat: 0.25, clearcoatRoughness: 0.4 });
+        const geo = RBG ? new RBG(W, H, D, 5, r) : new THREE.BoxGeometry(W, H, D);
+        const m = new THREE.Mesh(geo, soft); m.position.y = (d.y || 0) + H / 2; m.castShadow = true; m.receiveShadow = true; g.add(m);
         break;
       }
       case 'orb': {
