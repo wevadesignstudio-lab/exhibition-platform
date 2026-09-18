@@ -144,11 +144,11 @@
   </aside>
 </div>
 
-<script src="js/dialog.js?v=20260929"></script>
-<script src="js/store.js?v=20260929"></script>
-<script src="js/auth.js?v=20260929"></script>
-<script src="js/templates.js?v=20260929"></script>
-<script src="js/props.js?v=20260929"></script>
+<script src="js/dialog.js?v=20260932"></script>
+<script src="js/store.js?v=20260932"></script>
+<script src="js/auth.js?v=20260932"></script>
+<script src="js/templates.js?v=20260932"></script>
+<script src="js/props.js?v=20260932"></script>
 <script>
 Auth.requireOrRedirect();
 const params = new URLSearchParams(location.search);
@@ -165,8 +165,8 @@ let room = ex.rooms[roomSel];
 ex.items = room.items;          // 別名：下方程式都用 ex.items / ex.template 指向當前房間
 Object.defineProperty(ex, 'template', { get() { return room.template; }, set(v) { room.template = v; }, configurable: true });
 
-document.getElementById('previewBtn').href = 'view.html?id=' + exId + '&mode=tour&v=20260929';
-document.getElementById('edit3dBtn').href = 'view.html?id=' + exId + '&edit=1&v=20260929';
+document.getElementById('previewBtn').href = 'view.html?id=' + exId + '&mode=tour&v=20260932';
+document.getElementById('edit3dBtn').href = 'view.html?id=' + exId + '&edit=1&v=20260932';
 
 /* ---- 儲存（防抖）---- */
 let saveTimer = null;
@@ -416,6 +416,6 @@ renderItems();
 drawPlan();
 addEventListener('resize', drawPlan);
 </script>
-<script type="module" src="js/cloud.js?v=20260929"></script>
+<script type="module" src="js/cloud.js?v=20260932"></script>
 </body>
 </html>

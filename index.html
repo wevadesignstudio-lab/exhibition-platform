@@ -411,17 +411,17 @@
   </div>
 </div>
 
-<script src="js/site.js?v=20260929"></script>
-<script src="js/dialog.js?v=20260929"></script>
-<script src="js/store.js?v=20260929"></script>
-<script src="js/auth.js?v=20260929"></script>
-<script src="js/templates.js?v=20260929"></script>
-<script src="js/starter.js?v=20260929"></script>
-<script src="js/plan.js?v=20260929"></script>
+<script src="js/site.js?v=20260932"></script>
+<script src="js/dialog.js?v=20260932"></script>
+<script src="js/store.js?v=20260932"></script>
+<script src="js/auth.js?v=20260932"></script>
+<script src="js/templates.js?v=20260932"></script>
+<script src="js/starter.js?v=20260932"></script>
+<script src="js/plan.js?v=20260932"></script>
 <script>
 const authView = document.getElementById('authView');
 const dashView = document.getElementById('dashView');
-const VER = '20260929';   // 連結帶版本，避免 CDN 提供舊頁面
+const VER = '20260932';   // 連結帶版本，避免 CDN 提供舊頁面
 
 function fmtDate(ts) { if (!ts) return '—'; const d = new Date(ts); return `${d.getFullYear()}.${(d.getMonth()+1)}.${d.getDate()}`; }
 function thumbColor(tpl) { return (TEMPLATES[tpl]?.room.wallColor) || '#dedbd2'; }
@@ -1032,6 +1032,6 @@ document.getElementById('importPlanBtn').onclick = async () => {
   } catch (e) { UI.alert('匯入失敗：' + (e.message || e)); }
 };
 </script>
-<script type="module" src="js/cloud.js?v=20260929"></script>
+<script type="module" src="js/cloud.js?v=20260932"></script>
 </body>
 </html>

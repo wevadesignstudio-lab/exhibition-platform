@@ -95,8 +95,18 @@
   .delBtn:hover { background: #8c3b34; border-color: #8c3b34; color: #fff; }
 
   #reactBox { margin-top: 24px; border-top: 1px solid var(--phair); padding-top: 18px; }
-  #likeBtn { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; letter-spacing: 1px; padding: 8px 18px; border-radius: 2px; border: 1px solid var(--pline); background: transparent; color: var(--pink); cursor: pointer; font-family: inherit; transition: background .2s, border-color .2s; }
-  #likeBtn.liked { background: rgba(140,59,52,.08); border-color: #8c3b34; color: #8c3b34; }
+  /* 作品視窗：正中央彈出（預設只有媒體；有設定說明時才顯示文字與留言） */
+  #info.panel { left: 0; right: 0; top: 0; bottom: 0; width: auto; transform: none; background: rgba(26,25,22,.6); backdrop-filter: blur(4px); border: none; padding: 24px; display: none; align-items: center; justify-content: center; overflow: hidden; }
+  #info.panel.open { display: flex; }
+  #info .icard { position: relative; background: rgba(250,248,244,.98); border: 1px solid var(--pline); max-width: 860px; width: 100%; max-height: 92vh; overflow-y: auto; padding: 30px 32px 26px; box-shadow: 0 40px 100px rgba(0,0,0,.45); }
+  #info .media { margin-top: 0; border: none; background: transparent; text-align: center; }
+  #info .media img, #info .media video { max-height: 72vh; width: auto; max-width: 100%; margin: 0 auto; object-fit: contain; background: #000; }
+  #info .media:empty { display: none; }
+  #info .kind, #info h2 { margin-right: 44px; }
+  #info.mediaOnly .kind, #info.mediaOnly h2, #info.mediaOnly .body { display: none; }
+  #info.mediaOnly .icard { padding: 22px; background: rgba(26,25,22,.92); border-color: rgba(255,255,255,.15); }
+  #info.mediaOnly .close { border-color: rgba(255,255,255,.35); color: #f7f5f0; }
+  #info .media + .body:not(:empty) { margin-top: 18px; }
   #commentList { margin-top: 18px; display: flex; flex-direction: column; gap: 0; }
   #commentList .c { border-top: 1px solid var(--phair); padding: 12px 2px; }
   #commentList .c .n { font-size: 11px; color: var(--gold); letter-spacing: 2px; }
@@ -176,17 +186,18 @@
 </div>
 
 <aside id="info" class="panel">
+  <div class="icard">
   <button class="close">✕</button>
   <span class="kind"></span><h2></h2>
   <div class="media"></div><div class="body"></div>
   <div id="reactBox">
-    <button id="likeBtn">♡ <span id="likeCount">0</span></button>
     <div id="commentList"></div>
     <div class="cForm">
       <input id="cName" placeholder="你的名字（選填）" maxlength="24">
       <textarea id="cText" placeholder="留個言給策展人或其他觀眾…" maxlength="300"></textarea>
       <button id="cSend">送出留言</button>
     </div>
+  </div>
   </div>
 </aside>
 
@@ -240,14 +251,14 @@
   </div>
 </div>
 
-<script src="js/site.js?v=20260929"></script>
-<script src="js/dialog.js?v=20260929"></script>
-<script src="js/store.js?v=20260929"></script>
-<script src="js/auth.js?v=20260929"></script>
-<script src="js/templates.js?v=20260929"></script>
-<script src="js/props.js?v=20260929"></script>
-<script src="js/starter.js?v=20260929"></script>
-<script src="js/plan.js?v=20260929"></script>
+<script src="js/site.js?v=20260932"></script>
+<script src="js/dialog.js?v=20260932"></script>
+<script src="js/store.js?v=20260932"></script>
+<script src="js/auth.js?v=20260932"></script>
+<script src="js/templates.js?v=20260932"></script>
+<script src="js/props.js?v=20260932"></script>
+<script src="js/starter.js?v=20260932"></script>
+<script src="js/plan.js?v=20260932"></script>
 
 <script type="importmap">
 { "imports": {
@@ -438,7 +449,7 @@ let hdrLoaded = null, envSunScale = 1;
 function loadHDRI(key) {
   if (key === 'none') {   // 全封閉展場：不下載全景（省 6MB），用內建室內環境光＋純色背景
     scene.background = new THREE.Color(R.wallColor || '#f6f4ee'); sky.visible = false; hdrLoaded = 'none';
-    envSunScale = 1; hemi.intensity = R.ambient ?? 0.55; placeSun(); setOutdoorFallback(false); return;
+    envSunScale = 1; hemiBase = R.ambient ?? 0.55; bgBase = new THREE.Color(R.wallColor || '#f6f4ee'); placeSun(); setOutdoorFallback(false); return;
   }
   if (!HDRIS[key]) key = 'park';   // 舊資料的「日夜自動／原野」一律回到白天
   const h = HDRIS[key];
@@ -447,7 +458,7 @@ function loadHDRI(key) {
     scene.environment = pmrem.fromEquirectangular(tex).texture;
     scene.background = tex; scene.backgroundIntensity = 1.0; sky.visible = false; hdrLoaded = key;
     envSunScale = h.night ? 0.3 : 1;                         // 夜晚：太陽轉月光，但保留可視度
-    hemi.intensity = (R.ambient ?? 0.55) * (h.night ? 0.55 : 1);
+    hemiBase = (R.ambient ?? 0.55) * (h.night ? 0.55 : 1); bgBase = null;
     placeSun();
     setOutdoorFallback(false);
   }, undefined, () => { console.warn('HDRI 載入失敗，使用程序天空'); setOutdoorFallback(true); });
@@ -507,11 +518,12 @@ window.__dbg = { avatar, camera, scene, loadHDRI: (k) => loadHDRI(k) };   // 除
 
 /* ===== 自然光（建立一次，換房間時更新）===== */
 const hemi = new THREE.HemisphereLight('#cfe0f5', new THREE.Color(R.floorColor), R.ambient ?? 0.55); scene.add(hemi);
+let hemiBase = 0.55, bgBase = null; const ceilMats = [];   // 環境光基準（applyMood 依 STYLE.envLight 縮放）
 scene.add(new THREE.AmbientLight('#ffffff', 0.12));
 const sun = new THREE.DirectionalLight('#fff3df', STYLE.sun);
 sun.castShadow = true;
 sun.shadow.mapSize.set(isTouch ? 1024 : 2048, isTouch ? 1024 : 2048);
-sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02;
+sun.shadow.bias = -0.00025; sun.shadow.normalBias = 0.05;   // 抑制牆腳鋸齒與自陰影閃爍
 sun.shadow.camera.near = 0.5; sun.shadow.camera.far = 40;
 scene.add(sun); scene.add(sun.target);
 function placeSun() {
@@ -551,6 +563,15 @@ function applyMood() {
   const warm = (STYLE.moodWarm ?? 50) / 100;                 // 0 冷 – 1 暖
   const bright = (STYLE.moodBright ?? 100) / 100;
   renderer.toneMappingExposure = 1.05 * bright;              // 基準曝光 1.05
+  /* 環境光：0 = 全暗（只剩燈具與自發光），100 = 正常。作用在天光、太陽、天花板發光與背景 */
+  const a = Math.max(0, Math.min(1, (STYLE.envLight ?? 100) / 100));
+  hemi.intensity = hemiBase * a;
+  sun.intensity = STYLE.sun * envSunScale * a;
+  for (const c of ceilMats) c.m.emissiveIntensity = c.base * a;
+  if (scene.background && scene.background.isColor && bgBase) scene.background.copy(bgBase).multiplyScalar(a);
+  else if (scene.background && scene.background.isTexture) scene.backgroundIntensity = a;
+  /* 環境反射光（HDRI／室內環境貼圖）是主要照明來源：一併縮放，0 時才會真的全暗只剩燈具與自發光 */
+  scene.traverse(o => { if (o.isMesh && o.material && !Array.isArray(o.material) && 'envMapIntensity' in o.material) { const m = o.material; if (m.userData.envBase == null) m.userData.envBase = m.envMapIntensity; m.envMapIntensity = m.userData.envBase * a; } });
   const cold = new THREE.Color('#cfe0f5'), mid = new THREE.Color('#ffffff'), hot = new THREE.Color('#ffd9a0');
   const w = warm < 0.5 ? cold.lerp(mid, warm * 2) : mid.lerp(hot, (warm - 0.5) * 2);
   const tint = new THREE.Color(STYLE.moodColor || '#ffffff');
@@ -563,7 +584,7 @@ function buildRoomGeometry() {
   while (roomGroup.children.length) roomGroup.remove(roomGroup.children[0]);
   wallMeshes.length = 0;
   R = roomDims(); hw = R.width / 2; hd = R.depth / 2;
-  hemi.groundColor.set(R.floorColor); hemi.intensity = R.ambient ?? 0.55;
+  hemi.groundColor.set(R.floorColor); hemiBase = (R.ambient ?? 0.55) * (hdrLoaded === 'night' ? 0.55 : 1); ceilMats.length = 0;
   const span = Math.max(hw, hd) + 3, sc = sun.shadow.camera; sc.left = -span; sc.right = span; sc.top = span; sc.bottom = -span; sc.updateProjectionMatrix();
   let floorMat;
   const floorKind = (STYLE.floorTex && STYLE.floorTex !== 'auto') ? STYLE.floorTex : (['wood', 'tatami', 'darkwood', 'carpet', 'gloss'].includes(R.floorType) ? R.floorType : 'plain');
@@ -624,7 +645,7 @@ function buildRoomGeometry() {
     roomGroup.add(sp); roomGroup.add(sp.target);
   } else if (R.plain) {
     // ── 素面天花（設定檔展覽用）：整片均勻微發光，無天窗、無光斑；各區高度差由 slab 板另做 ──
-    const pc = new THREE.Mesh(new THREE.PlaneGeometry(R.width, R.depth), new THREE.MeshStandardMaterial({ color: R.ceilingColor, roughness: 1, emissive: new THREE.Color(R.ceilingColor), emissiveIntensity: R.ceilingGlow ?? 0.55 }));
+    const pc = new THREE.Mesh(new THREE.PlaneGeometry(R.width, R.depth), new THREE.MeshStandardMaterial({ color: R.ceilingColor, roughness: 1, emissive: new THREE.Color(R.ceilingColor), emissiveIntensity: R.ceilingGlow ?? 0.55 })); ceilMats.push({ m: pc.material, base: R.ceilingGlow ?? 0.55 });
     pc.rotation.x = Math.PI / 2; pc.position.y = R.height; roomGroup.add(pc);
   } else if (R.dark) {
     // ── 設計黑盒：深色外露天花＋黑色軌道管線＋暖白投射光 ──
@@ -642,7 +663,7 @@ function buildRoomGeometry() {
     }
   } else if (R.ribbed) {
     // ── 純白實驗場：白色肋條天花＋均勻明亮＋軌道投射 ──
-    const rc = new THREE.Mesh(new THREE.PlaneGeometry(R.width, R.depth), new THREE.MeshStandardMaterial({ color: R.ceilingColor, roughness: 1, emissive: new THREE.Color(R.ceilingColor), emissiveIntensity: 0.5 }));
+    const rc = new THREE.Mesh(new THREE.PlaneGeometry(R.width, R.depth), new THREE.MeshStandardMaterial({ color: R.ceilingColor, roughness: 1, emissive: new THREE.Color(R.ceilingColor), emissiveIntensity: 0.5 })); ceilMats.push({ m: rc.material, base: 0.5 });
     rc.rotation.x = Math.PI / 2; rc.position.y = R.height; roomGroup.add(rc);
     const ribM = new THREE.MeshStandardMaterial({ color: '#fbfaf7', roughness: 0.9 });
     const ribGeo = new THREE.BoxGeometry(R.width, 0.1, 0.05);
@@ -658,7 +679,7 @@ function buildRoomGeometry() {
     }
   } else {
   const ow = R.width * 0.4, od = R.depth * 0.48;
-  const ceilMat = new THREE.MeshStandardMaterial({ color: R.ceilingColor, roughness: 1, emissive: new THREE.Color(R.ceilingColor), emissiveIntensity: 0.38 });
+  const ceilMat = new THREE.MeshStandardMaterial({ color: R.ceilingColor, roughness: 1, emissive: new THREE.Color(R.ceilingColor), emissiveIntensity: 0.38 }); ceilMats.push({ m: ceilMat, base: 0.38 });
   const ceilStrip = (w, d, x, z) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), ceilMat); m.rotation.x = Math.PI / 2; m.position.set(x, R.height, z); m.receiveShadow = true; m.castShadow = true; roomGroup.add(m); };
   ceilStrip(R.width, hd - od / 2, 0, -(hd + od / 2) / 2); ceilStrip(R.width, hd - od / 2, 0, (hd + od / 2) / 2);
   ceilStrip(hw - ow / 2, od, -(hw + ow / 2) / 2, 0); ceilStrip(hw - ow / 2, od, (hw + ow / 2) / 2, 0);
@@ -935,8 +956,6 @@ function makeWallArt(d, tex) {
     const glowTex = cachedTex('artglow', 256, 256, (g, w, h) => { g.clearRect(0, 0, w, h); const gr = g.createRadialGradient(128, 118, 10, 128, 118, 128); gr.addColorStop(0, 'rgba(255,248,230,0.42)'); gr.addColorStop(0.55, 'rgba(255,248,230,0.14)'); gr.addColorStop(1, 'rgba(255,248,230,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, h); });
     const glow = new THREE.Mesh(new THREE.PlaneGeometry(sz.w * 2.1, sz.h * 2.3), new THREE.MeshBasicMaterial({ map: glowTex, transparent: true, depthWrite: false }));
     glow.position.set(0, sz.h * 0.12, -0.08); group.add(glow);
-    const bar = roundedBox(Math.min(sz.w * 0.7, 1.4), 0.035, 0.09, new THREE.MeshStandardMaterial({ color: '#f0efeb', emissive: '#fff3d6', emissiveIntensity: 0.9, roughness: 0.5 }), 0.012);
-    bar.position.set(0, sz.h / 2 + 0.26, 0.04); group.add(bar);
   }
   if (d.mount) { group.position.set(d.mount.p[0], d.mount.p[1], d.mount.p[2]); group.rotation.y = d.mount.ry; }
   else { const slot = wallSlot(d.wall || 'north', d.offset || 0, d.height ?? 1.7); group.position.set(...slot.pos); group.rotation.y = slot.ry; }
@@ -954,7 +973,7 @@ function buildItem(d, i) {
     let tex;
     if (d.type === 'image') tex = d.src ? texLoader.load(AS(d.src), t => { t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = MAX_ANISO; }, undefined, () => showToast('「' + (d.title || '圖片') + '」的圖片載入失敗：此網址不允許跨網域使用（Notion／Google Drive 等都不行）。請改用「上傳檔案」，或把圖放進 assets/img/ 後填 assets/img/檔名。', 9000)) : placeholderTexture(d.title, d.color, !!d.flat);
     else if (d.type === 'text') tex = textMaterial(d.title, d.description || '', d.textStyle || 'board', d.textColor);
-    else { if (d.src) { const v = document.createElement('video'); v.src = d.src; v.crossOrigin = 'anonymous'; v.loop = true; v.muted = true; v.playsInline = true; v.play().catch(() => {}); d._video = v; tex = new THREE.VideoTexture(v); tex.colorSpace = THREE.SRGBColorSpace; } else tex = placeholderTexture('▶  影片展品', '#444'); }
+    else { if (d.src) { const v = document.createElement('video'); v.src = d.src; v.crossOrigin = 'anonymous'; v.loop = d.loop !== false; v.muted = true; v.playsInline = true; if (d.autoplay !== false) v.play().catch(() => {}); d._video = v; tex = new THREE.VideoTexture(v); tex.colorSpace = THREE.SRGBColorSpace; } else tex = placeholderTexture('▶  影片展品', '#444'); }
     group = makeWallArt(d, tex);
     if (d.type === 'video') group.userData.panel.material.emissive = new THREE.Color('#111');
   } else if (d.type === 'model') {
@@ -988,7 +1007,7 @@ function buildItem(d, i) {
         img.position.set(0, 1.5, 0.026); group.add(img);
       }, undefined, () => showToast('懸吊螢幕的圖片載入失敗：請改用「上傳檔案」或 assets/img/ 路徑。', 7000));
     }
-    group.position.set(d.x || 0, 0, d.z || 0); group.rotation.y = (d.rot || 0) * Math.PI / 180;
+    group.position.set(d.x || 0, (!['slab', 'cyl', 'orb', 'disc', 'pod', 'wall'].includes(d.shape) && !(d.shape || '').startsWith('glb:') && !CEILING_PROP[d.shape]) ? (d.y || 0) : 0, d.z || 0); group.rotation.y = (d.rot || 0) * Math.PI / 180;
     if (!CEILING_PROP[d.shape]) group.scale.setScalar(d.scale || 1);   // 天花板物件不縮放（否則高度會跑掉）
     if (!CEILING_PROP[d.shape] && d.shape !== 'doorway') { const br = propRadius(d.shape); if (br > 0.05) addBlob(group, br); }   // 接觸陰影暈
     if (MOUNTABLE_PROP[d.shape]) group.userData.mountable = true;       // 可掛展品的結構（隔板等）
@@ -1005,6 +1024,11 @@ function buildItem(d, i) {
     if (up) {   // 上照燈：地面小圓筒
       const can = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.11, 0.12, 16), metal); can.position.y = 0.06; can.castShadow = true; group.add(can);
       const lens = new THREE.Mesh(new THREE.CircleGeometry(0.07, 16), new THREE.MeshStandardMaterial({ color: '#222', emissive: d.color || '#fff4e0', emissiveIntensity: 2.4 })); lens.position.y = 0.125; lens.rotation.x = -Math.PI / 2; group.add(lens);
+    } else if (kind === 'proj') {   // 投影機：本體＋鏡頭，把圖片／影片投在對準的牆面
+      const body = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.13, 0.28), metal); body.position.y = -0.065; body.castShadow = true; group.add(body);
+      const nd = dir.clone().normalize();
+      const lens = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.05, 0.06, 18), new THREE.MeshStandardMaterial({ color: '#111', emissive: '#dfe8ff', emissiveIntensity: 1.6, roughness: 0.3 }));
+      lens.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), nd); lens.position.copy(nd.clone().multiplyScalar(0.17)).add(new THREE.Vector3(0, -0.065, 0)); group.add(lens);
     } else {
       const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.3, 8), metal); arm.position.y = 0.15; group.add(arm);
       const headG = new THREE.Group();
@@ -1015,9 +1039,16 @@ function buildItem(d, i) {
     }
     if (lightCount < LIGHT_CAP) {
       lightCount++;
-      const ang = (d.angle ?? (kind === 'wash' ? 62 : kind === 'up' ? 45 : 32)) * Math.PI / 180;
-      const pen = kind === 'wash' ? 0.85 : kind === 'up' ? 0.6 : 0.45;
-      const sp = new THREE.SpotLight(d.color || '#fff4e0', d.intensity ?? 6, 20, ang, pen, 1.1);
+      const isProj = kind === 'proj';
+      const ang = (d.angle ?? (isProj ? 22 : kind === 'wash' ? 62 : kind === 'up' ? 45 : 32)) * Math.PI / 180;
+      const pen = isProj ? 0.03 : kind === 'wash' ? 0.85 : kind === 'up' ? 0.6 : 0.45;
+      const sp = new THREE.SpotLight(d.color || (isProj ? '#ffffff' : '#fff4e0'), d.intensity ?? (isProj ? 18 : 6), isProj ? 40 : 20, ang, pen, isProj ? 0.5 : 1.1);
+      if (isProj && d.src) {   // 投影內容：SpotLight.map（需 castShadow 才會投影）
+        sp.castShadow = true; sp.shadow.mapSize.set(1024, 1024); sp.shadow.bias = -0.0004; sp.shadow.normalBias = 0.03;
+        const isVid = d.mediaType === 'video' || /\.(mp4|webm|m3u8|mov|ogv)(\?|$)/i.test(d.src) || d.src.startsWith('data:video');
+        if (isVid) { const v = document.createElement('video'); v.src = AS(d.src); v.crossOrigin = 'anonymous'; v.loop = d.loop !== false; v.muted = true; v.playsInline = true; v.play().catch(() => {}); d._video = v; const vt = new THREE.VideoTexture(v); vt.colorSpace = THREE.SRGBColorSpace; sp.map = vt; }
+        else { const t = texLoader.load(AS(d.src)); t.colorSpace = THREE.SRGBColorSpace; sp.map = t; }
+      }
       sp.position.set(0, up ? 0.12 : 0, 0); sp.target.position.copy(dir.clone().multiplyScalar(4)); group.add(sp); group.add(sp.target);
     }
   } else if (d.type === 'hotspot') {
@@ -1061,7 +1092,7 @@ function rebuildObstacles() {
     if (r > 0.05) obstacles.push({ x: d.x || 0, z: d.z || 0, r });
   }
 }
-function rebuildAll() { for (const g of built) if (g) scene.remove(g); built.length = 0; interactables.length = 0; animated.length = 0; pulses.length = 0; lightCount = 0; (EX.items || []).forEach((d, i) => buildItem(d, i)); rebuildObstacles(); }
+function rebuildAll() { for (const g of built) if (g) scene.remove(g); built.length = 0; interactables.length = 0; animated.length = 0; pulses.length = 0; lightCount = 0; (EX.items || []).forEach((d, i) => buildItem(d, i)); rebuildObstacles(); if ((STYLE.envLight ?? 100) < 100) applyMood(); }
 rebuildAll();
 const PLAYER_R = 0.34;
 function blocked(x, z) { for (const o of obstacles) { const dx = x - o.x, dz = z - o.z, rr = o.r + PLAYER_R; if (dx * dx + dz * dz < rr * rr) return true; } return false; }
@@ -1108,7 +1139,7 @@ function pickIndex(coords, maxDist) {
 
 /* ===== 資訊面板 + 互動 ===== */
 const infoEl = document.getElementById('info'), reactBox = document.getElementById('reactBox');
-const likeBtn = document.getElementById('likeBtn'), likeCount = document.getElementById('likeCount');
+
 const commentList = document.getElementById('commentList'), cName = document.getElementById('cName'), cText = document.getElementById('cText'), cSend = document.getElementById('cSend');
 let infoItemId = null;
 const KIND = { image: '圖片', text: '文字', video: '影片', model: '立體物件', prop: '立體作品', light: '燈具', hotspot: '彩蛋' };
@@ -1116,30 +1147,29 @@ const NONINTERACTIVE = { prop: 1, light: 1 };   // 觀展時不可點開（無�
 function isInteractive(d) { return !!d && !d.noInfo && (!NONINTERACTIVE[d.type] || (d.type === 'prop' && !!(d.description && d.description.trim()))); }   // 有說明的道具（展台上的立體作品）也可點、可導覽；noInfo 的展品不彈視窗
 function likedKey(id) { return `liked:${EX.id}:${id}`; }
 function renderReactions(id) {
-  const r = Store.getReactions(EX.id, id); likeCount.textContent = r.likes;
-  const liked = localStorage.getItem(likedKey(id)) === '1';
-  likeBtn.classList.toggle('liked', liked); likeBtn.firstChild.textContent = (liked ? '♥ ' : '♡ ');
+  const r = Store.getReactions(EX.id, id);
   commentList.innerHTML = r.comments.length ? r.comments.slice().reverse().map(c => `<div class="c"><div class="n">${(c.name || '訪客').replace(/</g, '&lt;')}</div><div class="t">${(c.text || '').replace(/</g, '&lt;')}</div></div>`).join('') : `<div class="none">還沒有人留言，當第一個吧。</div>`;
 }
 function openInfo(index) {
   const d = EX.items[index]; if (!isInteractive(d)) return;
+  /* 預設：點擊只放大／播放；策展人填了說明（或勾「顯示說明」）才出現文字與留言 */
+  const hasInfo = !!(d.description && d.description.trim()) || !!d.info;
+  const media = infoEl.querySelector('.media'); media.innerHTML = '';
+  if (d.type === 'video' && d.src) { const v = document.createElement('video'); v.src = AS(d.src); v.controls = true; v.playsInline = true; v.autoplay = true; media.appendChild(v); }
+  else if (d.type === 'image' && d.src) { const img = document.createElement('img'); img.src = AS(d.src); media.appendChild(img); }
+  if (!hasInfo && !media.children.length && d.type !== 'hotspot') return;   // 沒說明也沒媒體 → 不彈
+  infoEl.classList.toggle('mediaOnly', !hasInfo && d.type !== 'hotspot');
   infoEl.classList.add('open'); document.getElementById('editPanel').classList.remove('open'); document.getElementById('scenePanel').classList.remove('open');
-  /* 留言功能由策展人決定是否開放（EX.comments === false 時隱藏） */
-  const cOff = EX.comments === false;
-  document.getElementById('commentList').style.display = cOff ? 'none' : '';
-  const cf = infoEl.querySelector('.cForm'); if (cf) cf.style.display = cOff ? 'none' : '';
   infoEl.querySelector('.kind').textContent = KIND[d.type] || '';
   infoEl.querySelector('h2').textContent = d.title + (d.artist ? ` · ${d.artist}` : '');
   infoEl.querySelector('.body').textContent = d.description || '';
-  const media = infoEl.querySelector('.media'); media.innerHTML = '';
-  if (d.type === 'video' && d.src) { const v = document.createElement('video'); v.src = d.src; v.controls = true; v.playsInline = true; media.appendChild(v); }
-  else if (d.type === 'image' && d.src) { const img = document.createElement('img'); img.src = d.src; media.appendChild(img); }
+  const cOff = EX.comments === false;
   if (d.type === 'hotspot') { reactBox.classList.add('hidden'); if (d.src) { const a = new Audio(d.src); a.play().catch(() => {}); } infoItemId = null; }
-  else if (EX.id) { reactBox.classList.remove('hidden'); infoItemId = d.id; renderReactions(d.id); }
+  else if (hasInfo && !cOff && EX.id) { reactBox.classList.remove('hidden'); infoItemId = d.id; renderReactions(d.id); }
   else { reactBox.classList.add('hidden'); infoItemId = null; }
 }
-infoEl.querySelector('.close').addEventListener('click', () => infoEl.classList.remove('open'));
-likeBtn.addEventListener('click', () => { if (!infoItemId || !EX.id) return; const nl = localStorage.getItem(likedKey(infoItemId)) !== '1'; localStorage.setItem(likedKey(infoItemId), nl ? '1' : '0'); Store.setLike(EX.id, infoItemId, nl); renderReactions(infoItemId); });
+infoEl.querySelector('.close').addEventListener('click', () => { infoEl.classList.remove('open'); infoEl.querySelector('.media').innerHTML = ''; });
+infoEl.addEventListener('mousedown', e => { if (e.target === infoEl) { infoEl.classList.remove('open'); infoEl.querySelector('.media').innerHTML = ''; } });
 cSend.addEventListener('click', () => { if (!infoItemId || !EX.id) return; const t = cText.value.trim(); if (!t) return; const nm = cName.value.trim() || (me ? me.name : '訪客'); if (cName.value.trim()) localStorage.setItem('visitor_name', cName.value.trim()); Store.addComment(EX.id, infoItemId, nm, t); cText.value = ''; renderReactions(infoItemId); });
 cName.value = localStorage.getItem('visitor_name') || (me ? me.name : '');
 
@@ -1263,12 +1293,25 @@ function renderEditPanel(i) {
   document.getElementById('epKind').textContent = KIND[d.type] || '';
   document.getElementById('epHead').textContent = '編輯' + (KIND[d.type] || '展品');
   let f = `<label>標題</label><input type="text" data-ef="title" value="${(d.title || '').replace(/"/g, '&quot;')}">`;
+  /* 位置微調（X／Y／Z 滑桿）：拖曳之外的精準移動 */
+  { const hw2 = R.width / 2, hd2 = R.depth / 2, mx = Math.max(hw2, hd2);
+    if (d.mount) f += `<label>位置微調</label><div class="row"><div>${rangeRow('X', 'mount.p.0', d.mount.p[0], -hw2, hw2, 0.05)}</div><div>${rangeRow('Y 高度', 'mount.p.1', d.mount.p[1], 0.2, R.height - 0.2, 0.05)}</div><div>${rangeRow('Z', 'mount.p.2', d.mount.p[2], -hd2, hd2, 0.05)}</div></div>`;
+    else if (d.type === 'image' || d.type === 'text' || d.type === 'video') f += `<label>位置微調</label><div class="row"><div>${rangeRow('沿牆位置', 'offset', d.offset || 0, -mx, mx, 0.05)}</div><div>${rangeRow('Y 高度', 'height', d.height ?? 1.7, 0.3, R.height - 0.3, 0.05)}</div></div>`;
+    else if (d.type === 'prop' || d.type === 'model' || d.type === 'light' || d.type === 'hotspot') {
+      f += `<label>位置微調</label><div class="row"><div>${rangeRow('X', 'x', d.x || 0, -hw2, hw2, 0.05)}</div><div>${rangeRow('Z', 'z', d.z || 0, -hd2, hd2, 0.05)}</div></div>`;
+      if (d.type === 'light' && d.kind !== 'up') f += rangeRow('Y 高度', 'height', d.height ?? (R.height - 0.4), 0.3, R.height, 0.05);
+      else if (d.type === 'hotspot') f += rangeRow('Y 高度', 'height', d.height ?? 1.5, 0.2, R.height, 0.05);
+      else if (d.type === 'prop' && !['slab', 'cyl', 'orb', 'disc', 'pod', 'wall'].includes(d.shape) && !(d.shape || '').startsWith('glb:') && !CEILING_PROP[d.shape]) f += rangeRow('Y 離地', 'y', d.y || 0, 0, R.height - 0.5, 0.05);
+    }
+  }
   if (d.type === 'image') f += `<label>作者／副標</label><input type="text" data-ef="artist" value="${(d.artist || '').replace(/"/g, '&quot;')}">`;
-  if (!NONINTERACTIVE[d.type] || d.type === 'prop') f += `<label>說明文字${d.type === 'prop' ? '（填了就會成為可點選的導覽站）' : ''}</label><textarea data-ef="description">${d.description || ''}</textarea>`;
+  if (!NONINTERACTIVE[d.type] || d.type === 'prop') f += `<label>說明文字${d.type === 'prop' ? '（填了就會成為可點選的導覽站）' : '（填了，點擊展品才會出現說明與留言；留空只放大／播放）'}</label><textarea data-ef="description">${d.description || ''}</textarea>`;
   if (!NONINTERACTIVE[d.type] || d.type === 'prop') f += `<label>章節／展區（策展導覽依此分章，進入新章節會顯示標題卡）</label><input type="text" data-ef="section" placeholder="例如：第一章 光的起點" value="${(d.section || '').replace(/"/g, '&quot;')}">`;
 
   if (d.type === 'image') f += `<label>換照片（網址或 assets/img/檔名）</label><input type="text" data-ef="src" placeholder="assets/img/work01.jpg 或 https://…/image.jpg" value="${(d.src || '').slice(0, 200).replace(/"/g, '&quot;')}"><div class="ph">最穩：把圖放進專案的 assets/img/ 後填「assets/img/檔名」。外部網址需允許跨網域（GitHub、Cloudflare、Imgur 可；Notion、Google Drive 不行）。</div><div class="ph">或上傳：</div><input type="file" accept="image/*" data-eupload="1" style="margin-top:6px;font-size:12px;">`;
-  else if (d.type === 'video') f += `<label>影片網址（MP4 / HLS）</label><input type="url" data-ef="src" value="${(d.src || '').replace(/"/g, '&quot;')}"><div class="ph">需開放 CORS；YouTube 不可用。</div>`;
+  else if (d.type === 'video') f += `<label>影片網址（MP4 / HLS）</label><input type="url" data-ef="src" value="${(d.src || '').replace(/"/g, '&quot;')}"><div class="ph">需開放 CORS；YouTube 不可用。</div>
+    <label>播放方式</label><div class="seg"><button data-vflag="autoplay:1" class="${d.autoplay !== false ? 'sel' : ''}">自動播放</button><button data-vflag="autoplay:0" class="${d.autoplay === false ? 'sel' : ''}">點擊才播</button></div>
+    <div class="seg" style="margin-top:6px;"><button data-vflag="loop:1" class="${d.loop !== false ? 'sel' : ''}">循環播放</button><button data-vflag="loop:0" class="${d.loop === false ? 'sel' : ''}">播一次</button></div>`;
   else if (d.type === 'model') f += `<label>3D 模型網址（.glb / .stl）</label><input type="url" data-ef="src" placeholder="https://…/model.glb" value="${(d.src && d.src.startsWith('data:') ? '（已上傳檔案）' : (d.src || '')).replace(/"/g, '&quot;')}" ${d.src && d.src.startsWith('data:') ? 'disabled' : ''}>
     <div class="ph">或從電腦上傳 .glb / .stl 檔：</div>
     <input type="file" accept=".glb,.gltf,.stl,model/gltf-binary" data-mupload="1" style="margin-top:6px;font-size:12px;">
@@ -1308,7 +1351,8 @@ function renderEditPanel(i) {
     f += rangeRow('大小', 'scale', d.scale ?? 1, 0.4, 3, 0.1); f += rangeRow('旋轉', 'rot', d.rot ?? 0, 0, 360, 15);
     f += `<label>主色</label><input type="color" data-ef="color" value="${d.color || '#e8e5dd'}">`;
   } else if (d.type === 'light') {
-    f += `<label>燈具類型</label><div class="seg" id="lkindSeg">${[['spot', '投射燈'], ['wash', '洗牆燈'], ['up', '上照燈']].map(([v, n]) => `<button data-lkind="${v}" class="${(d.kind || 'spot') === v ? 'sel' : ''}">${n}</button>`).join('')}</div>`;
+    f += `<label>燈具類型</label><div class="seg" id="lkindSeg">${[['spot', '投射燈'], ['wash', '洗牆燈'], ['up', '上照燈'], ['proj', '投影機']].map(([v, n]) => `<button data-lkind="${v}" class="${(d.kind || 'spot') === v ? 'sel' : ''}">${n}</button>`).join('')}</div>`;
+    if (d.kind === 'proj') f += `<label>投影內容（圖片或影片：網址／assets 路徑）</label><input type="text" data-ef="src" placeholder="assets/img/film.mp4 或 https://…/photo.jpg" value="${(d.src && d.src.startsWith('data:') ? '（已上傳圖片）' : (d.src || '')).replace(/"/g, '&quot;')}" ${d.src && d.src.startsWith('data:') ? 'disabled' : ''}><div class="ph">或上傳圖片：</div><input type="file" accept="image/*" data-eupload="1" style="margin-top:6px;font-size:12px;"><div class="ph">用「旋轉／俯仰」把投影機對準牆面，「角度」調畫面大小；影片需開放 CORS。畫面會被圓形光錐裁切，把角度調到略大於想要的畫面即可。</div>`;
     if ((d.kind || 'spot') !== 'up') f += rangeRow('離地高度', 'height', d.height ?? 3.6, 1, 4.8, 0.1);
     f += rangeRow('亮度', 'intensity', d.intensity ?? 6, 1, 16, 0.5);
     f += rangeRow('光束粗細（角度）', 'angle', d.angle ?? 32, 8, 60, 1);
@@ -1353,8 +1397,9 @@ function bindEditFields(i) {
   epFields.querySelectorAll('[data-frame]').forEach(b => b.onclick = () => { d.frame = b.dataset.frame; rebuildSelected(i); saveEx(); renderEditPanel(i); });
   epFields.querySelectorAll('[data-pmat]').forEach(b => b.onclick = () => { d.mat = b.dataset.pmat || undefined; rebuildSelected(i); saveEx(); renderEditPanel(i); });
   epFields.querySelectorAll('[data-tstyle]').forEach(b => b.onclick = () => { d.textStyle = b.dataset.tstyle; if (d.textStyle === 'foil' && (!d.textColor || d.textColor === '#1a1a1f')) d.textColor = '#d4af37'; rebuildSelected(i); saveEx(); renderEditPanel(i); });
-  epFields.querySelectorAll('[data-lkind]').forEach(b => b.onclick = () => { d.kind = b.dataset.lkind; if (d.kind === 'up') { d.tilt = d.tilt ?? 12; } else if ((d.height ?? 0) < 1) d.height = 3.6; rebuildAll(); if (built[i]) boxHelper.setFromObject(built[i]); saveEx(); renderEditPanel(i); });
-  epFields.querySelectorAll('[data-eupload]').forEach(fi => fi.onchange = e => { const file = e.target.files[0]; if (!file) return; const img = new Image(), url = URL.createObjectURL(file); img.onload = () => { const max = 1024, s = Math.min(1, max / Math.max(img.width, img.height)); const c = document.createElement('canvas'); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url); d.src = c.toDataURL('image/jpeg', 0.82); rebuildSelected(i); saveEx(); renderEditPanel(i); }; img.src = url; });
+  epFields.querySelectorAll('[data-lkind]').forEach(b => b.onclick = () => { d.kind = b.dataset.lkind; if (d.kind === 'proj') { d.angle = d.angle ?? 22; d.intensity = d.intensity ?? 18; } if (d.kind === 'up') { d.tilt = d.tilt ?? 12; } else if ((d.height ?? 0) < 1) d.height = 3.6; rebuildAll(); if (built[i]) boxHelper.setFromObject(built[i]); saveEx(); renderEditPanel(i); });
+  epFields.querySelectorAll('[data-vflag]').forEach(b => b.onclick = () => { const [k, v] = b.dataset.vflag.split(':'); d[k] = v === '1'; rebuildSelected(i); saveEx(); renderEditPanel(i); });
+  epFields.querySelectorAll('[data-eupload]').forEach(fi => fi.onchange = e => { const file = e.target.files[0]; if (!file) return; const img = new Image(), url = URL.createObjectURL(file); img.onload = () => { const max = 1024, s = Math.min(1, max / Math.max(img.width, img.height)); const c = document.createElement('canvas'); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url); d.src = c.toDataURL('image/jpeg', 0.82); if (d.type === 'light') rebuildAll(); else rebuildSelected(i); saveEx(); renderEditPanel(i); }; img.src = url; });
   epFields.querySelectorAll('[data-mupload]').forEach(fi => fi.onchange = e => {
     const file = e.target.files[0]; if (!file) return;
     if (file.size > 8 * 1024 * 1024) { UI.alert('檔案太大（' + Math.round(file.size / 1048576) + 'MB），請用小於 8MB 的模型。'); return; }
@@ -1416,6 +1461,7 @@ function renderScenePanel() {
   f += `<label style="margin-top:20px;">整體氛圍（獨立於燈具）</label>`;
   f += rangeRow('色溫（冷 ↔ 暖）', '__mw', STYLE.moodWarm ?? 50, 0, 100, 1);
   f += rangeRow('整體明亮度（%）', '__mb', STYLE.moodBright ?? 100, 40, 160, 1);
+  f += rangeRow('環境光（0＝全暗，只留燈具）', '__env', STYLE.envLight ?? 100, 0, 100, 1);
   f += `<div class="rr" style="margin-top:10px;"><div class="ph" style="margin:0;flex:1;">氛圍色（輕染整體光線）</div><input type="color" id="spMoodC" value="${STYLE.moodColor || '#ffffff'}"><button id="spMoodReset" style="padding:6px 12px;font-size:12px;border:1px solid var(--pline);background:transparent;border-radius:2px;cursor:pointer;font-family:inherit;color:var(--pink);">還原</button></div>`;
   f += `<label>背景音樂（網址，選填）</label><input type="url" id="spBgm" placeholder="https://…/music.mp3（需開放 CORS）" value="${(STYLE.bgm || '').replace(/"/g, '&quot;')}"><div class="ph">進場後自動播放，可用右上「音樂」鈕靜音。</div>`;
   spFields.innerHTML = f; bindScenePanel();
@@ -1476,7 +1522,7 @@ function bindScenePanel() {
   spFields.querySelectorAll('[data-wall]').forEach(inp => inp.oninput = () => { STYLE.wallColors[inp.dataset.wall] = inp.value; if (wallMats[inp.dataset.wall]) wallMats[inp.dataset.wall].color.set(inp.value); saveEx(); });
   spFields.querySelectorAll('[data-font]').forEach(b => b.onclick = () => { STYLE.font = b.dataset.font; rebuildAll(); saveEx(); renderScenePanel(); });
   spFields.querySelectorAll('[data-dframe]').forEach(b => b.onclick = () => { STYLE.frameDefault = b.dataset.dframe; rebuildAll(); saveEx(); renderScenePanel(); });
-  spFields.querySelectorAll('[data-num]').forEach(inp => inp.oninput = () => { const v = parseFloat(inp.value); const o = inp.parentElement.querySelector('output'); if (o) o.textContent = v.toFixed(+inp.step < 1 ? 1 : 0); if (inp.dataset.ef === '__sun') STYLE.sun = v; else if (inp.dataset.ef === '__az') STYLE.sunAzimuth = v; else if (inp.dataset.ef === '__el') STYLE.sunElev = v; else if (inp.dataset.ef === '__mw') STYLE.moodWarm = v; else if (inp.dataset.ef === '__mb') STYLE.moodBright = v; placeSun(); saveEx(); });
+  spFields.querySelectorAll('[data-num]').forEach(inp => inp.oninput = () => { const v = parseFloat(inp.value); const o = inp.parentElement.querySelector('output'); if (o) o.textContent = v.toFixed(+inp.step < 1 ? 1 : 0); if (inp.dataset.ef === '__sun') STYLE.sun = v; else if (inp.dataset.ef === '__az') STYLE.sunAzimuth = v; else if (inp.dataset.ef === '__el') STYLE.sunElev = v; else if (inp.dataset.ef === '__mw') STYLE.moodWarm = v; else if (inp.dataset.ef === '__mb') STYLE.moodBright = v; else if (inp.dataset.ef === '__env') STYLE.envLight = v; placeSun(); saveEx(); });
   const mc = document.getElementById('spMoodC'); if (mc) mc.oninput = () => { STYLE.moodColor = mc.value; applyMood(); saveEx(); };
   const mr = document.getElementById('spMoodReset'); if (mr) mr.onclick = () => { STYLE.moodWarm = 50; STYLE.moodBright = 100; STYLE.moodColor = '#ffffff'; applyMood(); saveEx(); renderScenePanel(); };
   document.getElementById('spBgm').oninput = e => { STYLE.bgm = e.target.value.trim(); setupBgm(); saveEx(); };
@@ -1865,7 +1911,7 @@ async function enterExhibition(withTour) {
   intro.classList.add('hidden'); topbar.classList.add('show'); crosshair.classList.add('show');
   minimap.classList.add('show'); chatBar.classList.add('show');
   capturePortals(); applyPortals();   // 渲染各房間快照，貼到門戶窗上
-  for (const it of (EX.items || [])) if (it._video) it._video.play().catch(() => {});
+  for (const it of (EX.items || [])) if (it._video && it.autoplay !== false) it._video.play().catch(() => {});
   setupBgm(); if (bgmAudio && !muted) bgmAudio.play().catch(() => {});
   startPresence();   // 讓同一檔展覽裡的其他觀眾看得到彼此
   const goEdit = isOwner && wantEdit && !isTouch;
@@ -1878,7 +1924,7 @@ enterBtn.addEventListener('click', () => enterExhibition(false));
 document.getElementById('tourEnterBtn').addEventListener('click', () => enterExhibition(true));
 addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
 applyLook(); tick();
-if (window.__dbg) window.__dbg.blocked = blocked;
+if (window.__dbg) { window.__dbg.blocked = blocked; window.__dbg.openInfo = openInfo; }
 if (window.__dbg) window.__dbg.tp = (x, z, yd) => { yawObj.position.set(x, EYE, z); yaw = (yd || 0) * Math.PI / 180; pitch = 0; applyLook(); };   // 除錯：傳送到座標（引擎座標、朝向角度）
 
 /* 直接開展覽連結、本機還沒有這檔資料 → 從雲端抓一次（1 次讀取）再重新載入 */
@@ -1912,6 +1958,6 @@ if (EX.id) {
   }, 800);
 }
 </script>
-<script type="module" src="js/cloud.js?v=20260929"></script>
+<script type="module" src="js/cloud.js?v=20260932"></script>
 </body>
 </html>
