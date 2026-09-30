@@ -220,6 +220,14 @@ window.PROPS = {
           const cx = (gp.at ?? L / 2) - L / 2, gw = (gp.w || 1.6) / 2, gh = Math.min(H - 0.05, gp.h || 2.4);
           const o = new THREE.Path(); o.moveTo(cx - gw, 0); o.lineTo(cx - gw, gh); o.lineTo(cx + gw, gh); o.lineTo(cx + gw, 0); o.closePath(); s.holes.push(o);
         }
+        // wins=[{at, w, y, h}]：不落地的窗洞，洞內嵌一片透明玻璃（門窗、觀景窗）
+        for (const wn of (d.wins || [])) {
+          const cx = (wn.at ?? L / 2) - L / 2, ww = (wn.w || 0.4) / 2, y0 = wn.y ?? 1.0, y1 = Math.min(H - 0.05, y0 + (wn.h || 0.9));
+          const o = new THREE.Path(); o.moveTo(cx - ww, y0); o.lineTo(cx - ww, y1); o.lineTo(cx + ww, y1); o.lineTo(cx + ww, y0); o.closePath(); s.holes.push(o);
+          const pane = new THREE.Mesh(new THREE.BoxGeometry(ww * 2, y1 - y0, Math.max(0.008, T * 0.3)),
+            new THREE.MeshPhysicalMaterial({ color: '#dfe9f2', transparent: true, opacity: 0.32, roughness: 0.04, metalness: 0, transmission: 0.55, thickness: 0.05, side: THREE.DoubleSide, depthWrite: false }));
+          pane.position.set(cx, (y0 + y1) / 2, 0); g.add(pane);
+        }
         const geo = new THREE.ExtrudeGeometry(s, { depth: T, bevelEnabled: false });
         const m = new THREE.Mesh(geo, prim); m.position.z = -T / 2; m.castShadow = true; m.receiveShadow = true; g.add(m);
         break;

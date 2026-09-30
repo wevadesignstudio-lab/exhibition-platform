@@ -51,7 +51,7 @@
       const [mx, mz] = E((w.from[0] + w.to[0]) / 2, (w.from[1] + w.to[1]) / 2);
       const t = w.t || 0.2, h = w.h || 3;
       wallMap[w.id] = Object.assign({ len, t, h, ux: dx / len, uz: dz / len }, w);
-      items.push({ id: w.id, type: 'prop', shape: 'wall', x: mx, z: mz, rot: heading, len, h, t, gaps: w.gaps || [], color: w.color || pal.wall, title: w.id });
+      items.push({ id: w.id, type: 'prop', shape: 'wall', x: mx, z: mz, rot: heading, len, h, t, gaps: w.gaps || [], wins: w.wins || [], color: w.color || pal.wall, title: w.id });
       for (const gp of (w.gaps || [])) {                          // 門楣：每個開口上方一條發光帶，比周圍亮
         const at = gp.at ?? len / 2, gh = Math.min(h - 0.05, gp.h || 2.4);
         const px = w.from[0] + dx / len * at, pz = w.from[1] + dz / len * at; const [lx, lz] = E(px, pz);
