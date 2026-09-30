@@ -1,0 +1,87 @@
+{
+  "_readme": [
+    "「浪花：潮」展覽示意頁的資料檔。頁面只讀這個檔；改文字、改尺寸都在這裡。",
+    "space：展場尺寸（公尺，示意）。平面圖與動線由這些數值自動畫出，改數字就會重畫。",
+    "zones：七個展區。text＝去程說明；backText＝回程說明（可留空）；returnOnly＝只在回程出現。",
+    "diagram.type 決定立面示意圖的畫法：corridor / projection / doors / pillars / lowwall / darkboard / jars。",
+    "diagram 內的其他欄位是該圖的可調參數（浪花數、格數、罐子標籤…）。"
+  ],
+  "title": "浪花：潮",
+  "titleEn": "Waves: Rising Tide",
+  "school": "高雄市新興區大同國小　2026 年度主題展・上篇",
+  "venue": "展場：學校地下展覽廳",
+  "intro": "單一出入口，走到盡頭後原路折返。去程是明亮的、向前的；回程轉身，看見同一批展板的背面。",
+  "space": {
+    "stairsLen": 4,
+    "corridorLen": 8,
+    "corridorW": 2.2,
+    "lobbyW": 8,
+    "lobbyD": 6,
+    "hallW": 20,
+    "hallD": 12,
+    "stageW": 6,
+    "stageD": 2.6,
+    "seatRows": 3,
+    "seatsPerRow": 6,
+    "doorCount": 3,
+    "pillarsPerSide": 4,
+    "endRoomW": 3.2,
+    "lowWallHeight": 0.8,
+    "deskW": 1.6,
+    "deskD": 3
+  },
+  "modes": {
+    "out": { "label": "去程", "note": "明亮、向前。展板正面。" },
+    "back": { "label": "回程", "note": "轉身。暖色、較暗。展板背面，暗流浮現。" }
+  },
+  "zones": [
+    {
+      "id": "A", "name": "起浪", "subtitle": "我們都是數位原住民", "location": "走廊",
+      "text": "左牆是孩子、右牆是老師與家長的紙浪花，每片寫一句「AI 在生活裡的樣子」。白色＝希望、淡藍＝做過、淡黃＝大人。掃描後匯成一片 TouchDesigner 數位海，投影在走廊地面。",
+      "backText": "回程再走一次走廊：紙浪花仍在，但你剛剛看過了它的背面。",
+      "diagram": { "type": "corridor", "waves": 14 }
+    },
+    {
+      "id": "B", "name": "浮光", "subtitle": "被算力喚醒的記憶", "location": "大廳左側白牆",
+      "text": "AI 修復並上色的校史老照片輪播；AI 讀出 1985 年手寫樂譜的旋律，戴上耳機聆聽。",
+      "backText": "",
+      "diagram": { "type": "projection", "headphones": 2 }
+    },
+    {
+      "id": "C", "name": "乘浪", "subtitle": "借一點算力，長出提問力", "location": "舞台與三道旋轉門正面",
+      "text": "門一：1–2 年級〈我希望大同有＿＿〉；門二：3–4 年級〈大同的一個小問題〉；門三：5–6 年級〈大同提案〉。舞台是 12/5 的「乘浪小沙龍」。",
+      "backText": "回程看見旋轉門的背面——同一扇門，另一個問題。",
+      "diagram": { "type": "doors", "doors": ["門一・1–2 年級", "門二・3–4 年級", "門三・5–6 年級"], "worksPerDoor": 6, "chairRows": 3 }
+    },
+    {
+      "id": "D", "name": "湧", "subtitle": "一秒生成的洪流", "location": "八根展覽柱正面",
+      "text": "數百張 AI 生成圖拼滿柱面，越往裡越密、越亮。前四根放知識類，後四根放陪伴類。",
+      "backText": "回程看見柱子的背面。",
+      "diagram": { "type": "pillars", "perSide": 4, "labels": ["知識", "陪伴"] }
+    },
+    {
+      "id": "E", "name": "滿潮", "subtitle": "在秒回的年代，等等！", "location": "盡頭小空間",
+      "text": "AI 圖越轉越快的輪播；80 cm 矮牆吊滿摺卡，外面是大人的話，打開是孩子的回應。大人回聲卡：「我聽見了。下次，我會＿＿」。",
+      "backText": "從這裡轉身。回程開始。",
+      "diagram": { "type": "lowwall", "cards": 9, "wallHeight": 0.8 }
+    },
+    {
+      "id": "F", "name": "暗流", "subtitle": "算力的背面", "location": "展覽柱、旋轉門背面與舞台（只在回程出現）",
+      "returnOnly": true,
+      "text": "四個問題藏在浪紋裡，要用潮汐卡的紅色小窗才看得見。",
+      "questions": [
+        { "where": "旋轉門背面", "q": "問題一秒就有答案，你還會想問下一個問題嗎？" },
+        { "where": "前四根柱背面", "q": "這個答案是真的嗎？你怎麼知道？" },
+        { "where": "後四根柱背面", "q": "永遠不會生氣的朋友，是好朋友嗎？" },
+        { "where": "舞台", "q": "你上一次等一件事超過一個禮拜，是什麼時候？" }
+      ],
+      "diagram": { "type": "darkboard", "arrowText": "轉身，看看背面" }
+    },
+    {
+      "id": "G", "name": "漂流瓶", "subtitle": "把擔心交給下一次潮水", "location": "服務台出口",
+      "text": "觀眾在潮汐卡上寫下擔心，投進「學習、思考、關係、等待」四個玻璃罐。",
+      "backText": "",
+      "diagram": { "type": "jars", "jars": ["學習", "思考", "關係", "等待"] }
+    }
+  ]
+}

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-mode="out">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>浪花：潮｜Waves: Rising Tide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet" />
+<style>
+  /* ── 主題色：去程＝冷色明亮；回程＝暖色較暗。只有一種藍（浪） ── */
+  :root { --paper: #f7f8f9; --card: #ffffff; --ink: #2b2f33; --line: #8a9199; --soft: #e6e9ec; --softer: #f0f2f4; --faint: #b7bec6; --blue: #2f6f9f; --dark: #3a4046; --glow0: #dceaf5; --glow1: #f7f8f9; --tr: .45s; }
+  html[data-mode="back"] { --paper: #2a2521; --card: #332d28; --ink: #ece3d8; --line: #8d8072; --soft: #46403a; --softer: #3b3530; --faint: #6f6458; --blue: #6a9cc4; --dark: #1c1916; --glow0: #5b4c3b; --glow1: #2a2521; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--paper); color: var(--ink); font-family: "Noto Sans TC", -apple-system, "PingFang TC", sans-serif; transition: background var(--tr), color var(--tr); min-height: 100vh; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 28px 22px 70px; }
+  header { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+  .t1 { font-family: "Noto Serif TC", serif; font-size: clamp(28px, 4.2vw, 40px); font-weight: 700; letter-spacing: 6px; }
+  .t1 .en { font-family: "Noto Sans TC", sans-serif; font-size: 13px; letter-spacing: .28em; text-transform: uppercase; color: var(--blue); margin-left: 14px; font-weight: 500; }
+  .meta { font-size: 13px; color: var(--line); line-height: 1.9; letter-spacing: .5px; text-align: right; }
+  .modeBar { display: flex; align-items: center; gap: 14px; margin: 22px 0 10px; flex-wrap: wrap; }
+  .seg { display: inline-flex; border: 1px solid var(--line); }
+  .seg button { background: transparent; border: none; color: var(--line); font-family: inherit; font-size: 13px; letter-spacing: 3px; padding: 9px 22px; cursor: pointer; transition: background .2s, color .2s; }
+  .seg button.on { background: var(--ink); color: var(--paper); }
+  #modeNote { font-size: 12px; color: var(--line); letter-spacing: 1px; }
+  .legend { margin-left: auto; display: flex; gap: 18px; font-size: 12px; color: var(--line); align-items: center; }
+  .legend i { display: inline-block; width: 28px; height: 0; border-top: 2px solid var(--blue); vertical-align: middle; margin-right: 6px; }
+  .legend i.dash { border-top-style: dashed; }
+  .grid { display: grid; grid-template-columns: 1fr; gap: 22px; margin-top: 14px; }
+  @media (max-width: 900px) { .meta { text-align: left; } .t1 .en { display: block; margin: 6px 0 0; } .planCard h3::after { content: '　可左右滑動'; color: var(--blue); } }
+  .card { background: var(--card); border: 1px solid var(--line); transition: background var(--tr), border-color var(--tr); }
+  .planCard { padding: 14px; overflow-x: auto; }
+  .planCard h3, #panel h3 { font-size: 12px; letter-spacing: 3px; color: var(--line); font-weight: 500; margin-bottom: 8px; }
+  #plan svg { display: block; width: 100%; height: auto; min-width: 720px; }
+  #panel { padding: 22px 24px; min-height: 300px; }
+  .pgrid { display: grid; grid-template-columns: 1.25fr 1fr; gap: 26px; align-items: start; }
+  @media (max-width: 900px) { .pgrid { grid-template-columns: 1fr; } }
+  .zoneList { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin-top: 16px; }
+  .zl { background: transparent; border: 1px solid var(--line); color: var(--ink); font-family: inherit; text-align: left; padding: 9px 12px; cursor: pointer; font-size: 13px; line-height: 1.5; transition: border-color .2s, background .2s; }
+  .zl b { display: inline-block; width: 22px; color: var(--blue); font-weight: 700; }
+  .zl span { display: block; font-size: 11px; color: var(--line); padding-left: 22px; }
+  .zl:hover { border-color: var(--blue); }
+  .zl[data-ro] { border-style: dashed; }
+  html[data-mode="out"] .zl[data-ro] { opacity: .45; }
+
+  /* ── SVG 線稿樣式（平面圖與立面圖共用；只有藍色是重點色） ── */
+  .room { fill: none; stroke: var(--ink); stroke-width: 0.09; }
+  .wall { fill: var(--ink); stroke: var(--ink); stroke-width: 0.09; }
+  .wall.thick { stroke-width: 0.22; }
+  .ln { fill: none; stroke: var(--line); stroke-width: 1.4; vector-effect: non-scaling-stroke; }
+  .ln.thin { stroke-width: 0.8; } .ln.thick { stroke-width: 2.4; }
+  .bluel { fill: none; stroke: var(--blue); stroke-width: 1.4; vector-effect: non-scaling-stroke; }
+  .bluel.thin { stroke-width: 0.9; } .bluel.thick { stroke-width: 3; }
+  .faintLn { opacity: .28; }
+  .blue { fill: var(--blue); stroke: none; }
+  .soft { fill: var(--soft); stroke: none; } .softer { fill: var(--softer); stroke: none; }
+  .paper { fill: var(--paper); stroke: var(--line); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .dark { fill: var(--dark); stroke: var(--line); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .txt { fill: var(--ink); font-family: "Noto Sans TC", sans-serif; }
+  .txt.lbl { font-size: 0.6px; fill: var(--line); }
+  .txt.mid { text-anchor: middle; }
+  .txt.cap { font-size: 12px; fill: var(--line); letter-spacing: 1px; }
+  .txt.tiny { font-size: 10.5px; }
+  .txt.faint { fill: var(--faint); }
+  .txt.badgeTxt { font-size: 0.62px; font-weight: 700; fill: var(--paper); }
+  .txt.zname { font-size: 0.66px; font-weight: 700; fill: var(--ink); }
+  .badge { fill: var(--blue); }
+  .zone { fill: var(--blue); fill-opacity: .08; stroke: var(--blue); stroke-width: 0.06; stroke-dasharray: 0.25 0.18; }
+  .zone.hatch { fill: url(#hatch); fill-opacity: 1; }
+  .hatchLn { stroke: var(--blue); stroke-width: 0.06; opacity: .5; }
+  .zoneG { cursor: pointer; }
+  .zoneG:hover .zone { fill-opacity: .18; }
+  .zoneG.on .zone { fill-opacity: .22; stroke-dasharray: none; stroke-width: 0.1; }
+  .route { fill: none; stroke: var(--blue); stroke-width: 0.12; stroke-linejoin: round; stroke-linecap: round; transition: opacity var(--tr); }
+  .route.back { stroke-dasharray: 0.35 0.3; }
+  .route.dim { opacity: .28; }
+  .arrowOut, .arrowBack { fill: var(--blue); }
+  .elev { width: 100%; height: auto; display: block; margin: 0 0 6px; border: 1px solid var(--line); background: var(--paper); transition: background var(--tr); }
+  .glow0 { stop-color: var(--glow0); } .glow1 { stop-color: var(--glow1); }
+
+  /* ── 面板文字 ── */
+  .ph .phK { font-size: 12px; letter-spacing: 4px; color: var(--blue); }
+  .ph p { margin-top: 12px; font-size: 14px; line-height: 2; letter-spacing: .5px; }
+  .dim { color: var(--line); }
+  .small { font-size: 12px; line-height: 1.9; margin-top: 14px; border-top: 1px solid var(--soft); padding-top: 12px; }
+  .zhead { display: flex; align-items: center; gap: 14px; }
+  .badgeL { width: 38px; height: 38px; border-radius: 50%; background: var(--blue); color: var(--paper); display: grid; place-items: center; font-weight: 700; font-size: 16px; flex: none; }
+  .zn { font-family: "Noto Serif TC", serif; font-size: 22px; font-weight: 700; letter-spacing: 4px; }
+  .zs { font-size: 13px; color: var(--line); letter-spacing: 1px; margin-top: 2px; }
+  .zloc { margin-top: 12px; font-size: 12px; letter-spacing: 2px; color: var(--blue); }
+  .ztext { margin-top: 12px; font-size: 14px; line-height: 2; letter-spacing: .5px; }
+  .qs { list-style: none; margin-top: 12px; }
+  .qs li { font-size: 13px; line-height: 1.9; padding: 8px 0; border-top: 1px solid var(--soft); }
+  .qs li span { display: block; font-size: 11px; color: var(--blue); letter-spacing: 2px; }
+  footer { margin-top: 40px; font-size: 11px; color: var(--line); letter-spacing: 2px; display: flex; gap: 16px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="t1"><span id="tTitle">浪花：潮</span><span class="en" id="tEn">Waves: Rising Tide</span></div>
+    </div>
+    <div class="meta"><div id="tSchool"></div><div id="tVenue"></div></div>
+  </header>
+
+  <div class="modeBar">
+    <div class="seg"><button id="mOut">去程</button><button id="mBack">回程</button></div>
+    <span id="modeNote"></span>
+    <div class="legend"><span><i></i>去程</span><span><i class="dash"></i>回程</span></div>
+  </div>
+
+  <div class="grid">
+    <div class="card planCard">
+      <h3>展場平面示意圖（俯視，尺寸為示意）</h3>
+      <div id="plan"></div>
+      <div class="zoneList" id="zoneList"></div>
+    </div>
+    <div class="card" id="panel"></div>
+  </div>
+
+  <footer><span>所有畫面皆由程式繪製之示意圖</span><span>內容來源：data.json</span></footer>
+</div>
+<script src="draw.js"></script>
+</body>
+</html>
