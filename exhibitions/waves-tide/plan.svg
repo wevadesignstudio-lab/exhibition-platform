@@ -5,10 +5,8 @@
 <text x="1148" y="566.0" font-size="13" fill="#7a7468">A 起浪・走廊 · 天花 3 m</text>
 <rect x="1020" y="308.0" width="384.0" height="240" fill="#ffffff" stroke="#b9b5aa" stroke-dasharray="4 4"/>
 <text x="1028" y="326.0" font-size="13" fill="#7a7468">LOBBY 大廳 · 天花 3.2 m</text>
-<rect x="180" y="67.99999999999997" width="840" height="480" fill="#ffffff" stroke="#b9b5aa" stroke-dasharray="4 4"/>
-<text x="188" y="85.99999999999997" font-size="13" fill="#7a7468">HALL 主展場 · 天花 4 m</text>
-<rect x="60" y="67.99999999999997" width="120" height="480" fill="#dedbd2" stroke="#b9b5aa" stroke-dasharray="4 4"/>
-<text x="68" y="85.99999999999997" font-size="13" fill="#7a7468">E 滿潮・盡頭 · 天花 2.8 m</text>
+<rect x="60" y="67.99999999999997" width="960" height="480" fill="#ffffff" stroke="#b9b5aa" stroke-dasharray="4 4"/>
+<text x="68" y="85.99999999999997" font-size="13" fill="#7a7468">HALL 主展場 · 天花 4 m</text>
 <line x1="1140.0" y1="868.0" x2="1140.0" y2="548.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
 <text x="1144.0" y="704.0" font-size="9" fill="#8a7f6a">A-W</text>
 <line x1="1236.0" y1="868.0" x2="1236.0" y2="548.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
@@ -29,44 +27,36 @@
 <text x="1408.0" y="424.0" font-size="9" fill="#8a7f6a">L-E</text>
 <line x1="1020.0" y1="308.0" x2="1404.0" y2="308.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
 <text x="1216.0" y="304.0" font-size="9" fill="#8a7f6a">L-N</text>
-<line x1="1020.0" y1="548.0" x2="1020.0" y2="415.99999999999994" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
-<text x="1024.0" y="477.99999999999994" font-size="9" fill="#8a7f6a">B-WALL</text>
-<line x1="1020.0" y1="320.0" x2="1020.0" y2="67.99999999999997" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
-<text x="1024.0" y="189.99999999999991" font-size="9" fill="#8a7f6a">L-W2</text>
 <line x1="60.0" y1="548.0" x2="1020.0" y2="548.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
 <text x="544.0" y="544.0" font-size="9" fill="#8a7f6a">H-S</text>
 <line x1="60.0" y1="67.99999999999997" x2="1020.0" y2="67.99999999999997" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
 <text x="544.0" y="63.99999999999997" font-size="9" fill="#8a7f6a">H-N</text>
+<line x1="1020.0" y1="475.99999999999994" x2="1020.0" y2="67.99999999999997" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
+<text x="1024.0" y="267.99999999999994" font-size="9" fill="#8a7f6a">X3</text>
 <line x1="64.00000000000006" y1="548.0" x2="64.00000000000006" y2="67.99999999999997" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
 <text x="68.00000000000006" y="304.0" font-size="9" fill="#8a7f6a">H-W</text>
-<line x1="180.0" y1="548.0" x2="180.0" y2="268.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
-<line x1="180.0" y1="195.99999999999994" x2="180.0" y2="67.99999999999997" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
-<line x1="180.0" y1="268.0" x2="180.0" y2="195.99999999999994" stroke="#E0701F" stroke-width="3" stroke-dasharray="3 3"/>
-<text x="184.0" y="304.0" font-size="9" fill="#8a7f6a">PART</text>
-<line x1="580.0" y1="512.0" x2="580.0" y2="408.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
-<text x="584.0" y="456.0" font-size="9" fill="#8a7f6a">DOOR1</text>
-<line x1="580.0" y1="360.0" x2="580.0" y2="255.99999999999994" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
-<text x="584.0" y="304.0" font-size="9" fill="#8a7f6a">DOOR2</text>
-<line x1="580.0" y1="207.99999999999997" x2="580.0" y2="103.99999999999991" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
-<text x="584.0" y="151.99999999999994" font-size="9" fill="#8a7f6a">DOOR3</text>
-<line x1="480.0" y1="344.0" x2="480.0" y2="319.99999999999994" stroke="#1a1916" stroke-width="24.0" stroke-linecap="butt"/>
-<text x="484.0" y="327.99999999999994" font-size="9" fill="#8a7f6a">P1N</text>
-<line x1="480.0" y1="144.00000000000006" x2="480.0" y2="120.0" stroke="#1a1916" stroke-width="24.0" stroke-linecap="butt"/>
-<text x="484.0" y="128.00000000000003" font-size="9" fill="#8a7f6a">P1S</text>
-<line x1="400.0" y1="344.0" x2="400.0" y2="319.99999999999994" stroke="#1a1916" stroke-width="24.0" stroke-linecap="butt"/>
-<text x="404.0" y="327.99999999999994" font-size="9" fill="#8a7f6a">P2N</text>
-<line x1="400.0" y1="144.00000000000006" x2="400.0" y2="120.0" stroke="#1a1916" stroke-width="24.0" stroke-linecap="butt"/>
-<text x="404.0" y="128.00000000000003" font-size="9" fill="#8a7f6a">P2S</text>
-<line x1="320.0" y1="344.0" x2="320.0" y2="319.99999999999994" stroke="#1a1916" stroke-width="24.0" stroke-linecap="butt"/>
-<text x="324.0" y="327.99999999999994" font-size="9" fill="#8a7f6a">P3N</text>
-<line x1="320.0" y1="144.00000000000006" x2="320.0" y2="120.0" stroke="#1a1916" stroke-width="24.0" stroke-linecap="butt"/>
-<text x="324.0" y="128.00000000000003" font-size="9" fill="#8a7f6a">P3S</text>
-<line x1="240.0" y1="344.0" x2="240.0" y2="319.99999999999994" stroke="#1a1916" stroke-width="24.0" stroke-linecap="butt"/>
-<text x="244.0" y="327.99999999999994" font-size="9" fill="#8a7f6a">P4N</text>
-<line x1="240.0" y1="144.00000000000006" x2="240.0" y2="120.0" stroke="#1a1916" stroke-width="24.0" stroke-linecap="butt"/>
-<text x="244.0" y="128.00000000000003" font-size="9" fill="#8a7f6a">P4S</text>
-<line x1="124.00000000000006" y1="428.0" x2="124.00000000000006" y2="107.99999999999997" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
-<text x="128.00000000000006" y="264.0" font-size="9" fill="#8a7f6a">LOW</text>
+<line x1="694.5600000000001" y1="315.4" x2="745.4399999999999" y2="304.5999999999999" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
+<text x="724.0" y="306.0" font-size="9" fill="#8a7f6a">DOOR1</text>
+<line x1="694.5600000000001" y1="263.4" x2="745.4399999999999" y2="252.59999999999997" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
+<text x="724.0" y="254.0" font-size="9" fill="#8a7f6a">DOOR2</text>
+<line x1="694.5600000000001" y1="211.4" x2="745.4399999999999" y2="200.60000000000002" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
+<text x="724.0" y="202.00000000000009" font-size="9" fill="#8a7f6a">DOOR3</text>
+<line x1="584.0" y1="291.99999999999994" x2="640.0" y2="291.99999999999994" stroke="#1a1916" stroke-width="24.8" stroke-linecap="butt"/>
+<text x="616.0" y="287.99999999999994" font-size="9" fill="#8a7f6a">P1S</text>
+<line x1="584.0" y1="172.00000000000003" x2="640.0" y2="172.00000000000003" stroke="#1a1916" stroke-width="24.8" stroke-linecap="butt"/>
+<text x="616.0" y="168.00000000000003" font-size="9" fill="#8a7f6a">P1N</text>
+<line x1="480.0" y1="291.99999999999994" x2="536.0" y2="291.99999999999994" stroke="#1a1916" stroke-width="24.8" stroke-linecap="butt"/>
+<text x="512.0" y="287.99999999999994" font-size="9" fill="#8a7f6a">P2S</text>
+<line x1="480.0" y1="172.00000000000003" x2="536.0" y2="172.00000000000003" stroke="#1a1916" stroke-width="24.8" stroke-linecap="butt"/>
+<text x="512.0" y="168.00000000000003" font-size="9" fill="#8a7f6a">P2N</text>
+<line x1="376.0000000000001" y1="291.99999999999994" x2="432.0" y2="291.99999999999994" stroke="#1a1916" stroke-width="24.8" stroke-linecap="butt"/>
+<text x="408.00000000000006" y="287.99999999999994" font-size="9" fill="#8a7f6a">P3S</text>
+<line x1="376.0000000000001" y1="172.00000000000003" x2="432.0" y2="172.00000000000003" stroke="#1a1916" stroke-width="24.8" stroke-linecap="butt"/>
+<text x="408.00000000000006" y="168.00000000000003" font-size="9" fill="#8a7f6a">P3N</text>
+<line x1="272.0" y1="291.99999999999994" x2="328.0" y2="291.99999999999994" stroke="#1a1916" stroke-width="24.8" stroke-linecap="butt"/>
+<text x="304.0" y="287.99999999999994" font-size="9" fill="#8a7f6a">P4S</text>
+<line x1="272.0" y1="172.00000000000003" x2="328.0" y2="172.00000000000003" stroke="#1a1916" stroke-width="24.8" stroke-linecap="butt"/>
+<text x="304.0" y="168.00000000000003" font-size="9" fill="#8a7f6a">P4N</text>
 <line x1="1146.0" y1="848.0" x2="1146.0" y2="800.0" stroke="#E0701F" stroke-width="5"/>
 <text x="1146.0" y="827.9999999999999" font-size="8" fill="#E0701F" text-anchor="middle">A-T</text>
 <line x1="1146.0" y1="785.6" x2="1146.0" y2="774.4" stroke="#0F4C50" stroke-width="5"/>
@@ -177,110 +167,110 @@
 <text x="1146.0" y="576.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-52</text>
 <line x1="1230.0" y1="570.3999999999999" x2="1230.0" y2="559.2" stroke="#0F4C50" stroke-width="5"/>
 <text x="1230.0" y="568.8" font-size="8" fill="#0F4C50" text-anchor="middle">A-53</text>
-<line x1="1026.0" y1="540.0" x2="1026.0" y2="424.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="1026.0" y="485.99999999999994" font-size="8" fill="#0F4C50" text-anchor="middle">B-1</text>
+<line x1="1026.0" y1="465.99999999999994" x2="1026.0" y2="350.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="1026.0" y="412.0" font-size="8" fill="#0F4C50" text-anchor="middle">B-1</text>
 <line x1="1056.0" y1="542.0" x2="1104.0" y2="542.0" stroke="#E0701F" stroke-width="5"/>
 <text x="1080.0" y="554.0" font-size="8" fill="#E0701F" text-anchor="middle">B-T</text>
-<line x1="1026.0" y1="428.0" x2="1026.0" y2="423.9999999999999" stroke="#E0701F" stroke-width="5"/>
-<text x="1026.0" y="429.99999999999994" font-size="8" fill="#E0701F" text-anchor="middle">B-EAR1</text>
-<line x1="1026.0" y1="422.0" x2="1026.0" y2="418.0" stroke="#E0701F" stroke-width="5"/>
-<text x="1026.0" y="424.0" font-size="8" fill="#E0701F" text-anchor="middle">B-EAR2</text>
+<line x1="1026.0" y1="344.0" x2="1026.0" y2="339.99999999999994" stroke="#E0701F" stroke-width="5"/>
+<text x="1026.0" y="345.99999999999994" font-size="8" fill="#E0701F" text-anchor="middle">B-EAR1</text>
+<line x1="1026.0" y1="338.0" x2="1026.0" y2="333.9999999999999" stroke="#E0701F" stroke-width="5"/>
+<text x="1026.0" y="339.99999999999994" font-size="8" fill="#E0701F" text-anchor="middle">B-EAR2</text>
 <line x1="1398.0" y1="455.99999999999994" x2="1398.0" y2="400.0" stroke="#E0701F" stroke-width="5"/>
 <text x="1398.0" y="432.0" font-size="8" fill="#E0701F" text-anchor="middle">G-T</text>
-<line x1="744.0" y1="542.0" x2="816.0" y2="542.0" stroke="#E0701F" stroke-width="5"/>
-<text x="780.0" y="554.0" font-size="8" fill="#E0701F" text-anchor="middle">C-T</text>
-<line x1="585.0" y1="484.0" x2="585.0" y2="436.0" stroke="#E0701F" stroke-width="5"/>
-<text x="585.0" y="464.0" font-size="8" fill="#E0701F" text-anchor="middle">C-D1</text>
-<line x1="585.0" y1="502.0" x2="585.0" y2="482.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="585.0" y="496.0" font-size="8" fill="#0F4C50" text-anchor="middle">C-D1-1</text>
-<line x1="585.0" y1="470.0" x2="585.0" y2="450.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="585.0" y="464.0" font-size="8" fill="#0F4C50" text-anchor="middle">C-D1-2</text>
-<line x1="585.0" y1="438.00000000000006" x2="585.0" y2="418.00000000000006" stroke="#0F4C50" stroke-width="5"/>
-<text x="585.0" y="432.00000000000006" font-size="8" fill="#0F4C50" text-anchor="middle">C-D1-3</text>
-<line x1="585.0" y1="331.99999999999994" x2="585.0" y2="284.0" stroke="#E0701F" stroke-width="5"/>
-<text x="585.0" y="312.0" font-size="8" fill="#E0701F" text-anchor="middle">C-D2</text>
-<line x1="585.0" y1="350.0" x2="585.0" y2="330.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="585.0" y="344.0" font-size="8" fill="#0F4C50" text-anchor="middle">C-D2-1</text>
-<line x1="585.0" y1="318.0" x2="585.0" y2="298.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="585.0" y="312.0" font-size="8" fill="#0F4C50" text-anchor="middle">C-D2-2</text>
-<line x1="585.0" y1="286.0" x2="585.0" y2="266.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="585.0" y="280.0" font-size="8" fill="#0F4C50" text-anchor="middle">C-D2-3</text>
-<line x1="585.0" y1="180.0" x2="585.0" y2="131.9999999999999" stroke="#E0701F" stroke-width="5"/>
-<text x="585.0" y="159.99999999999994" font-size="8" fill="#E0701F" text-anchor="middle">C-D3</text>
-<line x1="585.0" y1="197.99999999999997" x2="585.0" y2="177.99999999999997" stroke="#0F4C50" stroke-width="5"/>
-<text x="585.0" y="191.99999999999997" font-size="8" fill="#0F4C50" text-anchor="middle">C-D3-1</text>
-<line x1="585.0" y1="165.99999999999994" x2="585.0" y2="145.99999999999994" stroke="#0F4C50" stroke-width="5"/>
-<text x="585.0" y="159.99999999999994" font-size="8" fill="#0F4C50" text-anchor="middle">C-D3-2</text>
-<line x1="585.0" y1="133.99999999999991" x2="585.0" y2="113.99999999999991" stroke="#0F4C50" stroke-width="5"/>
-<text x="585.0" y="127.99999999999991" font-size="8" fill="#0F4C50" text-anchor="middle">C-D3-3</text>
-<line x1="468.0" y1="73.99999999999991" x2="532.0" y2="73.99999999999991" stroke="#E0701F" stroke-width="5"/>
-<text x="500.0" y="85.99999999999991" font-size="8" fill="#E0701F" text-anchor="middle">D-T</text>
-<line x1="494.00000000000006" y1="341.99999999999994" x2="494.00000000000006" y2="321.99999999999994" stroke="#0F4C50" stroke-width="5"/>
-<text x="494.00000000000006" y="335.99999999999994" font-size="8" fill="#0F4C50" text-anchor="middle">D-P1N</text>
-<line x1="494.00000000000006" y1="142.00000000000003" x2="494.00000000000006" y2="122.00000000000003" stroke="#0F4C50" stroke-width="5"/>
-<text x="494.00000000000006" y="136.00000000000003" font-size="8" fill="#0F4C50" text-anchor="middle">D-P1S</text>
-<line x1="414.00000000000006" y1="341.99999999999994" x2="414.00000000000006" y2="321.99999999999994" stroke="#0F4C50" stroke-width="5"/>
-<text x="414.00000000000006" y="335.99999999999994" font-size="8" fill="#0F4C50" text-anchor="middle">D-P2N</text>
-<line x1="414.00000000000006" y1="142.00000000000003" x2="414.00000000000006" y2="122.00000000000003" stroke="#0F4C50" stroke-width="5"/>
-<text x="414.00000000000006" y="136.00000000000003" font-size="8" fill="#0F4C50" text-anchor="middle">D-P2S</text>
-<line x1="334.00000000000006" y1="341.99999999999994" x2="334.00000000000006" y2="321.99999999999994" stroke="#0F4C50" stroke-width="5"/>
-<text x="334.00000000000006" y="335.99999999999994" font-size="8" fill="#0F4C50" text-anchor="middle">D-P3N</text>
-<line x1="334.00000000000006" y1="142.00000000000003" x2="334.00000000000006" y2="122.00000000000003" stroke="#0F4C50" stroke-width="5"/>
-<text x="334.00000000000006" y="136.00000000000003" font-size="8" fill="#0F4C50" text-anchor="middle">D-P3S</text>
-<line x1="254.00000000000006" y1="341.99999999999994" x2="254.00000000000006" y2="321.99999999999994" stroke="#0F4C50" stroke-width="5"/>
-<text x="254.00000000000006" y="335.99999999999994" font-size="8" fill="#0F4C50" text-anchor="middle">D-P4N</text>
-<line x1="254.00000000000006" y1="142.00000000000003" x2="254.00000000000006" y2="122.00000000000003" stroke="#0F4C50" stroke-width="5"/>
-<text x="254.00000000000006" y="136.00000000000003" font-size="8" fill="#0F4C50" text-anchor="middle">D-P4S</text>
-<line x1="185.99999999999994" y1="355.99999999999994" x2="185.99999999999994" y2="308.0" stroke="#E0701F" stroke-width="5"/>
-<text x="185.99999999999994" y="335.99999999999994" font-size="8" fill="#E0701F" text-anchor="middle">E-T</text>
+<line x1="1014.0" y1="304.0" x2="1014.0" y2="231.99999999999994" stroke="#E0701F" stroke-width="5"/>
+<text x="1014.0" y="272.0" font-size="8" fill="#E0701F" text-anchor="middle">C-T</text>
+<line x1="1014.0" y1="151.9999999999999" x2="1014.0" y2="80.0" stroke="#E0701F" stroke-width="5"/>
+<text x="1014.0" y="119.99999999999994" font-size="8" fill="#E0701F" text-anchor="middle">F-STAGE</text>
+<line x1="697.559215692292" y1="310.2653427347962" x2="740.6002679656751" y2="301.12927031827616" stroke="#E0701F" stroke-width="5"/>
+<text x="719.0797418289835" y="309.6973065265362" font-size="8" fill="#E0701F" text-anchor="middle">C-D1</text>
+<line x1="703.428450093208" y1="309.019514677998" x2="734.7310335647592" y2="302.37509837507434" stroke="#0F4C50" stroke-width="5"/>
+<text x="719.0797418289835" y="309.6973065265362" font-size="8" fill="#0F4C50" text-anchor="middle">C-D1-1</text>
+<line x1="703.428450093208" y1="309.019514677998" x2="734.7310335647592" y2="302.37509837507434" stroke="#0F4C50" stroke-width="5"/>
+<text x="719.0797418289835" y="309.6973065265362" font-size="8" fill="#0F4C50" text-anchor="middle">C-D1-2</text>
+<line x1="703.428450093208" y1="309.019514677998" x2="734.7310335647592" y2="302.37509837507434" stroke="#0F4C50" stroke-width="5"/>
+<text x="719.0797418289835" y="309.6973065265362" font-size="8" fill="#0F4C50" text-anchor="middle">C-D1-3</text>
+<line x1="699.3864301755959" y1="318.8735531894728" x2="742.4274824489792" y2="309.7374807729528" stroke="#E0701F" stroke-width="5"/>
+<text x="720.9069563122875" y="318.3055169812128" font-size="8" fill="#E0701F" text-anchor="middle">F-D1</text>
+<line x1="697.559215692292" y1="258.26534273479626" x2="740.6002679656751" y2="249.1292703182762" stroke="#E0701F" stroke-width="5"/>
+<text x="719.0797418289835" y="257.69730652653624" font-size="8" fill="#E0701F" text-anchor="middle">C-D2</text>
+<line x1="703.428450093208" y1="257.019514677998" x2="734.7310335647592" y2="250.37509837507443" stroke="#0F4C50" stroke-width="5"/>
+<text x="719.0797418289835" y="257.69730652653624" font-size="8" fill="#0F4C50" text-anchor="middle">C-D2-1</text>
+<line x1="703.428450093208" y1="257.019514677998" x2="734.7310335647592" y2="250.37509837507443" stroke="#0F4C50" stroke-width="5"/>
+<text x="719.0797418289835" y="257.69730652653624" font-size="8" fill="#0F4C50" text-anchor="middle">C-D2-2</text>
+<line x1="703.428450093208" y1="257.019514677998" x2="734.7310335647592" y2="250.37509837507443" stroke="#0F4C50" stroke-width="5"/>
+<text x="719.0797418289835" y="257.69730652653624" font-size="8" fill="#0F4C50" text-anchor="middle">C-D2-3</text>
+<line x1="699.3864301755959" y1="266.87355318947283" x2="742.4274824489792" y2="257.73748077295284" stroke="#E0701F" stroke-width="5"/>
+<text x="720.9069563122875" y="266.3055169812128" font-size="8" fill="#E0701F" text-anchor="middle">F-D2</text>
+<line x1="699.3864301755959" y1="214.8735531894728" x2="742.4274824489792" y2="205.73748077295292" stroke="#E0701F" stroke-width="5"/>
+<text x="720.9069563122875" y="214.30551698121286" font-size="8" fill="#E0701F" text-anchor="middle">C-D3</text>
+<line x1="705.2556645765119" y1="213.62772513267473" x2="736.5582480480632" y2="206.983308829751" stroke="#0F4C50" stroke-width="5"/>
+<text x="720.9069563122875" y="214.30551698121286" font-size="8" fill="#0F4C50" text-anchor="middle">C-D3-1</text>
+<line x1="705.2556645765119" y1="213.62772513267473" x2="736.5582480480632" y2="206.983308829751" stroke="#0F4C50" stroke-width="5"/>
+<text x="720.9069563122875" y="214.30551698121286" font-size="8" fill="#0F4C50" text-anchor="middle">C-D3-2</text>
+<line x1="705.2556645765119" y1="213.62772513267473" x2="736.5582480480632" y2="206.983308829751" stroke="#0F4C50" stroke-width="5"/>
+<text x="720.9069563122875" y="214.30551698121286" font-size="8" fill="#0F4C50" text-anchor="middle">C-D3-3</text>
+<line x1="697.559215692292" y1="206.26534273479606" x2="740.6002679656751" y2="197.12927031827618" stroke="#E0701F" stroke-width="5"/>
+<text x="719.0797418289835" y="205.69730652653612" font-size="8" fill="#E0701F" text-anchor="middle">F-D3</text>
+<line x1="368.0" y1="73.99999999999991" x2="432.0" y2="73.99999999999991" stroke="#E0701F" stroke-width="5"/>
+<text x="400.0" y="85.99999999999991" font-size="8" fill="#E0701F" text-anchor="middle">D-T</text>
+<line x1="586.4000000000001" y1="277.59999999999997" x2="615.2" y2="277.59999999999997" stroke="#0F4C50" stroke-width="5"/>
+<text x="600.8000000000001" y="289.59999999999997" font-size="8" fill="#0F4C50" text-anchor="middle">D-P1S</text>
+<line x1="616.4000000000001" y1="277.59999999999997" x2="636.4000000000001" y2="277.59999999999997" stroke="#E0701F" stroke-width="5"/>
+<text x="626.4000000000001" y="289.59999999999997" font-size="8" fill="#E0701F" text-anchor="middle">F-P1S</text>
+<line x1="586.4000000000001" y1="186.4" x2="615.2" y2="186.4" stroke="#0F4C50" stroke-width="5"/>
+<text x="600.8000000000001" y="198.4" font-size="8" fill="#0F4C50" text-anchor="middle">D-P1N</text>
+<line x1="616.4000000000001" y1="186.4" x2="636.4000000000001" y2="186.4" stroke="#E0701F" stroke-width="5"/>
+<text x="626.4000000000001" y="198.4" font-size="8" fill="#E0701F" text-anchor="middle">F-P1N</text>
+<line x1="482.4000000000001" y1="277.59999999999997" x2="511.20000000000005" y2="277.59999999999997" stroke="#0F4C50" stroke-width="5"/>
+<text x="496.80000000000007" y="289.59999999999997" font-size="8" fill="#0F4C50" text-anchor="middle">D-P2S</text>
+<line x1="512.4000000000001" y1="277.59999999999997" x2="532.4000000000001" y2="277.59999999999997" stroke="#E0701F" stroke-width="5"/>
+<text x="522.4000000000001" y="289.59999999999997" font-size="8" fill="#E0701F" text-anchor="middle">F-P2S</text>
+<line x1="482.4000000000001" y1="186.4" x2="511.20000000000005" y2="186.4" stroke="#0F4C50" stroke-width="5"/>
+<text x="496.80000000000007" y="198.4" font-size="8" fill="#0F4C50" text-anchor="middle">D-P2N</text>
+<line x1="512.4000000000001" y1="186.4" x2="532.4000000000001" y2="186.4" stroke="#E0701F" stroke-width="5"/>
+<text x="522.4000000000001" y="198.4" font-size="8" fill="#E0701F" text-anchor="middle">F-P2N</text>
+<line x1="378.4000000000002" y1="277.59999999999997" x2="407.20000000000016" y2="277.59999999999997" stroke="#0F4C50" stroke-width="5"/>
+<text x="392.8000000000002" y="289.59999999999997" font-size="8" fill="#0F4C50" text-anchor="middle">D-P3S</text>
+<line x1="408.40000000000003" y1="277.59999999999997" x2="428.40000000000003" y2="277.59999999999997" stroke="#E0701F" stroke-width="5"/>
+<text x="418.40000000000003" y="289.59999999999997" font-size="8" fill="#E0701F" text-anchor="middle">F-P3S</text>
+<line x1="378.4000000000002" y1="186.4" x2="407.20000000000016" y2="186.4" stroke="#0F4C50" stroke-width="5"/>
+<text x="392.8000000000002" y="198.4" font-size="8" fill="#0F4C50" text-anchor="middle">D-P3N</text>
+<line x1="408.40000000000003" y1="186.4" x2="428.40000000000003" y2="186.4" stroke="#E0701F" stroke-width="5"/>
+<text x="418.40000000000003" y="198.4" font-size="8" fill="#E0701F" text-anchor="middle">F-P3N</text>
+<line x1="274.4000000000001" y1="277.59999999999997" x2="303.20000000000005" y2="277.59999999999997" stroke="#0F4C50" stroke-width="5"/>
+<text x="288.80000000000007" y="289.59999999999997" font-size="8" fill="#0F4C50" text-anchor="middle">D-P4S</text>
+<line x1="304.4" y1="277.59999999999997" x2="324.4" y2="277.59999999999997" stroke="#E0701F" stroke-width="5"/>
+<text x="314.4" y="289.59999999999997" font-size="8" fill="#E0701F" text-anchor="middle">F-P4S</text>
+<line x1="274.4000000000001" y1="186.4" x2="303.20000000000005" y2="186.4" stroke="#0F4C50" stroke-width="5"/>
+<text x="288.80000000000007" y="198.4" font-size="8" fill="#0F4C50" text-anchor="middle">D-P4N</text>
+<line x1="304.4" y1="186.4" x2="324.4" y2="186.4" stroke="#E0701F" stroke-width="5"/>
+<text x="314.4" y="198.4" font-size="8" fill="#E0701F" text-anchor="middle">F-P4N</text>
 <line x1="69.00000000000006" y1="291.99999999999994" x2="69.00000000000006" y2="172.00000000000003" stroke="#181D1B" stroke-width="5"/>
 <text x="69.00000000000006" y="235.99999999999994" font-size="8" fill="#181D1B" text-anchor="middle">E-SCREEN</text>
-<line x1="129.00000000000006" y1="404.4" x2="129.00000000000006" y2="395.6" stroke="#0F4C50" stroke-width="5"/>
-<text x="129.00000000000006" y="404.0" font-size="8" fill="#0F4C50" text-anchor="middle">E-CARD1</text>
-<line x1="129.00000000000006" y1="371.59999999999997" x2="129.00000000000006" y2="362.8" stroke="#0F4C50" stroke-width="5"/>
-<text x="129.00000000000006" y="371.2" font-size="8" fill="#0F4C50" text-anchor="middle">E-CARD2</text>
-<line x1="129.00000000000006" y1="338.79999999999995" x2="129.00000000000006" y2="330.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="129.00000000000006" y="338.4" font-size="8" fill="#0F4C50" text-anchor="middle">E-CARD3</text>
-<line x1="129.00000000000006" y1="305.99999999999994" x2="129.00000000000006" y2="297.2" stroke="#0F4C50" stroke-width="5"/>
-<text x="129.00000000000006" y="305.59999999999997" font-size="8" fill="#0F4C50" text-anchor="middle">E-CARD4</text>
-<line x1="129.00000000000006" y1="273.19999999999993" x2="129.00000000000006" y2="264.4" stroke="#0F4C50" stroke-width="5"/>
-<text x="129.00000000000006" y="272.79999999999995" font-size="8" fill="#0F4C50" text-anchor="middle">E-CARD5</text>
-<line x1="129.00000000000006" y1="240.39999999999992" x2="129.00000000000006" y2="231.59999999999997" stroke="#0F4C50" stroke-width="5"/>
-<text x="129.00000000000006" y="239.99999999999994" font-size="8" fill="#0F4C50" text-anchor="middle">E-CARD6</text>
-<line x1="129.00000000000006" y1="207.5999999999999" x2="129.00000000000006" y2="198.79999999999995" stroke="#0F4C50" stroke-width="5"/>
-<text x="129.00000000000006" y="207.19999999999993" font-size="8" fill="#0F4C50" text-anchor="middle">E-CARD7</text>
-<line x1="129.00000000000006" y1="174.7999999999999" x2="129.00000000000006" y2="165.99999999999994" stroke="#0F4C50" stroke-width="5"/>
-<text x="129.00000000000006" y="174.39999999999992" font-size="8" fill="#0F4C50" text-anchor="middle">E-CARD8</text>
-<line x1="129.00000000000006" y1="142.00000000000003" x2="129.00000000000006" y2="133.20000000000007" stroke="#0F4C50" stroke-width="5"/>
-<text x="129.00000000000006" y="141.60000000000005" font-size="8" fill="#0F4C50" text-anchor="middle">E-CARD9</text>
-<line x1="129.00000000000006" y1="288.0" x2="129.00000000000006" y2="247.99999999999997" stroke="#E0701F" stroke-width="5"/>
-<text x="129.00000000000006" y="272.0" font-size="8" fill="#E0701F" text-anchor="middle">E-ECHO</text>
-<line x1="174.00000000000006" y1="355.99999999999994" x2="174.00000000000006" y2="308.0" stroke="#E0701F" stroke-width="5"/>
-<text x="174.00000000000006" y="335.99999999999994" font-size="8" fill="#E0701F" text-anchor="middle">F-T</text>
-<line x1="575.0" y1="492.0" x2="575.0" y2="428.0" stroke="#E0701F" stroke-width="5"/>
-<text x="575.0" y="464.0" font-size="8" fill="#E0701F" text-anchor="middle">F-D1</text>
-<line x1="575.0" y1="340.0" x2="575.0" y2="275.99999999999994" stroke="#E0701F" stroke-width="5"/>
-<text x="575.0" y="312.0" font-size="8" fill="#E0701F" text-anchor="middle">F-D2</text>
-<line x1="575.0" y1="187.99999999999997" x2="575.0" y2="123.99999999999991" stroke="#E0701F" stroke-width="5"/>
-<text x="575.0" y="159.99999999999994" font-size="8" fill="#E0701F" text-anchor="middle">F-D3</text>
-<line x1="465.99999999999994" y1="341.99999999999994" x2="465.99999999999994" y2="321.99999999999994" stroke="#E0701F" stroke-width="5"/>
-<text x="465.99999999999994" y="335.99999999999994" font-size="8" fill="#E0701F" text-anchor="middle">F-P1N</text>
-<line x1="465.99999999999994" y1="142.00000000000003" x2="465.99999999999994" y2="122.00000000000003" stroke="#E0701F" stroke-width="5"/>
-<text x="465.99999999999994" y="136.00000000000003" font-size="8" fill="#E0701F" text-anchor="middle">F-P1S</text>
-<line x1="385.99999999999994" y1="341.99999999999994" x2="385.99999999999994" y2="321.99999999999994" stroke="#E0701F" stroke-width="5"/>
-<text x="385.99999999999994" y="335.99999999999994" font-size="8" fill="#E0701F" text-anchor="middle">F-P2N</text>
-<line x1="385.99999999999994" y1="142.00000000000003" x2="385.99999999999994" y2="122.00000000000003" stroke="#E0701F" stroke-width="5"/>
-<text x="385.99999999999994" y="136.00000000000003" font-size="8" fill="#E0701F" text-anchor="middle">F-P2S</text>
-<line x1="305.99999999999994" y1="341.99999999999994" x2="305.99999999999994" y2="321.99999999999994" stroke="#E0701F" stroke-width="5"/>
-<text x="305.99999999999994" y="335.99999999999994" font-size="8" fill="#E0701F" text-anchor="middle">F-P3N</text>
-<line x1="305.99999999999994" y1="142.00000000000003" x2="305.99999999999994" y2="122.00000000000003" stroke="#E0701F" stroke-width="5"/>
-<text x="305.99999999999994" y="136.00000000000003" font-size="8" fill="#E0701F" text-anchor="middle">F-P3S</text>
-<line x1="225.99999999999994" y1="341.99999999999994" x2="225.99999999999994" y2="321.99999999999994" stroke="#E0701F" stroke-width="5"/>
-<text x="225.99999999999994" y="335.99999999999994" font-size="8" fill="#E0701F" text-anchor="middle">F-P4N</text>
-<line x1="225.99999999999994" y1="142.00000000000003" x2="225.99999999999994" y2="122.00000000000003" stroke="#E0701F" stroke-width="5"/>
-<text x="225.99999999999994" y="136.00000000000003" font-size="8" fill="#E0701F" text-anchor="middle">F-P4S</text>
-<line x1="848.0000000000001" y1="542.0" x2="920.0" y2="542.0" stroke="#E0701F" stroke-width="5"/>
-<text x="884.0" y="554.0" font-size="8" fill="#E0701F" text-anchor="middle">F-STAGE</text>
+<line x1="69.00000000000006" y1="156.00000000000009" x2="69.00000000000006" y2="107.99999999999997" stroke="#E0701F" stroke-width="5"/>
+<text x="69.00000000000006" y="136.00000000000003" font-size="8" fill="#E0701F" text-anchor="middle">E-T</text>
+<line x1="69.00000000000006" y1="308.4" x2="69.00000000000006" y2="299.6" stroke="#0F4C50" stroke-width="5"/>
+<text x="69.00000000000006" y="308.0" font-size="8" fill="#0F4C50" text-anchor="middle">E-CARD1</text>
+<line x1="69.00000000000006" y1="290.3999999999999" x2="69.00000000000006" y2="281.59999999999997" stroke="#0F4C50" stroke-width="5"/>
+<text x="69.00000000000006" y="289.99999999999994" font-size="8" fill="#0F4C50" text-anchor="middle">E-CARD2</text>
+<line x1="69.00000000000006" y1="272.4" x2="69.00000000000006" y2="263.6" stroke="#0F4C50" stroke-width="5"/>
+<text x="69.00000000000006" y="272.0" font-size="8" fill="#0F4C50" text-anchor="middle">E-CARD3</text>
+<line x1="69.00000000000006" y1="254.39999999999998" x2="69.00000000000006" y2="245.60000000000002" stroke="#0F4C50" stroke-width="5"/>
+<text x="69.00000000000006" y="254.0" font-size="8" fill="#0F4C50" text-anchor="middle">E-CARD4</text>
+<line x1="69.00000000000006" y1="236.39999999999992" x2="69.00000000000006" y2="227.5999999999999" stroke="#0F4C50" stroke-width="5"/>
+<text x="69.00000000000006" y="235.99999999999994" font-size="8" fill="#0F4C50" text-anchor="middle">E-CARD5</text>
+<line x1="69.00000000000006" y1="218.3999999999999" x2="69.00000000000006" y2="209.59999999999994" stroke="#0F4C50" stroke-width="5"/>
+<text x="69.00000000000006" y="217.99999999999991" font-size="8" fill="#0F4C50" text-anchor="middle">E-CARD6</text>
+<line x1="69.00000000000006" y1="200.39999999999992" x2="69.00000000000006" y2="191.59999999999997" stroke="#0F4C50" stroke-width="5"/>
+<text x="69.00000000000006" y="199.99999999999994" font-size="8" fill="#0F4C50" text-anchor="middle">E-CARD7</text>
+<line x1="69.00000000000006" y1="182.39999999999995" x2="69.00000000000006" y2="173.6" stroke="#0F4C50" stroke-width="5"/>
+<text x="69.00000000000006" y="181.99999999999997" font-size="8" fill="#0F4C50" text-anchor="middle">E-CARD8</text>
+<line x1="69.00000000000006" y1="164.39999999999998" x2="69.00000000000006" y2="155.60000000000002" stroke="#0F4C50" stroke-width="5"/>
+<text x="69.00000000000006" y="164.0" font-size="8" fill="#0F4C50" text-anchor="middle">E-CARD9</text>
+<line x1="69.00000000000006" y1="259.99999999999994" x2="69.00000000000006" y2="203.99999999999991" stroke="#E0701F" stroke-width="5"/>
+<text x="69.00000000000006" y="235.99999999999994" font-size="8" fill="#E0701F" text-anchor="middle">E-ECHO</text>
+<line x1="163.99999999999991" y1="73.99999999999991" x2="212.00000000000003" y2="73.99999999999991" stroke="#E0701F" stroke-width="5"/>
+<text x="187.99999999999997" y="85.99999999999991" font-size="8" fill="#E0701F" text-anchor="middle">F-T</text>
 <circle cx="1188.0" cy="700.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
 <text x="1188.0" y="703.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-SEA</text>
 <circle cx="1352.0" cy="428.0" r="38.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
@@ -293,60 +283,94 @@
 <text x="1358.8" y="442.19999999999993" font-size="8" fill="#0F4C50" text-anchor="middle">G-JAR3</text>
 <circle cx="1373.1999999999998" cy="439.19999999999993" r="5.2" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
 <text x="1373.1999999999998" y="442.19999999999993" font-size="8" fill="#0F4C50" text-anchor="middle">G-JAR4</text>
-<circle cx="780" cy="491.99999999999994" r="120.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="780" y="494.99999999999994" font-size="8" fill="#0F4C50" text-anchor="middle">STAGE</text>
-<circle cx="680.0" cy="415.99999999999994" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="680.0" y="418.99999999999994" font-size="8" fill="#0F4C50" text-anchor="middle">CH00</text>
-<circle cx="720.0" cy="415.99999999999994" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="720.0" y="418.99999999999994" font-size="8" fill="#0F4C50" text-anchor="middle">CH01</text>
-<circle cx="760.0" cy="415.99999999999994" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="760.0" y="418.99999999999994" font-size="8" fill="#0F4C50" text-anchor="middle">CH02</text>
-<circle cx="800.0" cy="415.99999999999994" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="800.0" y="418.99999999999994" font-size="8" fill="#0F4C50" text-anchor="middle">CH03</text>
-<circle cx="840.0" cy="415.99999999999994" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="840.0" y="418.99999999999994" font-size="8" fill="#0F4C50" text-anchor="middle">CH04</text>
-<circle cx="880.0" cy="415.99999999999994" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="880.0" y="418.99999999999994" font-size="8" fill="#0F4C50" text-anchor="middle">CH05</text>
-<circle cx="680.0" cy="384.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="680.0" y="387.0" font-size="8" fill="#0F4C50" text-anchor="middle">CH10</text>
-<circle cx="720.0" cy="384.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="720.0" y="387.0" font-size="8" fill="#0F4C50" text-anchor="middle">CH11</text>
-<circle cx="760.0" cy="384.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="760.0" y="387.0" font-size="8" fill="#0F4C50" text-anchor="middle">CH12</text>
-<circle cx="800.0" cy="384.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="800.0" y="387.0" font-size="8" fill="#0F4C50" text-anchor="middle">CH13</text>
-<circle cx="840.0" cy="384.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="840.0" y="387.0" font-size="8" fill="#0F4C50" text-anchor="middle">CH14</text>
-<circle cx="880.0" cy="384.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="880.0" y="387.0" font-size="8" fill="#0F4C50" text-anchor="middle">CH15</text>
-<circle cx="680.0" cy="351.99999999999994" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="680.0" y="354.99999999999994" font-size="8" fill="#0F4C50" text-anchor="middle">CH20</text>
-<circle cx="720.0" cy="351.99999999999994" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="720.0" y="354.99999999999994" font-size="8" fill="#0F4C50" text-anchor="middle">CH21</text>
-<circle cx="760.0" cy="351.99999999999994" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="760.0" y="354.99999999999994" font-size="8" fill="#0F4C50" text-anchor="middle">CH22</text>
-<circle cx="800.0" cy="351.99999999999994" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="800.0" y="354.99999999999994" font-size="8" fill="#0F4C50" text-anchor="middle">CH23</text>
-<circle cx="840.0" cy="351.99999999999994" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="840.0" y="354.99999999999994" font-size="8" fill="#0F4C50" text-anchor="middle">CH24</text>
-<circle cx="880.0" cy="351.99999999999994" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="880.0" y="354.99999999999994" font-size="8" fill="#0F4C50" text-anchor="middle">CH25</text>
+<circle cx="968.0" cy="328.0" r="64.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="968.0" y="331.0" font-size="8" fill="#0F4C50" text-anchor="middle">STAGE-A</text>
+<circle cx="968.0" cy="207.99999999999997" r="64.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="968.0" y="210.99999999999997" font-size="8" fill="#0F4C50" text-anchor="middle">STAGE-B</text>
+<circle cx="876.0" cy="368.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="876.0" y="371.0" font-size="8" fill="#0F4C50" text-anchor="middle">CH00</text>
+<circle cx="876.0" cy="328.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="876.0" y="331.0" font-size="8" fill="#0F4C50" text-anchor="middle">CH01</text>
+<circle cx="876.0" cy="288.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="876.0" y="291.0" font-size="8" fill="#0F4C50" text-anchor="middle">CH02</text>
+<circle cx="876.0" cy="247.99999999999997" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="876.0" y="250.99999999999997" font-size="8" fill="#0F4C50" text-anchor="middle">CH03</text>
+<circle cx="876.0" cy="207.99999999999997" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="876.0" y="210.99999999999997" font-size="8" fill="#0F4C50" text-anchor="middle">CH04</text>
+<circle cx="876.0" cy="167.99999999999997" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="876.0" y="170.99999999999997" font-size="8" fill="#0F4C50" text-anchor="middle">CH05</text>
+<circle cx="844.0" cy="368.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="844.0" y="371.0" font-size="8" fill="#0F4C50" text-anchor="middle">CH10</text>
+<circle cx="844.0" cy="328.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="844.0" y="331.0" font-size="8" fill="#0F4C50" text-anchor="middle">CH11</text>
+<circle cx="844.0" cy="288.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="844.0" y="291.0" font-size="8" fill="#0F4C50" text-anchor="middle">CH12</text>
+<circle cx="844.0" cy="247.99999999999997" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="844.0" y="250.99999999999997" font-size="8" fill="#0F4C50" text-anchor="middle">CH13</text>
+<circle cx="844.0" cy="207.99999999999997" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="844.0" y="210.99999999999997" font-size="8" fill="#0F4C50" text-anchor="middle">CH14</text>
+<circle cx="844.0" cy="167.99999999999997" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="844.0" y="170.99999999999997" font-size="8" fill="#0F4C50" text-anchor="middle">CH15</text>
+<circle cx="812.0" cy="368.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="812.0" y="371.0" font-size="8" fill="#0F4C50" text-anchor="middle">CH20</text>
+<circle cx="812.0" cy="328.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="812.0" y="331.0" font-size="8" fill="#0F4C50" text-anchor="middle">CH21</text>
+<circle cx="812.0" cy="288.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="812.0" y="291.0" font-size="8" fill="#0F4C50" text-anchor="middle">CH22</text>
+<circle cx="812.0" cy="247.99999999999997" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="812.0" y="250.99999999999997" font-size="8" fill="#0F4C50" text-anchor="middle">CH23</text>
+<circle cx="812.0" cy="207.99999999999997" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="812.0" y="210.99999999999997" font-size="8" fill="#0F4C50" text-anchor="middle">CH24</text>
+<circle cx="812.0" cy="167.99999999999997" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="812.0" y="170.99999999999997" font-size="8" fill="#0F4C50" text-anchor="middle">CH25</text>
+<circle cx="612.0" cy="291.99999999999994" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="612.0" y="294.99999999999994" font-size="8" fill="#0F4C50" text-anchor="middle">P1S-CAP</text>
+<circle cx="612.0" cy="274.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="612.0" y="277.0" font-size="8" fill="#0F4C50" text-anchor="middle">P1S-SHELF</text>
+<circle cx="612.0" cy="172.00000000000003" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="612.0" y="175.00000000000003" font-size="8" fill="#0F4C50" text-anchor="middle">P1N-CAP</text>
+<circle cx="612.0" cy="190.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="612.0" y="193.0" font-size="8" fill="#0F4C50" text-anchor="middle">P1N-SHELF</text>
+<circle cx="508.0" cy="291.99999999999994" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="508.0" y="294.99999999999994" font-size="8" fill="#0F4C50" text-anchor="middle">P2S-CAP</text>
+<circle cx="508.0" cy="274.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="508.0" y="277.0" font-size="8" fill="#0F4C50" text-anchor="middle">P2S-SHELF</text>
+<circle cx="508.0" cy="172.00000000000003" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="508.0" y="175.00000000000003" font-size="8" fill="#0F4C50" text-anchor="middle">P2N-CAP</text>
+<circle cx="508.0" cy="190.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="508.0" y="193.0" font-size="8" fill="#0F4C50" text-anchor="middle">P2N-SHELF</text>
+<circle cx="404.00000000000006" cy="291.99999999999994" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="404.00000000000006" y="294.99999999999994" font-size="8" fill="#0F4C50" text-anchor="middle">P3S-CAP</text>
+<circle cx="404.00000000000006" cy="274.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="404.00000000000006" y="277.0" font-size="8" fill="#0F4C50" text-anchor="middle">P3S-SHELF</text>
+<circle cx="404.00000000000006" cy="172.00000000000003" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="404.00000000000006" y="175.00000000000003" font-size="8" fill="#0F4C50" text-anchor="middle">P3N-CAP</text>
+<circle cx="404.00000000000006" cy="190.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="404.00000000000006" y="193.0" font-size="8" fill="#0F4C50" text-anchor="middle">P3N-SHELF</text>
+<circle cx="300.0" cy="291.99999999999994" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="300.0" y="294.99999999999994" font-size="8" fill="#0F4C50" text-anchor="middle">P4S-CAP</text>
+<circle cx="300.0" cy="274.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="300.0" y="277.0" font-size="8" fill="#0F4C50" text-anchor="middle">P4S-SHELF</text>
+<circle cx="300.0" cy="172.00000000000003" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="300.0" y="175.00000000000003" font-size="8" fill="#0F4C50" text-anchor="middle">P4N-CAP</text>
+<circle cx="300.0" cy="190.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="300.0" y="193.0" font-size="8" fill="#0F4C50" text-anchor="middle">P4N-SHELF</text>
 <line x1="1188.0" y1="708.0" x2="1140" y2="688.0" stroke="#E0701F" stroke-width="1" stroke-dasharray="2 3"/>
 <circle cx="1188.0" cy="708.0" r="4" fill="#E0701F"/>
-<line x1="1084.0" y1="468.0" x2="1020" y2="480.0" stroke="#E0701F" stroke-width="1" stroke-dasharray="2 3"/>
-<circle cx="1084.0" cy="468.0" r="4" fill="#E0701F"/>
+<line x1="1084.0" y1="404.0" x2="1020" y2="408.0" stroke="#E0701F" stroke-width="1" stroke-dasharray="2 3"/>
+<circle cx="1084.0" cy="404.0" r="4" fill="#E0701F"/>
 <line x1="1324.0" y1="404.0" x2="1404.0" y2="428.0" stroke="#E0701F" stroke-width="1" stroke-dasharray="2 3"/>
 <circle cx="1324.0" cy="404.0" r="4" fill="#E0701F"/>
-<line x1="780" y1="355.99999999999994" x2="780" y2="491.99999999999994" stroke="#E0701F" stroke-width="1" stroke-dasharray="2 3"/>
-<circle cx="780" cy="355.99999999999994" r="4" fill="#E0701F"/>
-<line x1="652.0" y1="308.0" x2="580" y2="308.0" stroke="#E0701F" stroke-width="1" stroke-dasharray="2 3"/>
-<circle cx="652.0" cy="308.0" r="4" fill="#E0701F"/>
-<line x1="400.0" y1="231.99999999999994" x2="360.0" y2="331.99999999999994" stroke="#E0701F" stroke-width="1" stroke-dasharray="2 3"/>
-<circle cx="400.0" cy="231.99999999999994" r="4" fill="#E0701F"/>
-<line x1="880.0" y1="231.99999999999994" x2="740" y2="231.99999999999994" stroke="#E0701F" stroke-width="1" stroke-dasharray="2 3"/>
-<circle cx="880.0" cy="231.99999999999994" r="4" fill="#E0701F"/>
-<line x1="132.00000000000003" y1="231.99999999999994" x2="64.00000000000006" y2="231.99999999999994" stroke="#E0701F" stroke-width="1" stroke-dasharray="2 3"/>
-<circle cx="132.00000000000003" cy="231.99999999999994" r="4" fill="#E0701F"/>
+<line x1="852.0" y1="268.0" x2="968.0" y2="268.0" stroke="#E0701F" stroke-width="1" stroke-dasharray="2 3"/>
+<circle cx="852.0" cy="268.0" r="4" fill="#E0701F"/>
+<line x1="788.0" y1="255.99999999999994" x2="720.0" y2="255.99999999999994" stroke="#E0701F" stroke-width="1" stroke-dasharray="2 3"/>
+<circle cx="788.0" cy="255.99999999999994" r="4" fill="#E0701F"/>
+<line x1="455.99999999999994" y1="231.99999999999994" x2="455.99999999999994" y2="231.99999999999994" stroke="#E0701F" stroke-width="1" stroke-dasharray="2 3"/>
+<circle cx="455.99999999999994" cy="231.99999999999994" r="4" fill="#E0701F"/>
+<line x1="300.0" y1="231.99999999999994" x2="200.0" y2="231.99999999999994" stroke="#E0701F" stroke-width="1" stroke-dasharray="2 3"/>
+<circle cx="300.0" cy="231.99999999999994" r="4" fill="#E0701F"/>
+<line x1="140.0" y1="231.99999999999994" x2="64.00000000000006" y2="231.99999999999994" stroke="#E0701F" stroke-width="1" stroke-dasharray="2 3"/>
+<circle cx="140.0" cy="231.99999999999994" r="4" fill="#E0701F"/>
 <circle cx="1188.0" cy="708.0" r="6" fill="none" stroke="#8a6f45" stroke-width="1.5"/><text x="1188.0" y="699.0" font-size="8" fill="#8a6f45" text-anchor="middle">S-A</text>
 <circle cx="1100.0" cy="480.0" r="6" fill="none" stroke="#8a6f45" stroke-width="1.5"/><text x="1100.0" y="471.0" font-size="8" fill="#8a6f45" text-anchor="middle">S-B</text>
 <circle cx="680.0" cy="268.0" r="6" fill="none" stroke="#8a6f45" stroke-width="1.5"/><text x="680.0" y="259.0" font-size="8" fill="#8a6f45" text-anchor="middle">S-C</text>
