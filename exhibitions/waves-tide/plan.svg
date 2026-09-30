@@ -3,9 +3,9 @@
 <rect x="60" y="60.0" width="1840" height="588.0" fill="#ecebe6" stroke="#1a1916" stroke-width="3"/>
 <rect x="1140" y="548.0" width="760" height="96.00000000000001" fill="#ffffff" stroke="#b9b5aa" stroke-dasharray="4 4"/>
 <text x="1148" y="566.0" font-size="13" fill="#7a7468">A 起浪・長廊 · 天花 3 m</text>
-<rect x="1020" y="308.0" width="384.0" height="240" fill="#ffffff" stroke="#b9b5aa" stroke-dasharray="4 4"/>
-<text x="1028" y="326.0" font-size="13" fill="#7a7468">LOBBY 大廳 · 天花 3.2 m</text>
-<rect x="60" y="67.99999999999997" width="960" height="480" fill="#ffffff" stroke="#b9b5aa" stroke-dasharray="4 4"/>
+<rect x="1020" y="348.0" width="224.0" height="200" fill="#ffffff" stroke="#b9b5aa" stroke-dasharray="4 4"/>
+<text x="1028" y="366.0" font-size="13" fill="#7a7468">LOBBY 大廳 · 天花 3.2 m</text>
+<rect x="60" y="67.99999999999997" width="1344.0" height="480" fill="#ffffff" stroke="#b9b5aa" stroke-dasharray="4 4"/>
 <text x="68" y="85.99999999999997" font-size="13" fill="#7a7468">HALL 主展場 · 天花 4 m</text>
 <rect x="1404.0" y="251.99999999999994" width="496.0" height="296.0" fill="#ffffff" stroke="#b9b5aa" stroke-dasharray="4 4"/>
 <text x="1412.0" y="269.99999999999994" font-size="13" fill="#7a7468">S 樓梯間 · 天花 3.2 m</text>
@@ -15,14 +15,10 @@
 <text x="1192.0" y="544.0" font-size="9" fill="#8a7f6a">A-GLASS</text>
 <line x1="1020.0" y1="548.0" x2="1140.0" y2="548.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
 <text x="1084.0" y="544.0" font-size="9" fill="#8a7f6a">L-S1</text>
-<line x1="1020.0" y1="308.0" x2="1404.0" y2="308.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
-<text x="1216.0" y="304.0" font-size="9" fill="#8a7f6a">L-N</text>
 <line x1="60.0" y1="548.0" x2="1020.0" y2="548.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
 <text x="544.0" y="544.0" font-size="9" fill="#8a7f6a">H-S</text>
 <line x1="60.0" y1="67.99999999999997" x2="1020.0" y2="67.99999999999997" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
 <text x="544.0" y="63.99999999999997" font-size="9" fill="#8a7f6a">H-N</text>
-<line x1="1020.0" y1="475.99999999999994" x2="1020.0" y2="67.99999999999997" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
-<text x="1024.0" y="267.99999999999994" font-size="9" fill="#8a7f6a">X3</text>
 <line x1="64.00000000000006" y1="548.0" x2="64.00000000000006" y2="67.99999999999997" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
 <text x="68.00000000000006" y="304.0" font-size="9" fill="#8a7f6a">H-W</text>
 <line x1="1140.0" y1="644.0" x2="1140.0" y2="548.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
@@ -35,8 +31,6 @@
 <text x="1572.0" y="544.0" font-size="9" fill="#8a7f6a">C-N</text>
 <line x1="1900.0" y1="644.0" x2="1900.0" y2="548.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
 <text x="1904.0" y="592.0" font-size="9" fill="#8a7f6a">C-E</text>
-<line x1="1404.0" y1="548.0" x2="1404.0" y2="251.99999999999994" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
-<text x="1408.0" y="396.0" font-size="9" fill="#8a7f6a">L-E</text>
 <line x1="1404.0" y1="251.99999999999994" x2="1900.0" y2="251.99999999999994" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
 <text x="1656.0" y="247.99999999999994" font-size="9" fill="#8a7f6a">S-N</text>
 <line x1="1900.0" y1="548.0" x2="1900.0" y2="251.99999999999994" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
@@ -69,20 +63,28 @@
 <text x="304.0" y="364.0" font-size="9" fill="#8a7f6a">P4S</text>
 <line x1="272.0" y1="247.99999999999997" x2="328.0" y2="247.99999999999997" stroke="#1a1916" stroke-width="24.8" stroke-linecap="butt"/>
 <text x="304.0" y="243.99999999999997" font-size="9" fill="#8a7f6a">P4N</text>
-<line x1="1026.0" y1="465.99999999999994" x2="1026.0" y2="350.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="1026.0" y="412.0" font-size="8" fill="#0F4C50" text-anchor="middle">B-1</text>
+<line x1="1020.0" y1="548.0" x2="1020.0" y2="348.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
+<text x="1024.0" y="444.0" font-size="9" fill="#8a7f6a">X3</text>
+<line x1="1244.0" y1="548.0" x2="1244.0" y2="348.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
+<text x="1248.0" y="444.0" font-size="9" fill="#8a7f6a">L-E2</text>
+<line x1="1092.0" y1="348.0" x2="1404.0" y2="348.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
+<text x="1252.0" y="344.0" font-size="9" fill="#8a7f6a">L-N</text>
+<line x1="1404.0" y1="548.0" x2="1404.0" y2="67.99999999999997" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
+<text x="1408.0" y="304.0" font-size="9" fill="#8a7f6a">L-E</text>
+<line x1="1026.0" y1="505.99999999999994" x2="1026.0" y2="390.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="1026.0" y="452.0" font-size="8" fill="#0F4C50" text-anchor="middle">B-1</text>
 <line x1="1056.0" y1="542.0" x2="1104.0" y2="542.0" stroke="#E0701F" stroke-width="5"/>
 <text x="1080.0" y="554.0" font-size="8" fill="#E0701F" text-anchor="middle">B-T</text>
-<line x1="1026.0" y1="344.0" x2="1026.0" y2="339.99999999999994" stroke="#E0701F" stroke-width="5"/>
-<text x="1026.0" y="345.99999999999994" font-size="8" fill="#E0701F" text-anchor="middle">B-EAR1</text>
-<line x1="1026.0" y1="338.0" x2="1026.0" y2="333.9999999999999" stroke="#E0701F" stroke-width="5"/>
-<text x="1026.0" y="339.99999999999994" font-size="8" fill="#E0701F" text-anchor="middle">B-EAR2</text>
-<line x1="1398.0" y1="455.99999999999994" x2="1398.0" y2="400.0" stroke="#E0701F" stroke-width="5"/>
-<text x="1398.0" y="432.0" font-size="8" fill="#E0701F" text-anchor="middle">G-T</text>
-<line x1="1014.0" y1="304.0" x2="1014.0" y2="231.99999999999994" stroke="#E0701F" stroke-width="5"/>
-<text x="1014.0" y="272.0" font-size="8" fill="#E0701F" text-anchor="middle">C-T</text>
-<line x1="1014.0" y1="151.9999999999999" x2="1014.0" y2="80.0" stroke="#E0701F" stroke-width="5"/>
-<text x="1014.0" y="119.99999999999994" font-size="8" fill="#E0701F" text-anchor="middle">F-STAGE</text>
+<line x1="1026.0" y1="386.0" x2="1026.0" y2="381.99999999999994" stroke="#E0701F" stroke-width="5"/>
+<text x="1026.0" y="388.0" font-size="8" fill="#E0701F" text-anchor="middle">B-EAR1</text>
+<line x1="1026.0" y1="380.0" x2="1026.0" y2="375.99999999999994" stroke="#E0701F" stroke-width="5"/>
+<text x="1026.0" y="382.0" font-size="8" fill="#E0701F" text-anchor="middle">B-EAR2</text>
+<line x1="1168.0" y1="354.0" x2="1224.0" y2="354.0" stroke="#E0701F" stroke-width="5"/>
+<text x="1196.0" y="366.0" font-size="8" fill="#E0701F" text-anchor="middle">G-T</text>
+<line x1="1184.0" y1="341.99999999999994" x2="1256.0" y2="341.99999999999994" stroke="#E0701F" stroke-width="5"/>
+<text x="1220.0" y="353.99999999999994" font-size="8" fill="#E0701F" text-anchor="middle">C-T</text>
+<line x1="1398.0" y1="223.99999999999991" x2="1398.0" y2="152.00000000000003" stroke="#E0701F" stroke-width="5"/>
+<text x="1398.0" y="191.99999999999997" font-size="8" fill="#E0701F" text-anchor="middle">F-STAGE</text>
 <line x1="368.0" y1="73.99999999999991" x2="432.0" y2="73.99999999999991" stroke="#E0701F" stroke-width="5"/>
 <text x="400.0" y="85.99999999999991" font-size="8" fill="#E0701F" text-anchor="middle">D-T</text>
 <line x1="163.99999999999991" y1="73.99999999999991" x2="212.00000000000003" y2="73.99999999999991" stroke="#E0701F" stroke-width="5"/>
@@ -231,30 +233,6 @@
 <text x="1275.6" y="566.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W70</text>
 <line x1="1270.0" y1="554.0" x2="1281.2" y2="554.0" stroke="#0F4C50" stroke-width="5"/>
 <text x="1275.6" y="566.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W71</text>
-<line x1="1245.2" y1="554.0" x2="1256.4" y2="554.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="1250.8" y="566.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W72</text>
-<line x1="1245.2" y1="554.0" x2="1256.4" y2="554.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="1250.8" y="566.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W73</text>
-<line x1="1245.2" y1="554.0" x2="1256.4" y2="554.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="1250.8" y="566.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W74</text>
-<line x1="1222.3999999999999" y1="554.0" x2="1233.6" y2="554.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="1228.0" y="566.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W75</text>
-<line x1="1222.3999999999999" y1="554.0" x2="1233.6" y2="554.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="1228.0" y="566.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W76</text>
-<line x1="1222.3999999999999" y1="554.0" x2="1233.6" y2="554.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="1228.0" y="566.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W77</text>
-<line x1="1200.8" y1="554.0" x2="1212.0" y2="554.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="1206.4" y="566.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W78</text>
-<line x1="1200.8" y1="554.0" x2="1212.0" y2="554.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="1206.4" y="566.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W79</text>
-<line x1="1200.8" y1="554.0" x2="1212.0" y2="554.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="1206.4" y="566.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W80</text>
-<line x1="1180.8" y1="554.0" x2="1192.0" y2="554.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="1186.4" y="566.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W81</text>
-<line x1="1180.8" y1="554.0" x2="1192.0" y2="554.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="1186.4" y="566.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W82</text>
-<line x1="1180.8" y1="554.0" x2="1192.0" y2="554.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="1186.4" y="566.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W83</text>
 <line x1="1823.1999999999998" y1="533.6" x2="1823.1999999999998" y2="517.6" stroke="#0F4C50" stroke-width="5"/>
 <text x="1823.1999999999998" y="529.6" font-size="8" fill="#0F4C50" text-anchor="middle">LEAF1-WIN</text>
 <line x1="1888.8" y1="533.6" x2="1888.8" y2="517.6" stroke="#0F4C50" stroke-width="5"/>
@@ -347,56 +325,6 @@
 <text x="69.00000000000006" y="239.99999999999994" font-size="8" fill="#0F4C50" text-anchor="middle">E-CARD9</text>
 <line x1="69.00000000000006" y1="335.99999999999994" x2="69.00000000000006" y2="280.0" stroke="#E0701F" stroke-width="5"/>
 <text x="69.00000000000006" y="312.0" font-size="8" fill="#E0701F" text-anchor="middle">E-ECHO</text>
-<circle cx="1352.0" cy="428.0" r="38.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="1352.0" y="431.0" font-size="8" fill="#0F4C50" text-anchor="middle">G-DESK</text>
-<circle cx="1330.0" cy="439.19999999999993" r="5.2" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="1330.0" y="442.19999999999993" font-size="8" fill="#0F4C50" text-anchor="middle">G-JAR1</text>
-<circle cx="1344.4" cy="439.19999999999993" r="5.2" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="1344.4" y="442.19999999999993" font-size="8" fill="#0F4C50" text-anchor="middle">G-JAR2</text>
-<circle cx="1358.8" cy="439.19999999999993" r="5.2" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="1358.8" y="442.19999999999993" font-size="8" fill="#0F4C50" text-anchor="middle">G-JAR3</text>
-<circle cx="1373.1999999999998" cy="439.19999999999993" r="5.2" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="1373.1999999999998" y="442.19999999999993" font-size="8" fill="#0F4C50" text-anchor="middle">G-JAR4</text>
-<circle cx="968.0" cy="328.0" r="64.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="968.0" y="331.0" font-size="8" fill="#0F4C50" text-anchor="middle">STAGE-A</text>
-<circle cx="968.0" cy="207.99999999999997" r="64.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="968.0" y="210.99999999999997" font-size="8" fill="#0F4C50" text-anchor="middle">STAGE-B</text>
-<circle cx="876.0" cy="368.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="876.0" y="371.0" font-size="8" fill="#0F4C50" text-anchor="middle">CH00</text>
-<circle cx="876.0" cy="328.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="876.0" y="331.0" font-size="8" fill="#0F4C50" text-anchor="middle">CH01</text>
-<circle cx="876.0" cy="288.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="876.0" y="291.0" font-size="8" fill="#0F4C50" text-anchor="middle">CH02</text>
-<circle cx="876.0" cy="247.99999999999997" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="876.0" y="250.99999999999997" font-size="8" fill="#0F4C50" text-anchor="middle">CH03</text>
-<circle cx="876.0" cy="207.99999999999997" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="876.0" y="210.99999999999997" font-size="8" fill="#0F4C50" text-anchor="middle">CH04</text>
-<circle cx="876.0" cy="167.99999999999997" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="876.0" y="170.99999999999997" font-size="8" fill="#0F4C50" text-anchor="middle">CH05</text>
-<circle cx="844.0" cy="368.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="844.0" y="371.0" font-size="8" fill="#0F4C50" text-anchor="middle">CH10</text>
-<circle cx="844.0" cy="328.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="844.0" y="331.0" font-size="8" fill="#0F4C50" text-anchor="middle">CH11</text>
-<circle cx="844.0" cy="288.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="844.0" y="291.0" font-size="8" fill="#0F4C50" text-anchor="middle">CH12</text>
-<circle cx="844.0" cy="247.99999999999997" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="844.0" y="250.99999999999997" font-size="8" fill="#0F4C50" text-anchor="middle">CH13</text>
-<circle cx="844.0" cy="207.99999999999997" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="844.0" y="210.99999999999997" font-size="8" fill="#0F4C50" text-anchor="middle">CH14</text>
-<circle cx="844.0" cy="167.99999999999997" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="844.0" y="170.99999999999997" font-size="8" fill="#0F4C50" text-anchor="middle">CH15</text>
-<circle cx="812.0" cy="368.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="812.0" y="371.0" font-size="8" fill="#0F4C50" text-anchor="middle">CH20</text>
-<circle cx="812.0" cy="328.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="812.0" y="331.0" font-size="8" fill="#0F4C50" text-anchor="middle">CH21</text>
-<circle cx="812.0" cy="288.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="812.0" y="291.0" font-size="8" fill="#0F4C50" text-anchor="middle">CH22</text>
-<circle cx="812.0" cy="247.99999999999997" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="812.0" y="250.99999999999997" font-size="8" fill="#0F4C50" text-anchor="middle">CH23</text>
-<circle cx="812.0" cy="207.99999999999997" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="812.0" y="210.99999999999997" font-size="8" fill="#0F4C50" text-anchor="middle">CH24</text>
-<circle cx="812.0" cy="167.99999999999997" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="812.0" y="170.99999999999997" font-size="8" fill="#0F4C50" text-anchor="middle">CH25</text>
 <circle cx="1520.0" cy="596.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
 <text x="1520.0" y="599.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-SEA</text>
 <circle cx="612.0" cy="368.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
@@ -458,14 +386,64 @@
 <circle cx="1436.0" cy="274.0" r="30.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
 <circle cx="1436.0" cy="328.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
 <text x="1436.0" y="331.0" font-size="8" fill="#0F4C50" text-anchor="middle">STAIR-VOID</text>
+<circle cx="1196.0" cy="371.99999999999994" r="38.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="1196.0" y="374.99999999999994" font-size="8" fill="#0F4C50" text-anchor="middle">G-DESK</text>
+<circle cx="1174.0" cy="384.0" r="5.2" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="1174.0" y="387.0" font-size="8" fill="#0F4C50" text-anchor="middle">G-JAR1</text>
+<circle cx="1188.4" cy="384.0" r="5.2" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="1188.4" y="387.0" font-size="8" fill="#0F4C50" text-anchor="middle">G-JAR2</text>
+<circle cx="1202.8" cy="384.0" r="5.2" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="1202.8" y="387.0" font-size="8" fill="#0F4C50" text-anchor="middle">G-JAR3</text>
+<circle cx="1217.2" cy="384.0" r="5.2" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="1217.2" y="387.0" font-size="8" fill="#0F4C50" text-anchor="middle">G-JAR4</text>
+<circle cx="1160.0" cy="288.0" r="64.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="1160.0" y="291.0" font-size="8" fill="#0F4C50" text-anchor="middle">STAGE-A</text>
+<circle cx="1280.0" cy="288.0" r="64.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="1280.0" y="291.0" font-size="8" fill="#0F4C50" text-anchor="middle">STAGE-B</text>
+<circle cx="1100" cy="203.99999999999991" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="1100" y="206.99999999999991" font-size="8" fill="#0F4C50" text-anchor="middle">CH00</text>
+<circle cx="1140" cy="203.99999999999991" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="1140" y="206.99999999999991" font-size="8" fill="#0F4C50" text-anchor="middle">CH01</text>
+<circle cx="1180" cy="203.99999999999991" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="1180" y="206.99999999999991" font-size="8" fill="#0F4C50" text-anchor="middle">CH02</text>
+<circle cx="1220" cy="203.99999999999991" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="1220" y="206.99999999999991" font-size="8" fill="#0F4C50" text-anchor="middle">CH03</text>
+<circle cx="1260" cy="203.99999999999991" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="1260" y="206.99999999999991" font-size="8" fill="#0F4C50" text-anchor="middle">CH04</text>
+<circle cx="1300" cy="203.99999999999991" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="1300" y="206.99999999999991" font-size="8" fill="#0F4C50" text-anchor="middle">CH05</text>
+<circle cx="1100" cy="172.00000000000003" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="1100" y="175.00000000000003" font-size="8" fill="#0F4C50" text-anchor="middle">CH10</text>
+<circle cx="1140" cy="172.00000000000003" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="1140" y="175.00000000000003" font-size="8" fill="#0F4C50" text-anchor="middle">CH11</text>
+<circle cx="1180" cy="172.00000000000003" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="1180" y="175.00000000000003" font-size="8" fill="#0F4C50" text-anchor="middle">CH12</text>
+<circle cx="1220" cy="172.00000000000003" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="1220" y="175.00000000000003" font-size="8" fill="#0F4C50" text-anchor="middle">CH13</text>
+<circle cx="1260" cy="172.00000000000003" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="1260" y="175.00000000000003" font-size="8" fill="#0F4C50" text-anchor="middle">CH14</text>
+<circle cx="1300" cy="172.00000000000003" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="1300" y="175.00000000000003" font-size="8" fill="#0F4C50" text-anchor="middle">CH15</text>
+<circle cx="1100" cy="140.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="1100" y="143.0" font-size="8" fill="#0F4C50" text-anchor="middle">CH20</text>
+<circle cx="1140" cy="140.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="1140" y="143.0" font-size="8" fill="#0F4C50" text-anchor="middle">CH21</text>
+<circle cx="1180" cy="140.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="1180" y="143.0" font-size="8" fill="#0F4C50" text-anchor="middle">CH22</text>
+<circle cx="1220" cy="140.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="1220" y="143.0" font-size="8" fill="#0F4C50" text-anchor="middle">CH23</text>
+<circle cx="1260" cy="140.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="1260" y="143.0" font-size="8" fill="#0F4C50" text-anchor="middle">CH24</text>
+<circle cx="1300" cy="140.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="1300" y="143.0" font-size="8" fill="#0F4C50" text-anchor="middle">CH25</text>
 <line x1="1524.0" y1="368.0" x2="1436.0" y2="368.0" stroke="#E0701F" stroke-width="1" stroke-dasharray="2 3"/>
 <circle cx="1524.0" cy="368.0" r="4" fill="#E0701F"/>
 <line x1="1380.0" y1="596.0" x2="1300.0" y2="596.0" stroke="#E0701F" stroke-width="1" stroke-dasharray="2 3"/>
 <circle cx="1380.0" cy="596.0" r="4" fill="#E0701F"/>
-<line x1="1084.0" y1="404.0" x2="1020" y2="408.0" stroke="#E0701F" stroke-width="1" stroke-dasharray="2 3"/>
-<circle cx="1084.0" cy="404.0" r="4" fill="#E0701F"/>
-<line x1="852.0" y1="268.0" x2="968.0" y2="268.0" stroke="#E0701F" stroke-width="1" stroke-dasharray="2 3"/>
-<circle cx="852.0" cy="268.0" r="4" fill="#E0701F"/>
+<line x1="1084.0" y1="448.0" x2="1020" y2="448.0" stroke="#E0701F" stroke-width="1" stroke-dasharray="2 3"/>
+<circle cx="1084.0" cy="448.0" r="4" fill="#E0701F"/>
+<line x1="1220.0" y1="155.99999999999994" x2="1220.0" y2="288.0" stroke="#E0701F" stroke-width="1" stroke-dasharray="2 3"/>
+<circle cx="1220.0" cy="155.99999999999994" r="4" fill="#E0701F"/>
 <line x1="788.0" y1="308.0" x2="720.0" y2="308.0" stroke="#E0701F" stroke-width="1" stroke-dasharray="2 3"/>
 <circle cx="788.0" cy="308.0" r="4" fill="#E0701F"/>
 <line x1="455.99999999999994" y1="308.0" x2="455.99999999999994" y2="308.0" stroke="#E0701F" stroke-width="1" stroke-dasharray="2 3"/>
