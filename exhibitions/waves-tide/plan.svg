@@ -1,13 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1380" viewBox="0 0 1000 1380" font-family="IBM Plex Mono, Menlo, monospace">
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="1380" viewBox="0 0 760 1380" font-family="IBM Plex Mono, Menlo, monospace">
 <rect width="100%" height="100%" fill="#f7f5f0"/>
-<rect x="60" y="60" width="880" height="1260.0" fill="#ecebe6" stroke="#1a1916" stroke-width="3"/>
-<rect x="180" y="1220" width="760" height="96.00000000000001" fill="#ffffff" stroke="#b9b5aa" stroke-dasharray="4 4"/>
+<rect x="60" y="60" width="640" height="1260.0" fill="#ecebe6" stroke="#1a1916" stroke-width="3"/>
+<rect x="180" y="1220" width="384.0" height="96.00000000000001" fill="#ffffff" stroke="#b9b5aa" stroke-dasharray="4 4"/>
 <text x="188" y="1238" font-size="13" fill="#7a7468">A 起浪・長廊 · 天花 3 m</text>
 <rect x="60" y="1020" width="224.0" height="200" fill="#ffffff" stroke="#b9b5aa" stroke-dasharray="4 4"/>
 <text x="68" y="1038" font-size="13" fill="#7a7468">LOBBY 大廳 · 天花 3.2 m</text>
 <rect x="60" y="60" width="384.0" height="960" fill="#ffffff" stroke="#b9b5aa" stroke-dasharray="4 4"/>
 <text x="68" y="78" font-size="13" fill="#7a7468">HALL 主展場 · 天花 4 m</text>
-<rect x="444.0" y="924.0" width="496.0" height="296.0" fill="#ffffff" stroke="#b9b5aa" stroke-dasharray="4 4"/>
+<rect x="444.0" y="924.0" width="256.0" height="296.0" fill="#ffffff" stroke="#b9b5aa" stroke-dasharray="4 4"/>
 <text x="452.0" y="942.0" font-size="13" fill="#7a7468">S 樓梯間 · 天花 3.2 m</text>
 <line x1="180.0" y1="1220.0" x2="190.0" y2="1220.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
 <line x1="266.0" y1="1220.0" x2="276.0" y2="1220.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
@@ -17,22 +17,22 @@
 <text x="124.0" y="1216.0" font-size="9" fill="#8a7f6a">L-S1</text>
 <line x1="180.0" y1="1316.0" x2="180.0" y2="1220.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
 <text x="184.0" y="1264.0" font-size="9" fill="#8a7f6a">C-W</text>
-<line x1="180.0" y1="1316.0" x2="940.0" y2="1316.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
-<text x="564.0" y="1312.0" font-size="9" fill="#8a7f6a">C-S</text>
-<line x1="276.0" y1="1220.0" x2="860.0" y2="1220.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
-<line x1="931.9999999999999" y1="1220.0" x2="940.0" y2="1220.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
-<line x1="860.0" y1="1220.0" x2="931.9999999999999" y2="1220.0" stroke="#E0701F" stroke-width="3" stroke-dasharray="3 3"/>
-<text x="612.0" y="1216.0" font-size="9" fill="#8a7f6a">C-N</text>
-<line x1="940.0" y1="1316.0" x2="940.0" y2="1220.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
-<text x="944.0" y="1264.0" font-size="9" fill="#8a7f6a">C-E</text>
-<line x1="444.0" y1="924.0" x2="940.0" y2="924.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
-<text x="696.0" y="920.0" font-size="9" fill="#8a7f6a">S-N</text>
-<line x1="940.0" y1="1220.0" x2="940.0" y2="924.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
-<text x="944.0" y="1068.0" font-size="9" fill="#8a7f6a">S-E</text>
-<line x1="860.0" y1="1215.2" x2="860.0" y2="1180.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
-<text x="864.0" y="1193.6000000000001" font-size="9" fill="#8a7f6a">LEAF1</text>
-<line x1="932.0" y1="1215.2" x2="932.0" y2="1180.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
-<text x="936.0" y="1193.6000000000001" font-size="9" fill="#8a7f6a">LEAF2</text>
+<line x1="180.0" y1="1316.0" x2="564.0" y2="1316.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
+<text x="376.0" y="1312.0" font-size="9" fill="#8a7f6a">C-S</text>
+<line x1="276.0" y1="1220.0" x2="484.0" y2="1220.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
+<line x1="556.0" y1="1220.0" x2="700.0" y2="1220.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
+<line x1="484.0" y1="1220.0" x2="556.0" y2="1220.0" stroke="#E0701F" stroke-width="3" stroke-dasharray="3 3"/>
+<text x="492.0" y="1216.0" font-size="9" fill="#8a7f6a">C-N</text>
+<line x1="564.0" y1="1316.0" x2="564.0" y2="1220.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
+<text x="568.0" y="1264.0" font-size="9" fill="#8a7f6a">C-E</text>
+<line x1="444.0" y1="924.0" x2="700.0" y2="924.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
+<text x="576.0" y="920.0" font-size="9" fill="#8a7f6a">S-N</text>
+<line x1="700.0" y1="1220.0" x2="700.0" y2="924.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
+<text x="704.0" y="1068.0" font-size="9" fill="#8a7f6a">S-E</text>
+<line x1="484.0" y1="1215.2" x2="484.0" y2="1180.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
+<text x="488.0" y="1193.6000000000001" font-size="9" fill="#8a7f6a">LEAF1</text>
+<line x1="556.0" y1="1215.2" x2="556.0" y2="1180.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
+<text x="560.0" y="1193.6000000000001" font-size="9" fill="#8a7f6a">LEAF2</text>
 <line x1="506.0" y1="1104.0" x2="506.0" y2="964.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
 <text x="510.0" y="1030.0" font-size="9" fill="#8a7f6a">RAIL</text>
 <line x1="284.0" y1="1220.0" x2="284.0" y2="1020.0" stroke="#1a1916" stroke-width="8.0" stroke-linecap="butt"/>
@@ -79,154 +79,8 @@
 <text x="236.0" y="1038.0" font-size="8" fill="#E0701F" text-anchor="middle">G-T</text>
 <line x1="186.0" y1="1292.0" x2="186.0" y2="1244.0" stroke="#E0701F" stroke-width="5"/>
 <text x="186.0" y="1272.0" font-size="8" fill="#E0701F" text-anchor="middle">A-T</text>
-<line x1="906.4" y1="1310.0" x2="917.6" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="912.0" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W01</text>
-<line x1="842.4" y1="1310.0" x2="853.6" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="848.0" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W02</text>
-<line x1="782.8" y1="1310.0" x2="794.0" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="788.4000000000001" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W03</text>
-<line x1="726.8000000000001" y1="1310.0" x2="738.0000000000001" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="732.4000000000001" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W04</text>
-<line x1="674.8" y1="1310.0" x2="686.0" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="680.4" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W05</text>
-<line x1="626.0" y1="1310.0" x2="637.2" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="631.5999999999999" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W06</text>
-<line x1="626.0" y1="1310.0" x2="637.2" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="631.5999999999999" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W07</text>
-<line x1="580.4" y1="1310.0" x2="591.6" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="586.0" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W08</text>
-<line x1="580.4" y1="1310.0" x2="591.6" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="586.0" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W09</text>
-<line x1="538.0" y1="1310.0" x2="549.2" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="543.6" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W10</text>
-<line x1="538.0" y1="1310.0" x2="549.2" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="543.6" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W11</text>
-<line x1="498.40000000000003" y1="1310.0" x2="509.6" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="504.0" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W12</text>
-<line x1="498.40000000000003" y1="1310.0" x2="509.6" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="504.0" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W13</text>
-<line x1="461.20000000000005" y1="1310.0" x2="472.4" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="466.8" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W14</text>
-<line x1="461.20000000000005" y1="1310.0" x2="472.4" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="466.8" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W15</text>
-<line x1="426.8" y1="1310.0" x2="438.0" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="432.4" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W16</text>
-<line x1="426.8" y1="1310.0" x2="438.0" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="432.4" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W17</text>
-<line x1="426.8" y1="1310.0" x2="438.0" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="432.4" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W18</text>
-<line x1="394.4" y1="1310.0" x2="405.6" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="400.0" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W19</text>
-<line x1="394.4" y1="1310.0" x2="405.6" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="400.0" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W20</text>
-<line x1="394.4" y1="1310.0" x2="405.6" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="400.0" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W21</text>
-<line x1="364.40000000000003" y1="1310.0" x2="375.59999999999997" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="370.0" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W22</text>
-<line x1="364.40000000000003" y1="1310.0" x2="375.59999999999997" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="370.0" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W23</text>
-<line x1="364.40000000000003" y1="1310.0" x2="375.59999999999997" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="370.0" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W24</text>
-<line x1="336.0" y1="1310.0" x2="347.2" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="341.6" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W25</text>
-<line x1="336.0" y1="1310.0" x2="347.2" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="341.6" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W26</text>
-<line x1="336.0" y1="1310.0" x2="347.2" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="341.6" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W27</text>
-<line x1="310.0" y1="1310.0" x2="321.2" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="315.6" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W28</text>
-<line x1="310.0" y1="1310.0" x2="321.2" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="315.6" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W29</text>
-<line x1="310.0" y1="1310.0" x2="321.2" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="315.6" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W30</text>
-<line x1="285.2" y1="1310.0" x2="296.4" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="290.79999999999995" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W31</text>
-<line x1="285.2" y1="1310.0" x2="296.4" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="290.79999999999995" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W32</text>
-<line x1="285.2" y1="1310.0" x2="296.4" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="290.79999999999995" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W33</text>
-<line x1="262.40000000000003" y1="1310.0" x2="273.6" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="268.0" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W34</text>
-<line x1="262.40000000000003" y1="1310.0" x2="273.6" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="268.0" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W35</text>
-<line x1="262.40000000000003" y1="1310.0" x2="273.6" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="268.0" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W36</text>
-<line x1="240.79999999999998" y1="1310.0" x2="252.0" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="246.4" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W37</text>
-<line x1="240.79999999999998" y1="1310.0" x2="252.0" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="246.4" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W38</text>
-<line x1="240.79999999999998" y1="1310.0" x2="252.0" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="246.4" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W39</text>
-<line x1="220.79999999999998" y1="1310.0" x2="232.0" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="226.4" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W40</text>
-<line x1="220.79999999999998" y1="1310.0" x2="232.0" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="226.4" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W41</text>
-<line x1="220.79999999999998" y1="1310.0" x2="232.0" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="226.4" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W42</text>
-<line x1="842.4" y1="1226.0" x2="853.6" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="848.0" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W43</text>
-<line x1="782.8" y1="1226.0" x2="794.0" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="788.4000000000001" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W44</text>
-<line x1="726.8000000000001" y1="1226.0" x2="738.0000000000001" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="732.4000000000001" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W45</text>
-<line x1="674.8" y1="1226.0" x2="686.0" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="680.4" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W46</text>
-<line x1="626.0" y1="1226.0" x2="637.2" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="631.6" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W47</text>
-<line x1="626.0" y1="1226.0" x2="637.2" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="631.6" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W48</text>
-<line x1="580.4" y1="1226.0" x2="591.6" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="586.0" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W49</text>
-<line x1="580.4" y1="1226.0" x2="591.6" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="586.0" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W50</text>
-<line x1="538.0" y1="1226.0" x2="549.2" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="543.6" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W51</text>
-<line x1="538.0" y1="1226.0" x2="549.2" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="543.6" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W52</text>
-<line x1="498.40000000000003" y1="1226.0" x2="509.6" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="504.0" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W53</text>
-<line x1="498.40000000000003" y1="1226.0" x2="509.6" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="504.0" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W54</text>
-<line x1="461.20000000000005" y1="1226.0" x2="472.4" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="466.8" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W55</text>
-<line x1="461.20000000000005" y1="1226.0" x2="472.4" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="466.8" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W56</text>
-<line x1="426.80000000000007" y1="1226.0" x2="438.0" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="432.40000000000003" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W57</text>
-<line x1="426.80000000000007" y1="1226.0" x2="438.0" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="432.40000000000003" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W58</text>
-<line x1="426.80000000000007" y1="1226.0" x2="438.0" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="432.40000000000003" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W59</text>
-<line x1="394.4" y1="1226.0" x2="405.6" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="400.0" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W60</text>
-<line x1="394.4" y1="1226.0" x2="405.6" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="400.0" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W61</text>
-<line x1="394.4" y1="1226.0" x2="405.6" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="400.0" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W62</text>
-<line x1="364.40000000000003" y1="1226.0" x2="375.59999999999997" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="370.0" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W63</text>
-<line x1="364.40000000000003" y1="1226.0" x2="375.59999999999997" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="370.0" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W64</text>
-<line x1="364.40000000000003" y1="1226.0" x2="375.59999999999997" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="370.0" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W65</text>
-<line x1="336.0" y1="1226.0" x2="347.2" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="341.6" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W66</text>
-<line x1="336.0" y1="1226.0" x2="347.2" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="341.6" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W67</text>
-<line x1="336.0" y1="1226.0" x2="347.2" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="341.6" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W68</text>
-<line x1="310.0" y1="1226.0" x2="321.2" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="315.6" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W69</text>
-<line x1="310.0" y1="1226.0" x2="321.2" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="315.6" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W70</text>
-<line x1="310.0" y1="1226.0" x2="321.2" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
-<text x="315.6" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W71</text>
-<line x1="863.1999999999999" y1="1205.6" x2="863.1999999999999" y2="1189.6000000000001" stroke="#0F4C50" stroke-width="5"/>
-<text x="863.1999999999999" y="1201.6000000000001" font-size="8" fill="#0F4C50" text-anchor="middle">LEAF1-WIN</text>
-<line x1="928.8000000000001" y1="1205.6" x2="928.8000000000001" y2="1189.6000000000001" stroke="#0F4C50" stroke-width="5"/>
-<text x="928.8000000000001" y="1201.6000000000001" font-size="8" fill="#0F4C50" text-anchor="middle">LEAF2-WIN</text>
-<line x1="868.0" y1="1214.0" x2="923.9999999999999" y2="1214.0" stroke="#E0701F" stroke-width="5"/>
-<text x="896.0" y="1226.0" font-size="8" fill="#E0701F" text-anchor="middle">S-T</text>
+<line x1="492.0" y1="1214.0" x2="548.0" y2="1214.0" stroke="#E0701F" stroke-width="5"/>
+<text x="520.0" y="1226.0" font-size="8" fill="#E0701F" text-anchor="middle">S-T</text>
 <line x1="288.0" y1="1014.0" x2="360.0" y2="1014.0" stroke="#E0701F" stroke-width="5"/>
 <text x="324.0" y="1026.0" font-size="8" fill="#E0701F" text-anchor="middle">C-T</text>
 <line x1="438.0" y1="876.0" x2="438.0" y2="804.0" stroke="#E0701F" stroke-width="5"/>
@@ -321,8 +175,108 @@
 <text x="252.0" y="77.99999999999994" font-size="8" fill="#E0701F" text-anchor="middle">E-ECHO</text>
 <line x1="66.0" y1="204.00000000000006" x2="66.0" y2="155.99999999999994" stroke="#E0701F" stroke-width="5"/>
 <text x="66.0" y="184.0" font-size="8" fill="#E0701F" text-anchor="middle">F-T</text>
-<circle cx="560.0" cy="1268.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
-<text x="560.0" y="1271.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-SEA</text>
+<line x1="546.4" y1="1310.0" x2="557.6" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="552.0" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W01</text>
+<line x1="501.59999999999997" y1="1310.0" x2="512.8" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="507.2" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W02</text>
+<line x1="460.4000000000001" y1="1310.0" x2="471.59999999999997" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="466.0" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W03</text>
+<line x1="422.8" y1="1310.0" x2="434.0" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="428.40000000000003" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W04</text>
+<line x1="422.8" y1="1310.0" x2="434.0" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="428.40000000000003" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W05</text>
+<line x1="388.40000000000003" y1="1310.0" x2="399.5999999999999" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="394.0" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W06</text>
+<line x1="388.40000000000003" y1="1310.0" x2="399.5999999999999" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="394.0" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W07</text>
+<line x1="356.8" y1="1310.0" x2="368.0" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="362.4" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W08</text>
+<line x1="356.8" y1="1310.0" x2="368.0" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="362.4" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W09</text>
+<line x1="327.59999999999997" y1="1310.0" x2="338.8" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="333.2" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W10</text>
+<line x1="327.59999999999997" y1="1310.0" x2="338.8" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="333.2" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W11</text>
+<line x1="301.2" y1="1310.0" x2="312.40000000000003" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="306.8" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W12</text>
+<line x1="301.2" y1="1310.0" x2="312.40000000000003" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="306.8" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W13</text>
+<line x1="301.2" y1="1310.0" x2="312.40000000000003" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="306.8" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W14</text>
+<line x1="276.8" y1="1310.0" x2="288.0" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="282.40000000000003" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W15</text>
+<line x1="276.8" y1="1310.0" x2="288.0" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="282.40000000000003" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W16</text>
+<line x1="276.8" y1="1310.0" x2="288.0" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="282.40000000000003" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W17</text>
+<line x1="254.39999999999998" y1="1310.0" x2="265.6" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="260.0" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W18</text>
+<line x1="254.39999999999998" y1="1310.0" x2="265.6" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="260.0" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W19</text>
+<line x1="254.39999999999998" y1="1310.0" x2="265.6" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="260.0" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W20</text>
+<line x1="234.0" y1="1310.0" x2="245.2" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="239.60000000000002" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W21</text>
+<line x1="234.0" y1="1310.0" x2="245.2" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="239.60000000000002" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W22</text>
+<line x1="234.0" y1="1310.0" x2="245.2" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="239.60000000000002" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W23</text>
+<line x1="215.2" y1="1310.0" x2="226.4" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="220.79999999999998" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W24</text>
+<line x1="215.2" y1="1310.0" x2="226.4" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="220.79999999999998" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W25</text>
+<line x1="215.2" y1="1310.0" x2="226.4" y2="1310.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="220.79999999999998" y="1322.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W26</text>
+<line x1="462.4" y1="1226.0" x2="473.6" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="468.0" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W27</text>
+<line x1="424.80000000000007" y1="1226.0" x2="435.99999999999994" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="430.4" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W28</text>
+<line x1="424.80000000000007" y1="1226.0" x2="435.99999999999994" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="430.4" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W29</text>
+<line x1="390.0" y1="1226.0" x2="401.20000000000005" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="395.6" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W30</text>
+<line x1="390.0" y1="1226.0" x2="401.20000000000005" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="395.6" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W31</text>
+<line x1="358.0" y1="1226.0" x2="369.2" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="363.6" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W32</text>
+<line x1="358.0" y1="1226.0" x2="369.2" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="363.6" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W33</text>
+<line x1="329.20000000000005" y1="1226.0" x2="340.4" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="334.8" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W34</text>
+<line x1="329.20000000000005" y1="1226.0" x2="340.4" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="334.8" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W35</text>
+<line x1="302.40000000000003" y1="1226.0" x2="313.6" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="308.0" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W36</text>
+<line x1="302.40000000000003" y1="1226.0" x2="313.6" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="308.0" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W37</text>
+<line x1="302.40000000000003" y1="1226.0" x2="313.6" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="308.0" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W38</text>
+<line x1="278.0" y1="1226.0" x2="289.20000000000005" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="283.6" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W39</text>
+<line x1="278.0" y1="1226.0" x2="289.20000000000005" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="283.6" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W40</text>
+<line x1="278.0" y1="1226.0" x2="289.20000000000005" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="283.6" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W41</text>
+<line x1="255.6" y1="1226.0" x2="266.8" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="261.2" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W42</text>
+<line x1="255.6" y1="1226.0" x2="266.8" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="261.2" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W43</text>
+<line x1="255.6" y1="1226.0" x2="266.8" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="261.2" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W44</text>
+<line x1="234.79999999999995" y1="1226.0" x2="246.0" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="240.39999999999998" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W45</text>
+<line x1="234.79999999999995" y1="1226.0" x2="246.0" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="240.39999999999998" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W46</text>
+<line x1="234.79999999999995" y1="1226.0" x2="246.0" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="240.39999999999998" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W47</text>
+<line x1="216.0" y1="1226.0" x2="227.2" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="221.6" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W48</text>
+<line x1="216.0" y1="1226.0" x2="227.2" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="221.6" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W49</text>
+<line x1="216.0" y1="1226.0" x2="227.2" y2="1226.0" stroke="#0F4C50" stroke-width="5"/>
+<text x="221.6" y="1238.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-W50</text>
+<circle cx="372.0" cy="1268.0" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
+<text x="372.0" y="1271.0" font-size="8" fill="#0F4C50" text-anchor="middle">A-SEA</text>
 <circle cx="476.0" cy="1098.4" r="28.799999999999997" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
 <text x="476.0" y="1101.4" font-size="8" fill="#0F4C50" text-anchor="middle">STEP01</text>
 <circle cx="476.0" cy="1087.2" r="28.799999999999997" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
@@ -432,10 +386,10 @@
 <text x="324.0" y="327.00000000000006" font-size="8" fill="#0F4C50" text-anchor="middle">P4E-CAP</text>
 <circle cx="294.4" cy="324.00000000000006" r="12.0" fill="none" stroke="#0F4C50" stroke-width="1.5"/>
 <text x="294.4" y="327.00000000000006" font-size="8" fill="#0F4C50" text-anchor="middle">P4E-SHELF</text>
-<line x1="564.0" y1="1040.0" x2="476.0" y2="1040.0" stroke="#E0701F" stroke-width="1" stroke-dasharray="2 3"/>
-<circle cx="564.0" cy="1040.0" r="4" fill="#E0701F"/>
-<line x1="420.0" y1="1268.0" x2="340.0" y2="1268.0" stroke="#E0701F" stroke-width="1" stroke-dasharray="2 3"/>
-<circle cx="420.0" cy="1268.0" r="4" fill="#E0701F"/>
+<line x1="572.0" y1="1040.0" x2="476.0" y2="1040.0" stroke="#E0701F" stroke-width="1" stroke-dasharray="2 3"/>
+<circle cx="572.0" cy="1040.0" r="4" fill="#E0701F"/>
+<line x1="372.0" y1="1268.0" x2="320.0" y2="1268.0" stroke="#E0701F" stroke-width="1" stroke-dasharray="2 3"/>
+<circle cx="372.0" cy="1268.0" r="4" fill="#E0701F"/>
 <line x1="124.0" y1="1120.0" x2="60" y2="1120.0" stroke="#E0701F" stroke-width="1" stroke-dasharray="2 3"/>
 <circle cx="124.0" cy="1120.0" r="4" fill="#E0701F"/>
 <line x1="324.0" y1="828.0" x2="324.0" y2="960.0" stroke="#E0701F" stroke-width="1" stroke-dasharray="2 3"/>
@@ -454,7 +408,7 @@
 <circle cx="-600.0" cy="904.0" r="6" fill="none" stroke="#8a6f45" stroke-width="1.5"/><text x="-600.0" y="895.0" font-size="8" fill="#8a6f45" text-anchor="middle">S-D</text>
 <circle cx="-812.0" cy="904.0" r="6" fill="none" stroke="#8a6f45" stroke-width="1.5"/><text x="-812.0" y="895.0" font-size="8" fill="#8a6f45" text-anchor="middle">S-E</text>
 <circle cx="340.0" cy="1100" r="6" fill="none" stroke="#8a6f45" stroke-width="1.5"/><text x="340.0" y="1091" font-size="8" fill="#8a6f45" text-anchor="middle">S-G</text>
-<circle cx="524.0" cy="1148.0" r="7" fill="#E0701F"/><text x="534.0" y="1152.0" font-size="11" fill="#E0701F">進場</text>
+<circle cx="604.0" cy="1092.0" r="7" fill="#E0701F"/><text x="614.0" y="1096.0" font-size="11" fill="#E0701F">進場</text>
 <text x="60" y="38" font-size="16" fill="#1a1916" font-family="Noto Serif TC, serif">浪花：潮 — 階段一 俯視平面圖（x 向右、z 向上；單位 m）</text>
 <text x="60" y="1358" font-size="11" fill="#7a7468">黑線＝展牆　橘虛線＝開口　藍綠＝作品板　橘＝牆文／燈具　圓＝道具碰撞範圍　D＝停留點</text>
 </svg>
