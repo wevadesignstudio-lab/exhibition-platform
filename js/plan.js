@@ -74,7 +74,7 @@
       const size = { w: (b.size || [1.2, 0.8])[0], h: (b.size || [1.2, 0.8])[1] };
       // noInfo：階段三接互動前，展品不彈出說明視窗（b.interactive=true 可個別打開）
       const base = { id: b.id, title: b.label || b.id, description: L(b.text, lang), size, frame: 'none', mount: { p: m.p, ry: m.ry }, zone: b.zone, src: b.src || '', meta: b, noInfo: !b.interactive };
-      if (b.kind === 'text') items.push(Object.assign(base, { type: 'text', textStyle: b.style || 'vinyl', title: L(b.title, lang) || '', description: L(b.text, lang) || base.title }));
+      if (b.kind === 'text') items.push(Object.assign(base, { type: 'text', textStyle: b.style || 'vinyl', title: L(b.title, lang) || '', description: L(b.text, lang) || base.title, textColor: b.textColor || undefined }));
       else if (b.kind === 'audio') items.push({ id: b.id, type: 'prop', shape: 'orb', x: m.p[0], z: m.p[2], y: b.on.y ?? 1.5, emis: pal.accent, title: b.label || b.id, description: L(b.text, lang), zone: b.zone, meta: b });
       else items.push(Object.assign(base, { type: 'image', color: b.kind === 'video' ? pal.dark : (b.color || pal.board), flat: true }));
     }
