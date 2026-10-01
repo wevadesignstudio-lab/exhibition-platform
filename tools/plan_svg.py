@@ -38,7 +38,7 @@ def mount(on):
     return fx + ux * on['at'] + nx * off, fz + uz * on['at'] + nz * off, ux, uz
 COL = {'work': '#0F4C50', 'text': '#E0701F', 'video': '#181D1B', 'audio': '#E0701F'}
 for b in plan['boards']:
-    px, pz, ux, uz = mount(b['on']); w = b['size'][0]
+    px, pz, ux, uz = mount(b['on']); w = (b.get('size') or [b.get('r', 0.12) * 2, 0.2])[0]
     out.append(f'<line x1="{X(px-ux*w/2)}" y1="{Y(pz-uz*w/2)}" x2="{X(px+ux*w/2)}" y2="{Y(pz+uz*w/2)}" stroke="{COL.get(b["kind"], "#333")}" stroke-width="5"/>')
     out.append(f'<text x="{X(px)}" y="{Y(pz)+ (12 if uz==0 else 4)}" font-size="8" fill="{COL.get(b["kind"], "#333")}" text-anchor="middle">{b["id"]}</text>')
 for p in plan['props']:

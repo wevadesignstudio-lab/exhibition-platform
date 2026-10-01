@@ -37,7 +37,7 @@ window.PROPS = {
       ['lightbox', '發光燈箱板'], ['curve_plinth', '流線展島（白）'], ['hang_screen', '懸吊螢幕（可放圖）']
     ]},
     { cat: '參數化基礎件（尺寸可調）', items: [
-      ['wall', '展牆（長／高／厚／開口）'], ['slab', '板（天花／地面／展台）'], ['pod', '流線量體（椅／台）'], ['cyl', '圓柱（圓桌／火盆）'], ['orb', '發光小點'], ['disc', '地面發光圓']
+      ['wall', '展牆（長／高／厚／開口）'], ['slab', '板（天花／地面／展台）'], ['pod', '流線量體（椅／台）'], ['cyl', '圓柱（圓桌／火盆）'], ['orb', '發光小點'], ['disc', '地面發光圓'], ['flower', '紙浪花（十二瓣剪紙）']
     ]},
     { cat: '動線', items: [['doorway', '門戶（通往其他房間）']] },
     { cat: '牆體／隔間', items: [['wall_seg', '直牆段'], ['wall_arch', '拱門牆（可穿越）'], ['wall_door', '門洞牆（可穿越）']] },
@@ -230,6 +230,21 @@ window.PROPS = {
         }
         const geo = new THREE.ExtrudeGeometry(s, { depth: T, bevelEnabled: false });
         const m = new THREE.Mesh(geo, prim); m.position.z = -T / 2; m.castShadow = true; m.receiveShadow = true; g.add(m);
+        break;
+      }
+      case 'flower': {
+        // 紙浪花：十二瓣剪紙花（js/flower.js 產生花形），貼牆用；size 半徑（m）、ftype 希望／做過／大人、seed 手剪隨機、spin 平面內旋轉角
+        const d = opts.d || {}; const R = d.size || 0.12, c = (window.FLOWER && FLOWER.COLOR[d.ftype]) || { fill: d.color || '#ffffff', stroke: '#b7bec6' };
+        const FS = window.FLOWER ? FLOWER.shapes(THREE, d.seed || 1) : null;
+        const holder = new THREE.Group(); holder.rotation.z = (d.spin || 0) * Math.PI / 180; holder.scale.setScalar(R); g.add(holder);
+        if (FS) {
+          const geo = new THREE.ExtrudeGeometry(FS.shapes, { depth: 0.03, bevelEnabled: false });
+          const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: c.fill, roughness: 0.85, metalness: 0, side: THREE.DoubleSide })); m.castShadow = true; holder.add(m);
+          const pts = []; for (const f of FS.folds) pts.push(f[0], f[1], 0.032, f[2], f[3], 0.032);
+          const lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
+          holder.add(new THREE.LineSegments(lg, new THREE.LineBasicMaterial({ color: c.stroke, transparent: true, opacity: 0.55 })));
+          const edge = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 40), new THREE.LineBasicMaterial({ color: c.stroke, transparent: true, opacity: 0.5 })); holder.add(edge);
+        } else holder.add(new THREE.Mesh(new THREE.CircleGeometry(1, 24), new THREE.MeshStandardMaterial({ color: c.fill })));
         break;
       }
       case 'slab': {

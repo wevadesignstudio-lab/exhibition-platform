@@ -71,6 +71,10 @@
     }
     for (const b of (plan.boards || [])) {
       const m = mountOn(b.on || {}); if (!m) continue;
+      if (b.kind === 'flower') {   // 單朵紙浪花（圖例用）：ftype 希望／做過／大人、r 半徑
+        items.push({ id: b.id, type: 'prop', shape: 'flower', x: m.p[0], z: m.p[2], y: b.on.y ?? 1.5, rot: deg(m.ry), size: b.r ?? 0.12, ftype: b.ftype || '希望', seed: b.seed ?? 3, spin: b.spin ?? 0, title: b.label || b.id, noInfo: true, zone: b.zone });
+        continue;
+      }
       const size = { w: (b.size || [1.2, 0.8])[0], h: (b.size || [1.2, 0.8])[1] };
       // noInfo：階段三接互動前，展品不彈出說明視窗（b.interactive=true 可個別打開）
       const base = { id: b.id, title: b.label || b.id, description: L(b.text, lang), size, frame: 'none', mount: { p: m.p, ry: m.ry }, zone: b.zone, src: b.src || '', meta: b, noInfo: !b.interactive };
@@ -79,10 +83,38 @@
       else items.push(Object.assign(base, { type: 'image', color: b.kind === 'video' ? pal.dark : (b.color || pal.board), flat: true }));
     }
 
+    /* ── 紙浪花牆：flowerWalls 自動排花（sentences 供句子；role kids＝越深越高越密、淡藍越多；adults＝淡黃平均） ── */
+    const S = plan.sentences || [], byType = (t) => S.filter(s => s.type === t);
+    const rng = (seed) => { let s = (seed * 9301 + 49297) % 233280; return () => (s = (s * 9301 + 49297) % 233280) / 233280; };
+    let fn = 0;
+    for (const fw of (plan.flowerWalls || [])) {
+      const w = wallMap[fw.wall]; if (!w) { console.warn('plan: flowerWalls 找不到牆', fw.wall); continue; }
+      const rnd = rng(fw.seed || 5), adults = fw.role === 'adults';
+      const a0 = fw.from ?? 0.3, a1 = fw.to ?? w.len - 0.3, deepAtFrom = fw.deepEnd === 'from';
+      const cols = fw.columns || 14, maxRows = fw.maxRows || 4, yBase = fw.yBase ?? 1.05, dy = fw.ySpacing ?? 0.26, size = fw.size ?? 0.11;
+      const pools = { hope: byType('希望'), done: byType('做過'), a: byType('大人') }, idx = { hope: 0, done: 0, a: 0 };
+      const pickS = (k) => pools[k].length ? pools[k][idx[k]++ % pools[k].length] : { text: '', who: '' };
+      for (let i = 0; i < cols; i++) {
+        const t = adults ? 0 : i / Math.max(1, cols - 1);                                   // 0 入口 → 1 深處
+        const u = adults ? i / Math.max(1, cols - 1) : (1 - Math.pow(1 - t, fw.densityCurve ?? 1.7));   // 越深欄距越小
+        const at = deepAtFrom ? a1 - (a1 - a0) * u : a0 + (a1 - a0) * u;
+        const rows = adults ? (fw.rows || 2) : 1 + Math.round(t * (maxRows - 1));
+        for (let k = 0; k < rows; k++) {
+          const blue = !adults && rnd() < (fw.blueMin ?? 0.12) + ((fw.blueMax ?? 0.87) - (fw.blueMin ?? 0.12)) * t;
+          const s = pickS(adults ? 'a' : (blue ? 'done' : 'hope')), type = adults ? '大人' : (blue ? '做過' : '希望');
+          const y = yBase + k * dy + (adults ? 0 : t * 0.08) + (rnd() - 0.5) * 0.05;
+          const m = mountOn({ wall: fw.wall, at: at + (rnd() - 0.5) * 0.06, side: fw.side, y }); if (!m) continue;
+          fn++;
+          items.push({ id: `${fw.id || fw.wall}_f${fn}`, type: 'prop', shape: 'flower', x: m.p[0], z: m.p[2], y, rot: deg(m.ry), size: +(size - t * 0.015).toFixed(3), ftype: type, seed: 1 + (fn % 9), spin: Math.round(rnd() * 30), title: s.who || type, description: s.text, zone: fw.zone || fw.id, meta: { sentence: s } });
+        }
+      }
+    }
+
     /* ── 道具 ── */
     for (const p of (plan.props || [])) {
       const [ex, ez] = E(p.pos[0], p.pos[1]);
       const d = Object.assign({}, p); delete d.pos;
+      if (p.shape === 'sea') d.sentences = S;   // 數位海：浪花上的句子
       items.push(Object.assign(d, { type: 'prop', x: ex, z: ez, rot: p.rot || 0, color: p.color || pal.wall, title: p.label || p.id }));
     }
 
