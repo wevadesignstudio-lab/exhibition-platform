@@ -13,7 +13,8 @@
   "sentences：約 30 句示意句子（text、who 身分、type 希望／做過／大人），紙浪花牆與數位海共用；示意內容，非實際作品。",
   "flowerWalls：紙浪花牆自動排花。role kids＝孩子牆（columns 欄數＝密度、maxRows 深處最多幾排、blueMin/blueMax 淡藍比例由入口到深處、deepEnd 深處在牆的 from 或 to 端）；role adults＝老師家長牆（columns、rows 平均分布）。size 浪花半徑（m）。",
   "數位海：props 裡 shape \"sea\"（w×d 公尺、count 浪花數、speed 動畫速度倍率）。觀眾走過或準心掃過會泛漣漪，點浪花浮出句子，右上角「退潮」按鈕預留給下學期「浪花：岸」。",
-  "花形本體在 js/flower.js（SVG／Canvas／3D 共用），海的動畫在 js/sea.js，3D 花朵道具在 js/props.js 的 flower。"
+  "花形本體在 js/flower.js（SVG／Canvas／3D 共用），海的動畫在 js/sea.js，3D 花朵道具在 js/props.js 的 flower。",
+  "數位海要貼牆：把 props 的 A-SEA 刪掉，改在 boards 加 {\"kind\":\"sea\",\"on\":{\"wall\":\"S-E\",\"at\":3.8,\"side\":\"L\",\"y\":1.7},\"size\":[4,2.6]}；或匯入後在編輯器選取數位海 → 投影位置「貼牆（直立）」，再拖到牆邊、調旋轉與高度。"
  ],
  "id": "waves-tide",
  "lang": "zh",

@@ -71,6 +71,10 @@
     }
     for (const b of (plan.boards || [])) {
       const m = mountOn(b.on || {}); if (!m) continue;
+      if (b.kind === 'sea') {   // 貼牆的數位海：size [寬, 高]，on.y 中心高度
+        items.push({ id: b.id, type: 'prop', shape: 'sea', upright: true, x: m.p[0], z: m.p[2], y: b.on.y ?? 1.6, rot: deg(m.ry), w: (b.size || [3, 2])[0], d: (b.size || [3, 2])[1], count: b.count, speed: b.speed, sentences: plan.sentences || [], title: b.label || b.id, noInfo: true, zone: b.zone });
+        continue;
+      }
       if (b.kind === 'flower') {   // 單朵紙浪花（圖例用）：ftype 希望／做過／大人、r 半徑
         items.push({ id: b.id, type: 'prop', shape: 'flower', x: m.p[0], z: m.p[2], y: b.on.y ?? 1.5, rot: deg(m.ry), size: b.r ?? 0.12, ftype: b.ftype || '希望', seed: b.seed ?? 3, spin: b.spin ?? 0, title: b.label || b.id, noInfo: true, zone: b.zone });
         continue;
